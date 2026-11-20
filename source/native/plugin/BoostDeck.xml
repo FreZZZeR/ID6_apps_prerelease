@@ -55,6 +55,14 @@
       <raAction id="628" />
       <raAction id="629" />
       <raAction id="630" />
+      <raAction id="631" />
+      <raAction id="632" />
+      <raAction id="633" />
+      <raAction id="634" />
+      <raAction id="635" />
+      <raAction id="636" />
+      <raAction id="637" />
+      <raAction id="638" />
       <hmiAction id="510" target="510" />
       <hmiAction id="511" target="511" />
       <hmiAction id="512" target="512" />
@@ -393,7 +401,7 @@
         <components>
           <label id="590" model="360" />
           <button id="591" action="502" text="Gasoline" />
-          <button id="592" action="503" text="Diesel (standard OBD PIDs)" />
+          <button id="592" action="503" text="Diesel / N57" />
         </components>
       </hmiState>
       <hmiState id="510" parentId="500" text="Gauge 1">
@@ -430,155 +438,151 @@
           <button id="1029" action="628" text="Lambda target" />
           <button id="1030" action="629" text="Catalyst temp" />
           <button id="1031" action="630" text="Throttle target" />
+          <button id="1032" action="631" text="DPF soot" />
+          <button id="1033" action="632" text="DPF pressure" />
+          <button id="1034" action="633" text="DPF regen dist." />
+          <button id="1035" action="634" text="EGT pre-DPF" />
+          <button id="1036" action="635" text="EGT pre-cat" />
+          <button id="1037" action="636" text="AdBlue level" />
+          <button id="1038" action="637" text="DDE torque" />
+          <button id="1039" action="638" text="Power (calc.)" />
         </components>
       </hmiState>
       <hmiState id="511" parentId="500" text="Gauge 2">
         <components>
-          <label id="1032" model="341" />
-          <button id="1033" action="600" text="Boost" />
-          <button id="1034" action="601" text="AFR" />
-          <button id="1035" action="602" text="Timing" />
-          <button id="1036" action="603" text="Intake air" />
-          <button id="1037" action="604" text="Trans temp" />
-          <button id="1038" action="605" text="Rail pressure" />
-          <button id="1039" action="606" text="Oil pressure" />
-          <button id="1040" action="607" text="Coolant" />
-          <button id="1041" action="608" text="Active ethanol" />
-          <button id="1042" action="609" text="Oil temp" />
-          <button id="1043" action="610" text="Voltage" />
-          <button id="1044" action="611" text="Engine RPM" />
-          <button id="1045" action="612" text="Speed" />
-          <button id="1046" action="613" text="Engine load" />
-          <button id="1047" action="614" text="Manifold abs." />
-          <button id="1048" action="615" text="Air flow" />
-          <button id="1049" action="616" text="Throttle" />
-          <button id="1050" action="617" text="Barometric" />
-          <button id="1051" action="618" text="Outside air" />
-          <button id="1052" action="619" text="Fuel rate" />
-          <button id="1053" action="620" text="Fuel level" />
-          <button id="1054" action="621" text="Accel. pedal" />
-          <button id="1055" action="622" text="Spark advance" />
-          <button id="1056" action="623" text="Absolute load" />
-          <button id="1057" action="624" text="STFT bank 1" />
-          <button id="1058" action="625" text="LTFT bank 1" />
-          <button id="1059" action="626" text="STFT bank 2" />
-          <button id="1060" action="627" text="LTFT bank 2" />
-          <button id="1061" action="628" text="Lambda target" />
-          <button id="1062" action="629" text="Catalyst temp" />
-          <button id="1063" action="630" text="Throttle target" />
+          <label id="1040" model="341" />
+          <button id="1041" action="600" text="Boost" />
+          <button id="1042" action="601" text="AFR" />
+          <button id="1043" action="602" text="Timing" />
+          <button id="1044" action="603" text="Intake air" />
+          <button id="1045" action="604" text="Trans temp" />
+          <button id="1046" action="605" text="Rail pressure" />
+          <button id="1047" action="606" text="Oil pressure" />
+          <button id="1048" action="607" text="Coolant" />
+          <button id="1049" action="608" text="Active ethanol" />
+          <button id="1050" action="609" text="Oil temp" />
+          <button id="1051" action="610" text="Voltage" />
+          <button id="1052" action="611" text="Engine RPM" />
+          <button id="1053" action="612" text="Speed" />
+          <button id="1054" action="613" text="Engine load" />
+          <button id="1055" action="614" text="Manifold abs." />
+          <button id="1056" action="615" text="Air flow" />
+          <button id="1057" action="616" text="Throttle" />
+          <button id="1058" action="617" text="Barometric" />
+          <button id="1059" action="618" text="Outside air" />
+          <button id="1060" action="619" text="Fuel rate" />
+          <button id="1061" action="620" text="Fuel level" />
+          <button id="1062" action="621" text="Accel. pedal" />
+          <button id="1063" action="622" text="Spark advance" />
+          <button id="1064" action="623" text="Absolute load" />
+          <button id="1065" action="624" text="STFT bank 1" />
+          <button id="1066" action="625" text="LTFT bank 1" />
+          <button id="1067" action="626" text="STFT bank 2" />
+          <button id="1068" action="627" text="LTFT bank 2" />
+          <button id="1069" action="628" text="Lambda target" />
+          <button id="1070" action="629" text="Catalyst temp" />
+          <button id="1071" action="630" text="Throttle target" />
+          <button id="1072" action="631" text="DPF soot" />
+          <button id="1073" action="632" text="DPF pressure" />
+          <button id="1074" action="633" text="DPF regen dist." />
+          <button id="1075" action="634" text="EGT pre-DPF" />
+          <button id="1076" action="635" text="EGT pre-cat" />
+          <button id="1077" action="636" text="AdBlue level" />
+          <button id="1078" action="637" text="DDE torque" />
+          <button id="1079" action="638" text="Power (calc.)" />
         </components>
       </hmiState>
       <hmiState id="512" parentId="500" text="Gauge 3">
         <components>
-          <label id="1064" model="342" />
-          <button id="1065" action="600" text="Boost" />
-          <button id="1066" action="601" text="AFR" />
-          <button id="1067" action="602" text="Timing" />
-          <button id="1068" action="603" text="Intake air" />
-          <button id="1069" action="604" text="Trans temp" />
-          <button id="1070" action="605" text="Rail pressure" />
-          <button id="1071" action="606" text="Oil pressure" />
-          <button id="1072" action="607" text="Coolant" />
-          <button id="1073" action="608" text="Active ethanol" />
-          <button id="1074" action="609" text="Oil temp" />
-          <button id="1075" action="610" text="Voltage" />
-          <button id="1076" action="611" text="Engine RPM" />
-          <button id="1077" action="612" text="Speed" />
-          <button id="1078" action="613" text="Engine load" />
-          <button id="1079" action="614" text="Manifold abs." />
-          <button id="1080" action="615" text="Air flow" />
-          <button id="1081" action="616" text="Throttle" />
-          <button id="1082" action="617" text="Barometric" />
-          <button id="1083" action="618" text="Outside air" />
-          <button id="1084" action="619" text="Fuel rate" />
-          <button id="1085" action="620" text="Fuel level" />
-          <button id="1086" action="621" text="Accel. pedal" />
-          <button id="1087" action="622" text="Spark advance" />
-          <button id="1088" action="623" text="Absolute load" />
-          <button id="1089" action="624" text="STFT bank 1" />
-          <button id="1090" action="625" text="LTFT bank 1" />
-          <button id="1091" action="626" text="STFT bank 2" />
-          <button id="1092" action="627" text="LTFT bank 2" />
-          <button id="1093" action="628" text="Lambda target" />
-          <button id="1094" action="629" text="Catalyst temp" />
-          <button id="1095" action="630" text="Throttle target" />
+          <label id="1080" model="342" />
+          <button id="1081" action="600" text="Boost" />
+          <button id="1082" action="601" text="AFR" />
+          <button id="1083" action="602" text="Timing" />
+          <button id="1084" action="603" text="Intake air" />
+          <button id="1085" action="604" text="Trans temp" />
+          <button id="1086" action="605" text="Rail pressure" />
+          <button id="1087" action="606" text="Oil pressure" />
+          <button id="1088" action="607" text="Coolant" />
+          <button id="1089" action="608" text="Active ethanol" />
+          <button id="1090" action="609" text="Oil temp" />
+          <button id="1091" action="610" text="Voltage" />
+          <button id="1092" action="611" text="Engine RPM" />
+          <button id="1093" action="612" text="Speed" />
+          <button id="1094" action="613" text="Engine load" />
+          <button id="1095" action="614" text="Manifold abs." />
+          <button id="1096" action="615" text="Air flow" />
+          <button id="1097" action="616" text="Throttle" />
+          <button id="1098" action="617" text="Barometric" />
+          <button id="1099" action="618" text="Outside air" />
+          <button id="1100" action="619" text="Fuel rate" />
+          <button id="1101" action="620" text="Fuel level" />
+          <button id="1102" action="621" text="Accel. pedal" />
+          <button id="1103" action="622" text="Spark advance" />
+          <button id="1104" action="623" text="Absolute load" />
+          <button id="1105" action="624" text="STFT bank 1" />
+          <button id="1106" action="625" text="LTFT bank 1" />
+          <button id="1107" action="626" text="STFT bank 2" />
+          <button id="1108" action="627" text="LTFT bank 2" />
+          <button id="1109" action="628" text="Lambda target" />
+          <button id="1110" action="629" text="Catalyst temp" />
+          <button id="1111" action="630" text="Throttle target" />
+          <button id="1112" action="631" text="DPF soot" />
+          <button id="1113" action="632" text="DPF pressure" />
+          <button id="1114" action="633" text="DPF regen dist." />
+          <button id="1115" action="634" text="EGT pre-DPF" />
+          <button id="1116" action="635" text="EGT pre-cat" />
+          <button id="1117" action="636" text="AdBlue level" />
+          <button id="1118" action="637" text="DDE torque" />
+          <button id="1119" action="638" text="Power (calc.)" />
         </components>
       </hmiState>
       <hmiState id="513" parentId="500" text="Gauge 4">
         <components>
-          <label id="1096" model="343" />
-          <button id="1097" action="600" text="Boost" />
-          <button id="1098" action="601" text="AFR" />
-          <button id="1099" action="602" text="Timing" />
-          <button id="1100" action="603" text="Intake air" />
-          <button id="1101" action="604" text="Trans temp" />
-          <button id="1102" action="605" text="Rail pressure" />
-          <button id="1103" action="606" text="Oil pressure" />
-          <button id="1104" action="607" text="Coolant" />
-          <button id="1105" action="608" text="Active ethanol" />
-          <button id="1106" action="609" text="Oil temp" />
-          <button id="1107" action="610" text="Voltage" />
-          <button id="1108" action="611" text="Engine RPM" />
-          <button id="1109" action="612" text="Speed" />
-          <button id="1110" action="613" text="Engine load" />
-          <button id="1111" action="614" text="Manifold abs." />
-          <button id="1112" action="615" text="Air flow" />
-          <button id="1113" action="616" text="Throttle" />
-          <button id="1114" action="617" text="Barometric" />
-          <button id="1115" action="618" text="Outside air" />
-          <button id="1116" action="619" text="Fuel rate" />
-          <button id="1117" action="620" text="Fuel level" />
-          <button id="1118" action="621" text="Accel. pedal" />
-          <button id="1119" action="622" text="Spark advance" />
-          <button id="1120" action="623" text="Absolute load" />
-          <button id="1121" action="624" text="STFT bank 1" />
-          <button id="1122" action="625" text="LTFT bank 1" />
-          <button id="1123" action="626" text="STFT bank 2" />
-          <button id="1124" action="627" text="LTFT bank 2" />
-          <button id="1125" action="628" text="Lambda target" />
-          <button id="1126" action="629" text="Catalyst temp" />
-          <button id="1127" action="630" text="Throttle target" />
+          <label id="1120" model="343" />
+          <button id="1121" action="600" text="Boost" />
+          <button id="1122" action="601" text="AFR" />
+          <button id="1123" action="602" text="Timing" />
+          <button id="1124" action="603" text="Intake air" />
+          <button id="1125" action="604" text="Trans temp" />
+          <button id="1126" action="605" text="Rail pressure" />
+          <button id="1127" action="606" text="Oil pressure" />
+          <button id="1128" action="607" text="Coolant" />
+          <button id="1129" action="608" text="Active ethanol" />
+          <button id="1130" action="609" text="Oil temp" />
+          <button id="1131" action="610" text="Voltage" />
+          <button id="1132" action="611" text="Engine RPM" />
+          <button id="1133" action="612" text="Speed" />
+          <button id="1134" action="613" text="Engine load" />
+          <button id="1135" action="614" text="Manifold abs." />
+          <button id="1136" action="615" text="Air flow" />
+          <button id="1137" action="616" text="Throttle" />
+          <button id="1138" action="617" text="Barometric" />
+          <button id="1139" action="618" text="Outside air" />
+          <button id="1140" action="619" text="Fuel rate" />
+          <button id="1141" action="620" text="Fuel level" />
+          <button id="1142" action="621" text="Accel. pedal" />
+          <button id="1143" action="622" text="Spark advance" />
+          <button id="1144" action="623" text="Absolute load" />
+          <button id="1145" action="624" text="STFT bank 1" />
+          <button id="1146" action="625" text="LTFT bank 1" />
+          <button id="1147" action="626" text="STFT bank 2" />
+          <button id="1148" action="627" text="LTFT bank 2" />
+          <button id="1149" action="628" text="Lambda target" />
+          <button id="1150" action="629" text="Catalyst temp" />
+          <button id="1151" action="630" text="Throttle target" />
+          <button id="1152" action="631" text="DPF soot" />
+          <button id="1153" action="632" text="DPF pressure" />
+          <button id="1154" action="633" text="DPF regen dist." />
+          <button id="1155" action="634" text="EGT pre-DPF" />
+          <button id="1156" action="635" text="EGT pre-cat" />
+          <button id="1157" action="636" text="AdBlue level" />
+          <button id="1158" action="637" text="DDE torque" />
+          <button id="1159" action="638" text="Power (calc.)" />
         </components>
       </hmiState>
       <hmiState id="514" parentId="500" text="Gauge 5">
         <components>
-          <label id="1128" model="344" />
-          <button id="1129" action="600" text="Boost" />
-          <button id="1130" action="601" text="AFR" />
-          <button id="1131" action="602" text="Timing" />
-          <button id="1132" action="603" text="Intake air" />
-          <button id="1133" action="604" text="Trans temp" />
-          <button id="1134" action="605" text="Rail pressure" />
-          <button id="1135" action="606" text="Oil pressure" />
-          <button id="1136" action="607" text="Coolant" />
-          <button id="1137" action="608" text="Active ethanol" />
-          <button id="1138" action="609" text="Oil temp" />
-          <button id="1139" action="610" text="Voltage" />
-          <button id="1140" action="611" text="Engine RPM" />
-          <button id="1141" action="612" text="Speed" />
-          <button id="1142" action="613" text="Engine load" />
-          <button id="1143" action="614" text="Manifold abs." />
-          <button id="1144" action="615" text="Air flow" />
-          <button id="1145" action="616" text="Throttle" />
-          <button id="1146" action="617" text="Barometric" />
-          <button id="1147" action="618" text="Outside air" />
-          <button id="1148" action="619" text="Fuel rate" />
-          <button id="1149" action="620" text="Fuel level" />
-          <button id="1150" action="621" text="Accel. pedal" />
-          <button id="1151" action="622" text="Spark advance" />
-          <button id="1152" action="623" text="Absolute load" />
-          <button id="1153" action="624" text="STFT bank 1" />
-          <button id="1154" action="625" text="LTFT bank 1" />
-          <button id="1155" action="626" text="STFT bank 2" />
-          <button id="1156" action="627" text="LTFT bank 2" />
-          <button id="1157" action="628" text="Lambda target" />
-          <button id="1158" action="629" text="Catalyst temp" />
-          <button id="1159" action="630" text="Throttle target" />
-        </components>
-      </hmiState>
-      <hmiState id="515" parentId="500" text="Gauge 6">
-        <components>
-          <label id="1160" model="345" />
+          <label id="1160" model="344" />
           <button id="1161" action="600" text="Boost" />
           <button id="1162" action="601" text="AFR" />
           <button id="1163" action="602" text="Timing" />
@@ -610,114 +614,190 @@
           <button id="1189" action="628" text="Lambda target" />
           <button id="1190" action="629" text="Catalyst temp" />
           <button id="1191" action="630" text="Throttle target" />
+          <button id="1192" action="631" text="DPF soot" />
+          <button id="1193" action="632" text="DPF pressure" />
+          <button id="1194" action="633" text="DPF regen dist." />
+          <button id="1195" action="634" text="EGT pre-DPF" />
+          <button id="1196" action="635" text="EGT pre-cat" />
+          <button id="1197" action="636" text="AdBlue level" />
+          <button id="1198" action="637" text="DDE torque" />
+          <button id="1199" action="638" text="Power (calc.)" />
+        </components>
+      </hmiState>
+      <hmiState id="515" parentId="500" text="Gauge 6">
+        <components>
+          <label id="1200" model="345" />
+          <button id="1201" action="600" text="Boost" />
+          <button id="1202" action="601" text="AFR" />
+          <button id="1203" action="602" text="Timing" />
+          <button id="1204" action="603" text="Intake air" />
+          <button id="1205" action="604" text="Trans temp" />
+          <button id="1206" action="605" text="Rail pressure" />
+          <button id="1207" action="606" text="Oil pressure" />
+          <button id="1208" action="607" text="Coolant" />
+          <button id="1209" action="608" text="Active ethanol" />
+          <button id="1210" action="609" text="Oil temp" />
+          <button id="1211" action="610" text="Voltage" />
+          <button id="1212" action="611" text="Engine RPM" />
+          <button id="1213" action="612" text="Speed" />
+          <button id="1214" action="613" text="Engine load" />
+          <button id="1215" action="614" text="Manifold abs." />
+          <button id="1216" action="615" text="Air flow" />
+          <button id="1217" action="616" text="Throttle" />
+          <button id="1218" action="617" text="Barometric" />
+          <button id="1219" action="618" text="Outside air" />
+          <button id="1220" action="619" text="Fuel rate" />
+          <button id="1221" action="620" text="Fuel level" />
+          <button id="1222" action="621" text="Accel. pedal" />
+          <button id="1223" action="622" text="Spark advance" />
+          <button id="1224" action="623" text="Absolute load" />
+          <button id="1225" action="624" text="STFT bank 1" />
+          <button id="1226" action="625" text="LTFT bank 1" />
+          <button id="1227" action="626" text="STFT bank 2" />
+          <button id="1228" action="627" text="LTFT bank 2" />
+          <button id="1229" action="628" text="Lambda target" />
+          <button id="1230" action="629" text="Catalyst temp" />
+          <button id="1231" action="630" text="Throttle target" />
+          <button id="1232" action="631" text="DPF soot" />
+          <button id="1233" action="632" text="DPF pressure" />
+          <button id="1234" action="633" text="DPF regen dist." />
+          <button id="1235" action="634" text="EGT pre-DPF" />
+          <button id="1236" action="635" text="EGT pre-cat" />
+          <button id="1237" action="636" text="AdBlue level" />
+          <button id="1238" action="637" text="DDE torque" />
+          <button id="1239" action="638" text="Power (calc.)" />
         </components>
       </hmiState>
       <hmiState id="516" parentId="500" text="Gauge 7">
         <components>
-          <label id="1192" model="346" />
-          <button id="1193" action="600" text="Boost" />
-          <button id="1194" action="601" text="AFR" />
-          <button id="1195" action="602" text="Timing" />
-          <button id="1196" action="603" text="Intake air" />
-          <button id="1197" action="604" text="Trans temp" />
-          <button id="1198" action="605" text="Rail pressure" />
-          <button id="1199" action="606" text="Oil pressure" />
-          <button id="1200" action="607" text="Coolant" />
-          <button id="1201" action="608" text="Active ethanol" />
-          <button id="1202" action="609" text="Oil temp" />
-          <button id="1203" action="610" text="Voltage" />
-          <button id="1204" action="611" text="Engine RPM" />
-          <button id="1205" action="612" text="Speed" />
-          <button id="1206" action="613" text="Engine load" />
-          <button id="1207" action="614" text="Manifold abs." />
-          <button id="1208" action="615" text="Air flow" />
-          <button id="1209" action="616" text="Throttle" />
-          <button id="1210" action="617" text="Barometric" />
-          <button id="1211" action="618" text="Outside air" />
-          <button id="1212" action="619" text="Fuel rate" />
-          <button id="1213" action="620" text="Fuel level" />
-          <button id="1214" action="621" text="Accel. pedal" />
-          <button id="1215" action="622" text="Spark advance" />
-          <button id="1216" action="623" text="Absolute load" />
-          <button id="1217" action="624" text="STFT bank 1" />
-          <button id="1218" action="625" text="LTFT bank 1" />
-          <button id="1219" action="626" text="STFT bank 2" />
-          <button id="1220" action="627" text="LTFT bank 2" />
-          <button id="1221" action="628" text="Lambda target" />
-          <button id="1222" action="629" text="Catalyst temp" />
-          <button id="1223" action="630" text="Throttle target" />
+          <label id="1240" model="346" />
+          <button id="1241" action="600" text="Boost" />
+          <button id="1242" action="601" text="AFR" />
+          <button id="1243" action="602" text="Timing" />
+          <button id="1244" action="603" text="Intake air" />
+          <button id="1245" action="604" text="Trans temp" />
+          <button id="1246" action="605" text="Rail pressure" />
+          <button id="1247" action="606" text="Oil pressure" />
+          <button id="1248" action="607" text="Coolant" />
+          <button id="1249" action="608" text="Active ethanol" />
+          <button id="1250" action="609" text="Oil temp" />
+          <button id="1251" action="610" text="Voltage" />
+          <button id="1252" action="611" text="Engine RPM" />
+          <button id="1253" action="612" text="Speed" />
+          <button id="1254" action="613" text="Engine load" />
+          <button id="1255" action="614" text="Manifold abs." />
+          <button id="1256" action="615" text="Air flow" />
+          <button id="1257" action="616" text="Throttle" />
+          <button id="1258" action="617" text="Barometric" />
+          <button id="1259" action="618" text="Outside air" />
+          <button id="1260" action="619" text="Fuel rate" />
+          <button id="1261" action="620" text="Fuel level" />
+          <button id="1262" action="621" text="Accel. pedal" />
+          <button id="1263" action="622" text="Spark advance" />
+          <button id="1264" action="623" text="Absolute load" />
+          <button id="1265" action="624" text="STFT bank 1" />
+          <button id="1266" action="625" text="LTFT bank 1" />
+          <button id="1267" action="626" text="STFT bank 2" />
+          <button id="1268" action="627" text="LTFT bank 2" />
+          <button id="1269" action="628" text="Lambda target" />
+          <button id="1270" action="629" text="Catalyst temp" />
+          <button id="1271" action="630" text="Throttle target" />
+          <button id="1272" action="631" text="DPF soot" />
+          <button id="1273" action="632" text="DPF pressure" />
+          <button id="1274" action="633" text="DPF regen dist." />
+          <button id="1275" action="634" text="EGT pre-DPF" />
+          <button id="1276" action="635" text="EGT pre-cat" />
+          <button id="1277" action="636" text="AdBlue level" />
+          <button id="1278" action="637" text="DDE torque" />
+          <button id="1279" action="638" text="Power (calc.)" />
         </components>
       </hmiState>
       <hmiState id="517" parentId="500" text="Gauge 8">
         <components>
-          <label id="1224" model="347" />
-          <button id="1225" action="600" text="Boost" />
-          <button id="1226" action="601" text="AFR" />
-          <button id="1227" action="602" text="Timing" />
-          <button id="1228" action="603" text="Intake air" />
-          <button id="1229" action="604" text="Trans temp" />
-          <button id="1230" action="605" text="Rail pressure" />
-          <button id="1231" action="606" text="Oil pressure" />
-          <button id="1232" action="607" text="Coolant" />
-          <button id="1233" action="608" text="Active ethanol" />
-          <button id="1234" action="609" text="Oil temp" />
-          <button id="1235" action="610" text="Voltage" />
-          <button id="1236" action="611" text="Engine RPM" />
-          <button id="1237" action="612" text="Speed" />
-          <button id="1238" action="613" text="Engine load" />
-          <button id="1239" action="614" text="Manifold abs." />
-          <button id="1240" action="615" text="Air flow" />
-          <button id="1241" action="616" text="Throttle" />
-          <button id="1242" action="617" text="Barometric" />
-          <button id="1243" action="618" text="Outside air" />
-          <button id="1244" action="619" text="Fuel rate" />
-          <button id="1245" action="620" text="Fuel level" />
-          <button id="1246" action="621" text="Accel. pedal" />
-          <button id="1247" action="622" text="Spark advance" />
-          <button id="1248" action="623" text="Absolute load" />
-          <button id="1249" action="624" text="STFT bank 1" />
-          <button id="1250" action="625" text="LTFT bank 1" />
-          <button id="1251" action="626" text="STFT bank 2" />
-          <button id="1252" action="627" text="LTFT bank 2" />
-          <button id="1253" action="628" text="Lambda target" />
-          <button id="1254" action="629" text="Catalyst temp" />
-          <button id="1255" action="630" text="Throttle target" />
+          <label id="1280" model="347" />
+          <button id="1281" action="600" text="Boost" />
+          <button id="1282" action="601" text="AFR" />
+          <button id="1283" action="602" text="Timing" />
+          <button id="1284" action="603" text="Intake air" />
+          <button id="1285" action="604" text="Trans temp" />
+          <button id="1286" action="605" text="Rail pressure" />
+          <button id="1287" action="606" text="Oil pressure" />
+          <button id="1288" action="607" text="Coolant" />
+          <button id="1289" action="608" text="Active ethanol" />
+          <button id="1290" action="609" text="Oil temp" />
+          <button id="1291" action="610" text="Voltage" />
+          <button id="1292" action="611" text="Engine RPM" />
+          <button id="1293" action="612" text="Speed" />
+          <button id="1294" action="613" text="Engine load" />
+          <button id="1295" action="614" text="Manifold abs." />
+          <button id="1296" action="615" text="Air flow" />
+          <button id="1297" action="616" text="Throttle" />
+          <button id="1298" action="617" text="Barometric" />
+          <button id="1299" action="618" text="Outside air" />
+          <button id="1300" action="619" text="Fuel rate" />
+          <button id="1301" action="620" text="Fuel level" />
+          <button id="1302" action="621" text="Accel. pedal" />
+          <button id="1303" action="622" text="Spark advance" />
+          <button id="1304" action="623" text="Absolute load" />
+          <button id="1305" action="624" text="STFT bank 1" />
+          <button id="1306" action="625" text="LTFT bank 1" />
+          <button id="1307" action="626" text="STFT bank 2" />
+          <button id="1308" action="627" text="LTFT bank 2" />
+          <button id="1309" action="628" text="Lambda target" />
+          <button id="1310" action="629" text="Catalyst temp" />
+          <button id="1311" action="630" text="Throttle target" />
+          <button id="1312" action="631" text="DPF soot" />
+          <button id="1313" action="632" text="DPF pressure" />
+          <button id="1314" action="633" text="DPF regen dist." />
+          <button id="1315" action="634" text="EGT pre-DPF" />
+          <button id="1316" action="635" text="EGT pre-cat" />
+          <button id="1317" action="636" text="AdBlue level" />
+          <button id="1318" action="637" text="DDE torque" />
+          <button id="1319" action="638" text="Power (calc.)" />
         </components>
       </hmiState>
       <hmiState id="518" parentId="500" text="Gauge 9">
         <components>
-          <label id="1256" model="348" />
-          <button id="1257" action="600" text="Boost" />
-          <button id="1258" action="601" text="AFR" />
-          <button id="1259" action="602" text="Timing" />
-          <button id="1260" action="603" text="Intake air" />
-          <button id="1261" action="604" text="Trans temp" />
-          <button id="1262" action="605" text="Rail pressure" />
-          <button id="1263" action="606" text="Oil pressure" />
-          <button id="1264" action="607" text="Coolant" />
-          <button id="1265" action="608" text="Active ethanol" />
-          <button id="1266" action="609" text="Oil temp" />
-          <button id="1267" action="610" text="Voltage" />
-          <button id="1268" action="611" text="Engine RPM" />
-          <button id="1269" action="612" text="Speed" />
-          <button id="1270" action="613" text="Engine load" />
-          <button id="1271" action="614" text="Manifold abs." />
-          <button id="1272" action="615" text="Air flow" />
-          <button id="1273" action="616" text="Throttle" />
-          <button id="1274" action="617" text="Barometric" />
-          <button id="1275" action="618" text="Outside air" />
-          <button id="1276" action="619" text="Fuel rate" />
-          <button id="1277" action="620" text="Fuel level" />
-          <button id="1278" action="621" text="Accel. pedal" />
-          <button id="1279" action="622" text="Spark advance" />
-          <button id="1280" action="623" text="Absolute load" />
-          <button id="1281" action="624" text="STFT bank 1" />
-          <button id="1282" action="625" text="LTFT bank 1" />
-          <button id="1283" action="626" text="STFT bank 2" />
-          <button id="1284" action="627" text="LTFT bank 2" />
-          <button id="1285" action="628" text="Lambda target" />
-          <button id="1286" action="629" text="Catalyst temp" />
-          <button id="1287" action="630" text="Throttle target" />
+          <label id="1320" model="348" />
+          <button id="1321" action="600" text="Boost" />
+          <button id="1322" action="601" text="AFR" />
+          <button id="1323" action="602" text="Timing" />
+          <button id="1324" action="603" text="Intake air" />
+          <button id="1325" action="604" text="Trans temp" />
+          <button id="1326" action="605" text="Rail pressure" />
+          <button id="1327" action="606" text="Oil pressure" />
+          <button id="1328" action="607" text="Coolant" />
+          <button id="1329" action="608" text="Active ethanol" />
+          <button id="1330" action="609" text="Oil temp" />
+          <button id="1331" action="610" text="Voltage" />
+          <button id="1332" action="611" text="Engine RPM" />
+          <button id="1333" action="612" text="Speed" />
+          <button id="1334" action="613" text="Engine load" />
+          <button id="1335" action="614" text="Manifold abs." />
+          <button id="1336" action="615" text="Air flow" />
+          <button id="1337" action="616" text="Throttle" />
+          <button id="1338" action="617" text="Barometric" />
+          <button id="1339" action="618" text="Outside air" />
+          <button id="1340" action="619" text="Fuel rate" />
+          <button id="1341" action="620" text="Fuel level" />
+          <button id="1342" action="621" text="Accel. pedal" />
+          <button id="1343" action="622" text="Spark advance" />
+          <button id="1344" action="623" text="Absolute load" />
+          <button id="1345" action="624" text="STFT bank 1" />
+          <button id="1346" action="625" text="LTFT bank 1" />
+          <button id="1347" action="626" text="STFT bank 2" />
+          <button id="1348" action="627" text="LTFT bank 2" />
+          <button id="1349" action="628" text="Lambda target" />
+          <button id="1350" action="629" text="Catalyst temp" />
+          <button id="1351" action="630" text="Throttle target" />
+          <button id="1352" action="631" text="DPF soot" />
+          <button id="1353" action="632" text="DPF pressure" />
+          <button id="1354" action="633" text="DPF regen dist." />
+          <button id="1355" action="634" text="EGT pre-DPF" />
+          <button id="1356" action="635" text="EGT pre-cat" />
+          <button id="1357" action="636" text="AdBlue level" />
+          <button id="1358" action="637" text="DDE torque" />
+          <button id="1359" action="638" text="Power (calc.)" />
         </components>
       </hmiState>
     </hmiStates>

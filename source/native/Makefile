@@ -10,11 +10,14 @@ MOST_HEADERS = src/most/most_link.h src/most/dsi_client.h src/most/most_proto.h 
 FAKE_DSI = tests/fake_dsi.c tests/fake_dme.c tests/fake_dsi.h tests/fake_dme.h
 WORKER = src/collector.c $(CORE_LINK) $(MOST) tests/fake_most_env.c $(FAKE_DSI) $(HEADERS) $(MOST_HEADERS)
 HOST_LINK = $(CC) $(CFLAGS) -pthread -DMOST_HOST -Isrc -Itests
-.PHONY: assets launch-assets test
+.PHONY: assets launch-assets boostdeck-layout test
 
 assets:
 	$(PYTHON) tools/make_bars.py
 	$(PYTHON) tools/make_drive_apps.py
+
+boostdeck-layout:
+	$(PYTHON) tools/make_boostdeck_extended.py
 
 build:
 	mkdir -p build
@@ -49,6 +52,9 @@ build/exhaust-flap: $(WORKER) | build
 build/test-core: tests/test_core.c $(CORE) $(HEADERS) | build
 	$(CC) $(CFLAGS) -Isrc $(filter %.c,$^) -lm -o $@
 
+build/test-gauges-extended: tests/test_gauges_extended.c $(CORE) $(HEADERS) | build
+	$(CC) $(CFLAGS) -DPERF_LAB -Isrc $(filter %.c,$^) -lm -o $@
+
 build/test-most: tests/test_most.c $(MOST) $(FAKE_DSI) $(MOST_HEADERS) | build
 	$(CC) $(CFLAGS) -pthread -DMOST_HOST -Isrc -Itests $(filter %.c,$^) -o $@
 
@@ -67,11 +73,13 @@ build/test-launch-records: tests/test_launch_records.cpp build/launch_timer.o sr
 launch-assets:
 	$(PYTHON) tools/launch_art.py
 
-test: build/xdrive-control build/boostdeck-collector build/boostdeck-n57 build/test-n57 build/shift-deck build/mhd-maps build/engine-codes build/test-core build/test-most build/test-diag-link build/bootmod3 build/exhaust-flap build/test-launch-timer build/test-launch-records
+test: build/xdrive-control build/boostdeck-collector build/boostdeck-n57 build/test-n57 build/shift-deck build/mhd-maps build/engine-codes build/test-core build/test-gauges-extended build/test-most build/test-diag-link build/bootmod3 build/exhaust-flap build/test-launch-timer build/test-launch-records
 	./build/test-n57
 	./build/test-launch-timer
 	./build/test-launch-records
 	./build/test-core
+	./build/test-gauges-extended
+	$(PYTHON) -B tests/test_boostdeck_layout.py
 	./build/test-most
 	./build/test-diag-link
 	$(PYTHON) -B tests/test_drive_apps.py

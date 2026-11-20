@@ -66,7 +66,7 @@ def update_xml():
     ET.SubElement(models, "raDataModel", id="360", modelType="Richtext")
     ET.SubElement(choices, "label", id="590", model="360")
     ET.SubElement(choices, "button", id="591", action="502", text="Gasoline")
-    ET.SubElement(choices, "button", id="592", action="503", text="Diesel (standard OBD PIDs)")
+    ET.SubElement(choices, "button", id="592", action="503", text="Diesel / N57")
 
     for i in range(SLOTS):
         x, y = tile(i)

@@ -248,16 +248,16 @@ void BoostDeck::startVisibleCollector() {
     if (!gauges_visible_ || collector_>0 || fd_<0 ||
         bd_mono_ms()<retry_at_) return;
     const DiagnosticGateway gateway("/var/opt/hmi/data/ID5/Plugins/" "BoostDeck" "/gateway-ip.txt");
-    unsigned mask=0;
-    for (unsigned i=0;i<kBarCount;++i) mask |= 1u << signals_[diesel_][i];
-    char selected[16];
-    snprintf(selected,sizeof selected,"%u",mask);
+    bd_mask mask=0;
+    for (unsigned i=0;i<kBarCount;++i) mask |= BD_BIT(signals_[diesel_][i]);
+    char selected[24];
+    snprintf(selected,sizeof selected,"%llu",static_cast<unsigned long long>(mask));
     const char *args[]={kCollector,"--host",gateway.host(),"--session","--signals",selected,
                        0,0,0,0,0};
     char n57[7];
     const unsigned index=diesel_ ? n57_index_file(ID6_N57_SETTINGS) : 0;
     unsigned next=6;
-    if (mask & (1u<<BD_ETHANOL)) args[next++]="--ethanol";
+    if (mask & BD_BIT(BD_ETHANOL)) args[next++]="--ethanol";
     if (diesel_) args[next++]="--diesel";
     if (index) {
         snprintf(n57,sizeof n57,"%06X",index);
@@ -298,7 +298,7 @@ bool BoostDeck::invokeDataUpdate(unsigned key, const bmw::Parcel& data) {
 void BoostDeck::poll() {
     reapCollector();
     startVisibleCollector();
-    // A bounded non-blocking drain: at most 8 * 512 bytes per UI tick.
+    // A bounded non-blocking drain: at most 8 packets per UI tick.
     char data[BD_MAX_PACKET];
     for (unsigned n=0;fd_>=0 && n<8;++n) {
         ssize_t k=recv(fd_,data,sizeof data,0);
@@ -379,13 +379,7 @@ void BoostDeck::refresh() {
         unsigned image=vertical ? kVerticalFirst : kBarFirst;
         if (received_ && bd_is_fresh(&frame_,signal,elapsed)) {
             const double value=frame_.value[signal];
-            const char *unit=bd_unit(signal,metric_);
-            double reading=bd_display_value(signal,value,metric_);
-            if (signal==BD_BOOST && fabs(reading)<0.05) reading=0;
-            const int decimals=signal==BD_BATTERY || signal==BD_LAMBDA_TARGET ? 2 :
-                signal==BD_RPM || signal==BD_RAIL || signal==BD_ETHANOL ? 0 : 1;
-            snprintf(label,sizeof label,"%.*f%s%s",decimals,reading,
-                     *unit && *unit!='%' ? " " : "",unit);
+            bd_format_value(signal,value,metric_,label,sizeof label);
             const int bar=diesel_ && signal==BD_RAIL ?
                 static_cast<int>(fmax(0,fmin(1000,value*1000/2500))) : bd_bar(signal,value);
             const unsigned step=(bar*steps+500)/1000;

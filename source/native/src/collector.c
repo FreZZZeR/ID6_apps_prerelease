@@ -442,37 +442,50 @@ static int n57_link_exchange(void *ctx, unsigned ecu, const unsigned char *req, 
     return diag_link_request(ctx,ecu,req,n,prefix,pn,reply,cap,timeout,negative);
 }
 
-/* shortcut: reuse matching slots; diesel-only selectors need a separate protocol/resource update. */
+/* The lease covers each complete dynamic read and each pair used for a derived value. */
 static void read_n57_profile(struct diag_link *link, bd_frame *f, uint64_t *observed,
-                              uint64_t *due, unsigned selected, unsigned index, int no_trans) {
+                              uint64_t *due, unsigned *cursor, bd_mask selected, unsigned index, int no_trans) {
     static const struct { unsigned slot, did; double divisor; } map[]={
         {BD_BOOST,0x4841,1}, {BD_IAT,0x4846,1}, {BD_RAIL,0x4746,1}, {BD_COOLANT,0x461b,1},
         {BD_OIL_TEMP,0x4517,1}, {BD_BATTERY,0x5242,1}, {BD_RPM,0x5955,1}, {BD_SPEED,0x4c14,1},
         {BD_MAP,0x4841,10}, {BD_MAF,0x47dc,3.6}, {BD_BARO,0x4cf0,10}, {BD_AMBIENT,0x50a6,1},
-        {BD_TRANS,0xda12,1}
+        {BD_TRANS,0xda12,1},
+        {BD_DPF_SOOT,0x44be,1}, {BD_DPF_DP,0x44f8,1}, {BD_DPF_REGEN_DIST,0x44bf,1},
+        {BD_EGT_PRE_DPF,0x44ef,1}, {BD_EGT_PRE_CAT,0x44f2,1}, {BD_ADBLUE,0x5306,1},
+        {BD_TORQUE,0x48a5,1}, {BD_POWER,0x48a5,1}
     };
+    const unsigned count=sizeof map/sizeof map[0], start=*cursor;
     unsigned i;
     int rc=n57_match(n57_link_exchange,link,index);
     if (rc!=1) { f->valid=0; if (rc<0) diag_link_drop(link); return; }
-    for (i=0;i<sizeof map/sizeof map[0] && diag_running;i++) {
-        unsigned slot=map[i].slot;
+    for (i=0;i<count && diag_running;i++) {
+        const unsigned pos=(start+i)%count, slot=map[pos].slot;
         uint64_t now=bd_mono_ms();
         double value=0, baro=0;
-        if (!(selected & (1u<<slot)) || (slot==BD_TRANS && no_trans) || now<due[slot]) continue;
-        due[slot]=now+(slot==BD_BOOST || slot==BD_RPM || slot==BD_SPEED ? 250 : 2000);
-        f->valid &= ~(1u<<slot);
+        if (!(selected & BD_BIT(slot)) || (slot==BD_TRANS && no_trans) || now<due[slot]) continue;
+        due[slot]=now+(slot==BD_BOOST || slot==BD_RPM || slot==BD_SPEED ||
+                      slot==BD_TORQUE || slot==BD_POWER ? 250 : 2000);
+        f->valid &= ~BD_BIT(slot);
         rc=slot==BD_TRANS ? read_did(link,0x18,0xda12,&value) :
-                           n57_read(n57_link_exchange,link,map[i].did,&value);
+                           n57_read(n57_link_exchange,link,map[pos].did,&value);
         if (rc==1 && slot==BD_BOOST) {
             rc=n57_read(n57_link_exchange,link,0x4cf0,&baro);
             value=(value-baro)*.0145037738;  /* hPa differential -> psi */
         }
+        if (rc==1 && slot==BD_POWER) {
+            double rpm;
+            rc=n57_read(n57_link_exchange,link,0x5955,&rpm);
+            if (rc==1) value=value*rpm*(6.283185307179586/60000); /* Nm * rad/s -> kW */
+        }
         if (rc<0) { diag_link_drop(link); return; }
         if (rc==1) {
-            f->value[slot]=value/map[i].divisor;
-            observed[slot]=bd_mono_ms(); f->valid |= 1u<<slot;
+            f->value[slot]=value/map[pos].divisor;
+            observed[slot]=slot==BD_POWER ? now : bd_mono_ms();
+            f->valid |= BD_BIT(slot);
         }
-        /* Yield only between complete clear/define/read transactions (and the boost pair). */
+        /* Resume at the next slot so fast channels cannot starve later selectors. */
+        *cursor=(pos+1)%count;
+        /* Yield only between complete transactions/pairs; F303 must not be interleaved. */
         if (diag_link_should_yield(link,bd_mono_ms())) return;
     }
 }
@@ -522,8 +535,9 @@ int main(int argc, char **argv) {
 #ifdef PERF_LAB
     int ethanol=0, diesel=0;
     unsigned n57_index=0;
+    unsigned n57_cursor=0;
     uint64_t n57_due[BD_COUNT]={0};
-    unsigned selected=(1u << 8) - 1;
+    bd_mask selected=BD_BIT(8)-1;
     uint64_t next_ethanol=0;
     uint64_t obd_due[sizeof obd_pids/sizeof obd_pids[0]] = {0};
     uint64_t obd_failed_until[sizeof obd_pids/sizeof obd_pids[0]] = {0};
@@ -532,14 +546,20 @@ int main(int argc, char **argv) {
         if (!strcmp(argv[i], "--demo")) demo = 1;
 #ifdef PERF_LAB
         else if (!strcmp(argv[i], "--ethanol")) ethanol = 1;
-        else if (!strcmp(argv[i], "--extended")) selected |= (1u << BD_OIL_TEMP) | (1u << BD_BATTERY);
+        else if (!strcmp(argv[i], "--extended")) selected |= BD_BIT(BD_OIL_TEMP) | BD_BIT(BD_BATTERY);
         else if (!strcmp(argv[i], "--diesel")) diesel=1;
         else if (!strcmp(argv[i], "--n57-sgbd") && i+1 < (unsigned)argc) {
             n57_index=n57_parse_index(argv[++i]);
             if (!n57_index) return 2;
         }
-        else if (!strcmp(argv[i], "--signals") && i+1 < (unsigned)argc)
-            selected=number(argv[++i],1,(1u << BD_COUNT)-1);
+        else if (!strcmp(argv[i], "--signals") && i+1 < (unsigned)argc) {
+            char *end;
+            const char *text=argv[++i];
+            unsigned long long mask;
+            errno=0; mask=strtoull(text,&end,10);
+            if (*text<'0' || *text>'9' || *end || errno==ERANGE || !mask || mask>BD_ALL_SIGNALS) return 2;
+            selected=(bd_mask)mask;
+        }
 #endif
         else if (!strcmp(argv[i], "--session")) session = 1;
         else if (!strcmp(argv[i], "--trace")) trace_reads = 1;
@@ -605,8 +625,11 @@ int main(int argc, char **argv) {
             f.value[BD_STFT_B2]=1.6; f.value[BD_LTFT_B2]=-0.8;
             f.value[BD_LAMBDA_TARGET]=.95; f.value[BD_CAT_TEMP]=580;
             f.value[BD_THROTTLE_TARGET]=46;
+            f.value[BD_DPF_SOOT]=12; f.value[BD_DPF_DP]=25; f.value[BD_DPF_REGEN_DIST]=120000;
+            f.value[BD_EGT_PRE_DPF]=400; f.value[BD_EGT_PRE_CAT]=430; f.value[BD_ADBLUE]=72;
+            f.value[BD_TORQUE]=500; f.value[BD_POWER]=146.607657;
 #endif
-            f.valid=(1u<<BD_COUNT)-1;
+            f.valid=BD_ALL_SIGNALS;
             for (i=0;i<BD_COUNT;++i) observed[i]=bd_mono_ms();
         } else {
             int full_scan = session ? !scanned : link.fd < 0 && !diag_link_on_most(&link);
@@ -615,19 +638,18 @@ int main(int argc, char **argv) {
             up = diag_link_up(&link);
 #ifdef PERF_LAB
             if (n57_index) {
-                if (up) read_n57_profile(&link,&f,observed,n57_due,selected,n57_index,no_trans);
-                else f.valid=0;
+                if (up) read_n57_profile(&link,&f,observed,n57_due,&n57_cursor,selected,n57_index,no_trans);
             } else {
 #endif
-            if (diag_link_on_most(&link)) f.valid &= ~(1u << BD_TRANS); /* no EGS reads on MOST */
+            if (diag_link_on_most(&link)) f.valid &= ~BD_BIT(BD_TRANS); /* no EGS reads on MOST */
             for (i=0; up && i < sizeof dids / sizeof dids[0] && diag_running; ++i) {
                 double v = 0;
                 int rc;
-                unsigned kept;
+                bd_mask kept;
                 int on_most = diag_link_on_most(&link);
 #ifdef PERF_LAB
                 if (diesel && dids[i] != 0xda12) continue;
-                if (!(selected & (1u << (i ? i-1 : BD_BOOST)))) continue;
+                if (!(selected & BD_BIT(i ? i-1 : BD_BOOST))) continue;
 #endif
                 if ((no_trans || on_most) && dids[i] == 0xda12) continue;
                 if ((session || on_most) && start < failed_until[i]) continue;
@@ -637,7 +659,7 @@ int main(int argc, char **argv) {
                     due[i]+=periods[i];
                     if (due[i]<=start) due[i]=start+periods[i];
                 }
-                kept = i != 0 ? f.valid & (1u << (i-1)) : 0;
+                kept = i != 0 ? f.valid & BD_BIT(i-1) : 0;
                 f.valid &= ~kept;
                 rc = read_did(&link, dids[i] == 0xda12 ? 0x18 : 0x12, dids[i], &v);
                 if (rc == -3) { /* skip it for a while; a value still fresh stays shown */
@@ -673,7 +695,7 @@ int main(int argc, char **argv) {
                     v = (v-ambient) * .145037738; /* kPa absolute - measured ambient -> gauge psi */
                 }
                 if (i == 2) v *= 14.7; /* measured lambda -> gasoline-equivalent AFR */
-                f.value[i-1]=v; observed[i-1]=bd_mono_ms(); f.valid |= 1u << (i-1);
+                f.value[i-1]=v; observed[i-1]=bd_mono_ms(); f.valid |= BD_BIT(i-1);
                 /* A tunnel read is slow, so each new value goes out at once. */
                 if (diag_link_on_most(&link) && !send_frame(sock,&dest,&f,observed)) { perror("send frame"); diag_running=0; }
             }
@@ -684,9 +706,9 @@ int main(int argc, char **argv) {
                 const unsigned k = obd_pids[i].slot;
                 double v = 0;
                 int rc;
-                const unsigned wanted = selected | (diesel && (selected & (1u<<BD_BOOST)) ?
-                                                         (1u<<BD_BARO) : 0);
-                if (!(wanted & (1u<<k)) || (obd_pids[i].diesel_only && !diesel)) continue;
+                const bd_mask wanted = selected | (diesel && (selected & BD_BIT(BD_BOOST)) ?
+                                                         BD_BIT(BD_BARO) : 0);
+                if (!(wanted & BD_BIT(k)) || (obd_pids[i].diesel_only && !diesel)) continue;
                 if (start < obd_due[i] || start < obd_failed_until[i]) continue;
                 if (full_scan && i && !obd_due[i]) { obd_due[i]=start+100+i*65; continue; }
                 obd_due[i]=start+2000;
@@ -702,13 +724,13 @@ int main(int argc, char **argv) {
                     }
                     break;
                 }
-                if (!rc) { f.valid &= ~(1u<<k); continue; }
+                if (!rc) { f.valid &= ~BD_BIT(k); continue; }
                 if (k == BD_BOOST) {
-                    if (!(f.valid & (1u<<BD_BARO)) || bd_mono_ms()-observed[BD_BARO]>=BD_TEMP_STALE_MS)
+                    if (!(f.valid & BD_BIT(BD_BARO)) || bd_mono_ms()-observed[BD_BARO]>=BD_TEMP_STALE_MS)
                         continue;
                     v=(v-f.value[BD_BARO])*.145037738;
                 }
-                f.value[k]=v; observed[k]=bd_mono_ms(); f.valid |= 1u << k;
+                f.value[k]=v; observed[k]=bd_mono_ms(); f.valid |= BD_BIT(k);
                 if (diag_link_on_most(&link) && !send_frame(sock,&dest,&f,observed)) { perror("send frame"); diag_running=0; }
             }
             /* Not over MOST: the tunnel's echo check and 2 s wait do not suit this read. */
@@ -720,11 +742,11 @@ int main(int argc, char **argv) {
                 unsigned negative;
                 const int n=diag_link_request(&link,0x12,query,sizeof query,prefix,sizeof prefix,
                                               reply,sizeof reply,180,&negative);
-                f.valid &= ~(1u<<BD_ETHANOL);
+                f.valid &= ~BD_BIT(BD_ETHANOL);
                 if (n==38 && reply[17]<=100) {
                     observed[BD_ETHANOL]=bd_mono_ms();
                     f.value[BD_ETHANOL]=reply[17];
-                    f.valid |= 1u<<BD_ETHANOL;
+                    f.valid |= BD_BIT(BD_ETHANOL);
                     next_ethanol=observed[BD_ETHANOL]+5000;
                 } else {
                     next_ethanol=bd_mono_ms()+30000;
