@@ -1,5 +1,11 @@
 # NBT Evo ID6 apps
 
+> **Experimental N57 development fork.** We are moving the N57 work from
+> [nbtevo-id6-apps](https://github.com/FreZZZeR/nbtevo-id6-apps) into
+> [upstream ID6 Apps](https://github.com/inotbarnacle/ID6_apps_prerelease).
+> See [N57 support and validation limits](source/docs/N57.md) before building this branch.
+> The ZIP packages and upstream installation instructions below do **not** include these changes.
+
 Connect your parked car to a computer over wired ENET. Open an AI agent with terminal access on that computer and give it this repository and [AgentReadMe.md](AgentReadMe.md). The agent identifies your head unit, checks compatibility, and installs your chosen apps under **My Vehicle**.
 
 

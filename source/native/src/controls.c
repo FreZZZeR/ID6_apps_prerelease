@@ -164,6 +164,48 @@ static void control(control_link fd, const char *mode, unsigned value) {
     }
 }
 #else
+#include <sys/stat.h>
+#ifndef ID6_XDRIVE_OWNER
+#define ID6_XDRIVE_OWNER "/var/opt/hmi/data/ID5/xdrive-owner-vin.txt"
+#endif
+static unsigned n57_index;
+
+static int n57_fd_exchange(void *ctx, unsigned ecu, const unsigned char *req, unsigned n,
+                            const unsigned char *prefix, unsigned pn, unsigned char *reply,
+                            unsigned cap, unsigned timeout, unsigned *negative) {
+    return exchange(*(int *)ctx,ecu,req,n,prefix,pn,reply,cap,timeout,negative);
+}
+
+static int owner_consent(int fd) {
+    const char *want=getenv("NBTEVO_OWN_VIN");
+    char saved[18], extra;
+    unsigned char reply[32];
+    const unsigned char req[]={0x22,0xf1,0x90}, ack[]={0x62,0xf1,0x90};
+    unsigned negative, i;
+    int n, start=3;
+    if (!want) {
+        struct stat st;
+        FILE *file;
+        if (lstat(ID6_XDRIVE_OWNER,&st) || !S_ISREG(st.st_mode) || st.st_uid!=geteuid() || (st.st_mode & 0777)!=0600)
+            return 0;
+        file=fopen(ID6_XDRIVE_OWNER,"r");
+        if (!file) return 0;
+        n=fscanf(file,"%17s %c",saved,&extra);
+        fclose(file);
+        if (n!=1) return 0;
+        want=saved;
+    }
+    if (strlen(want)!=17) return 0;
+    for (i=0;i<17;i++)
+        if (!((want[i]>='A' && want[i]<='Z') || (want[i]>='0' && want[i]<='9')) ||
+            want[i]=='I' || want[i]=='O' || want[i]=='Q') return 0;
+    n=exchange(fd,0x12,req,3,ack,3,reply,sizeof reply,800,&negative);
+    if (n<20) return 0;
+    while (n>start && (reply[n-1]==0 || reply[n-1]==' ')) n--;
+    while (start<n && (reply[start]==0 || reply[start]==' ')) start++;
+    return n-start==17 && !memcmp(reply+start,want,17);
+}
+
 static int read_mode(int fd) {
     const unsigned char req[]={0x22,0xdb,0x32}, ack[]={0x62,0xdb,0x32};
     unsigned char reply[64];
@@ -205,7 +247,14 @@ static int parked(int fd, int running) {
     unsigned char reply[8];
     unsigned negative;
     // Same Park read as the 340i parked probe. Missing or different replies block the write.
-    return exchange(fd,0x18,gear,3,gear_ack,3,reply,sizeof reply,350,&negative)==5 && reply[3]==0 && reply[4]==6 &&
+    if (!(exchange(fd,0x18,gear,3,gear_ack,3,reply,sizeof reply,350,&negative)==5 && reply[3]==0 && reply[4]==6)) return 0;
+    if (running && n57_index) {
+        double speed, rpm_value;
+        return n57_match(n57_fd_exchange,&fd,n57_index)==1 &&
+               n57_read(n57_fd_exchange,&fd,0x5955,&rpm_value)==1 && rpm_value>0 &&
+               n57_read(n57_fd_exchange,&fd,0x4c14,&speed)==1 && speed==0;
+    }
+    return
            exchange(fd,0x12,rpm,2,rpm_ack,2,reply,sizeof reply,350,&negative)==4 && ((reply[2]|reply[3])!=0)==running &&
            exchange(fd,0x12,speed,2,speed_ack,2,reply,sizeof reply,350,&negative)==3 && !reply[2];
 }
@@ -251,6 +300,7 @@ static void control(int fd, const char *mode, unsigned value) {
     // dsc_25.prg documents DBE1 as writable with 1 = active; restore verified on a 0F1860 car.
     if (value && index!=0x0f2850 && !fseries) { puts("Cycle the ignition to restore AWD on this DSC."); return; }
     if (current<0) { puts(fseries?"Start the engine to read the transfer case.":"Transfer case mode unavailable."); return; }
+    if (!owner_consent(fd)) { puts("Owner VIN missing, unreadable or mismatched. No mode change sent."); return; }
     if (!parked(fd,fseries)) {
         puts(fseries?"Needs engine running, stationary, and confirmed Park.":"Needs ignition on, engine off, stationary, and confirmed Park.");
         return;
@@ -278,10 +328,22 @@ int main(int argc,char **argv) {
 #ifndef BM3_ONLY
     int fd,lock;
 #endif
-    if ((argc!=5 && argc!=7) || strcmp(argv[1],"--host")) return 2;
-    if (argc==7) {
-        if (strcmp(argv[5],"--port")) return 2;
-        port=number(argv[6],1,65535);
+    if (argc<5 || argc%2!=1 || strcmp(argv[1],"--host")) return 2;
+#ifdef XDRIVE_ONLY
+    n57_index=n57_index_file(ID6_N57_SETTINGS);
+    if (!n57_index && access(ID6_N57_SETTINGS,F_OK)==0) {
+        puts("Invalid N57 DDE identity setting; no mode change sent."); return 2;
+    }
+#endif
+    for (int i=5;i<argc;i+=2) {
+        if (!strcmp(argv[i],"--port")) port=number(argv[i+1],1,65535);
+#ifdef XDRIVE_ONLY
+        else if (!strcmp(argv[i],"--n57-sgbd")) {
+            n57_index=n57_parse_index(argv[i+1]);
+            if (!n57_index) return 2;
+        }
+#endif
+        else return 2;
     }
 #ifdef BM3_ONLY
     if (strcmp(argv[3],"--current-map") && strcmp(argv[3],"--map") && strcmp(argv[3],"--flap") && strcmp(argv[3],"--sound") && strcmp(argv[3],"--burbles")) return 2;

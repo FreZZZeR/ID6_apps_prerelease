@@ -2,6 +2,7 @@
 #include "gauge_core.h"
 #include "diagnostic_lease.h"
 #include "diag_link.h"
+#include "n57.h"
 #include <arpa/inet.h>
 #include <errno.h>
 #include <math.h>
@@ -434,6 +435,47 @@ static int read_pid(struct diag_link *link, unsigned char pid, double *value) {
     }
     return decoded;
 }
+
+static int n57_link_exchange(void *ctx, unsigned ecu, const unsigned char *req, unsigned n,
+                              const unsigned char *prefix, unsigned pn, unsigned char *reply,
+                              unsigned cap, unsigned timeout, unsigned *negative) {
+    return diag_link_request(ctx,ecu,req,n,prefix,pn,reply,cap,timeout,negative);
+}
+
+/* shortcut: reuse matching slots; diesel-only selectors need a separate protocol/resource update. */
+static void read_n57_profile(struct diag_link *link, bd_frame *f, uint64_t *observed,
+                              uint64_t *due, unsigned selected, unsigned index, int no_trans) {
+    static const struct { unsigned slot, did; double divisor; } map[]={
+        {BD_BOOST,0x4841,1}, {BD_IAT,0x4846,1}, {BD_RAIL,0x4746,1}, {BD_COOLANT,0x461b,1},
+        {BD_OIL_TEMP,0x4517,1}, {BD_BATTERY,0x5242,1}, {BD_RPM,0x5955,1}, {BD_SPEED,0x4c14,1},
+        {BD_MAP,0x4841,10}, {BD_MAF,0x47dc,3.6}, {BD_BARO,0x4cf0,10}, {BD_AMBIENT,0x50a6,1},
+        {BD_TRANS,0xda12,1}
+    };
+    unsigned i;
+    int rc=n57_match(n57_link_exchange,link,index);
+    if (rc!=1) { f->valid=0; if (rc<0) diag_link_drop(link); return; }
+    for (i=0;i<sizeof map/sizeof map[0] && diag_running;i++) {
+        unsigned slot=map[i].slot;
+        uint64_t now=bd_mono_ms();
+        double value=0, baro=0;
+        if (!(selected & (1u<<slot)) || (slot==BD_TRANS && no_trans) || now<due[slot]) continue;
+        due[slot]=now+(slot==BD_BOOST || slot==BD_RPM || slot==BD_SPEED ? 250 : 2000);
+        f->valid &= ~(1u<<slot);
+        rc=slot==BD_TRANS ? read_did(link,0x18,0xda12,&value) :
+                           n57_read(n57_link_exchange,link,map[i].did,&value);
+        if (rc==1 && slot==BD_BOOST) {
+            rc=n57_read(n57_link_exchange,link,0x4cf0,&baro);
+            value=(value-baro)*.0145037738;  /* hPa differential -> psi */
+        }
+        if (rc<0) { diag_link_drop(link); return; }
+        if (rc==1) {
+            f->value[slot]=value/map[i].divisor;
+            observed[slot]=bd_mono_ms(); f->valid |= 1u<<slot;
+        }
+        /* Yield only between complete clear/define/read transactions (and the boost pair). */
+        if (diag_link_should_yield(link,bd_mono_ms())) return;
+    }
+}
 #endif
 
 static int send_frame(int sock, struct sockaddr_in *dest, bd_frame *f, uint64_t *observed) {
@@ -479,6 +521,8 @@ int main(int argc, char **argv) {
     uint64_t failed_until[sizeof dids/sizeof dids[0]] = {0};
 #ifdef PERF_LAB
     int ethanol=0, diesel=0;
+    unsigned n57_index=0;
+    uint64_t n57_due[BD_COUNT]={0};
     unsigned selected=(1u << 8) - 1;
     uint64_t next_ethanol=0;
     uint64_t obd_due[sizeof obd_pids/sizeof obd_pids[0]] = {0};
@@ -490,6 +534,10 @@ int main(int argc, char **argv) {
         else if (!strcmp(argv[i], "--ethanol")) ethanol = 1;
         else if (!strcmp(argv[i], "--extended")) selected |= (1u << BD_OIL_TEMP) | (1u << BD_BATTERY);
         else if (!strcmp(argv[i], "--diesel")) diesel=1;
+        else if (!strcmp(argv[i], "--n57-sgbd") && i+1 < (unsigned)argc) {
+            n57_index=n57_parse_index(argv[++i]);
+            if (!n57_index) return 2;
+        }
         else if (!strcmp(argv[i], "--signals") && i+1 < (unsigned)argc)
             selected=number(argv[++i],1,(1u << BD_COUNT)-1);
 #endif
@@ -505,6 +553,16 @@ int main(int argc, char **argv) {
         else if (!strcmp(argv[i], "--transport") && i+1 < (unsigned)argc && !strcmp(argv[i+1], "most")) { transport = DIAG_MOST; ++i; }
         else { fprintf(stderr, "Usage: %s (--host IPv4 | --demo) [--transport auto|hsfz|most] [--port 6801] [--udp-port 42860] [--cycles N] [--no-trans] [--trace] [--session]\n", argv[0]); return 2; }
     }
+#ifdef PERF_LAB
+    if (diesel && !n57_index) {
+        n57_index=n57_index_file(ID6_N57_SETTINGS);
+        if (!n57_index && access(ID6_N57_SETTINGS,F_OK)==0) return 2;
+    }
+    if (n57_index) {
+        if (demo || transport==DIAG_MOST) return 2;
+        diesel=1; session=1; transport=DIAG_HSFZ;
+    }
+#endif
     if (host && demo) { fprintf(stderr, "Choose --host or --demo, never both.\n"); return 2; }
     if (!host && !demo && transport == DIAG_HSFZ) { fprintf(stderr, "--transport hsfz needs --host.\n"); return 2; }
     if (transport == DIAG_MOST) host = 0;
@@ -520,6 +578,10 @@ int main(int argc, char **argv) {
     memset(&dest,0,sizeof dest); dest.sin_family=AF_INET; dest.sin_port=htons((uint16_t)udp_port);
     inet_pton(AF_INET,"127.0.0.1",&dest.sin_addr); /* local process IPC only */
     memset(&f,0,sizeof f); f.demo=(unsigned)demo;
+#ifdef PERF_LAB
+    if (n57_index) fprintf(stderr,"EXPERIMENTAL N57: pinned DDE %06X; validate against ISTA/logger.\n",n57_index);
+    else
+#endif
     fprintf(stderr, "%s: 2016 340i candidate profile; validate against ISTA/logger.\n",
         demo ? "DEMO / NO VEHICLE CONNECTION" : host ? "READ ONLY / HSFZ" : "READ ONLY / MOST");
     while (diag_running && (!cycles || count < cycles) && (!session || getppid() == parent)) {
@@ -551,6 +613,12 @@ int main(int argc, char **argv) {
             int up, stopped = 0; /* the DID scan ended early on a failed read */
             diag_link_tick(&link);
             up = diag_link_up(&link);
+#ifdef PERF_LAB
+            if (n57_index) {
+                if (up) read_n57_profile(&link,&f,observed,n57_due,selected,n57_index,no_trans);
+                else f.valid=0;
+            } else {
+#endif
             if (diag_link_on_most(&link)) f.valid &= ~(1u << BD_TRANS); /* no EGS reads on MOST */
             for (i=0; up && i < sizeof dids / sizeof dids[0] && diag_running; ++i) {
                 double v = 0;
@@ -662,6 +730,9 @@ int main(int argc, char **argv) {
                     next_ethanol=bd_mono_ms()+30000;
                     if (n==-1) diag_link_drop(&link);
                 }
+            }
+#endif
+#ifdef PERF_LAB
             }
 #endif
             if (diag_link_on_most(&link)) scanned=1;

@@ -1,0 +1,153 @@
+"""Experimental N57 profile and xDrive interlocks over real loopback HSFZ sockets."""
+import os
+from pathlib import Path
+import socket
+import struct
+import subprocess
+import threading
+import unittest
+
+import test_drive_apps
+from test_transport import exact, frame
+
+BUILD = Path(__file__).resolve().parents[1] / "build"
+VIN = "TEST0000000000001"  # synthetic fixture; not a vehicle capture
+INDEX = "010203"  # synthetic identity, not an N57 compatibility claim
+
+
+def dyn(did, raw):
+    return [("2c03f303", ["6c03f303"]),
+            ("2c01f303" + did + "0102", ["6c01f303"]),
+            ("22f303", ["62f303" + raw])]
+
+
+class N57Test(unittest.TestCase):
+    def xdrive(self, extra, speed="0000", rpm="0640", vin=VIN, index=INDEX, ack="6edbe1", value=0):
+        tx = [("22f150", ["62f1500f1860"]), ("22dbe1", ["62dbe101"]),
+              ("22f150", ["62f1500f1480"]), ("224002", ["62400209c4200f"]),
+              ("22f190", ["62f190" + vin.encode().hex()]),
+              ("22da2e", ["62da2e0006"]), ("22f150", ["62f150" + index])]
+        targets = ["29", "29", "19", "19", "12", "18", "12"]
+        if index == INDEX:
+            tx += dyn("5955", rpm)
+            targets += ["12"] * 3
+            if rpm != "0000" and rpm != "ffff":
+                tx += dyn("4c14", speed)
+                targets += ["12"] * 3
+                if speed == "0000":
+                    tx += [("2edbe1%02x" % value, [ack] if ack else [])]
+                    targets += ["29"]
+                    if ack in ("6edbe1", None):
+                        tx += [("224002", ["62400209c4" + ("20" if value else "28") + "0f"])]
+                        targets += ["19"]
+        return test_drive_apps.DriveAppsTest.run_worker(self, "xdrive-control", ["--drive-mode", str(value), "--n57-sgbd", INDEX, *extra],
+                                       tx, targets=targets, env=dict(os.environ, NBTEVO_OWN_VIN=VIN))
+
+    def test_xdrive_uses_dde_not_mode01(self):
+        self.assertEqual(self.xdrive([]), "Transfer case confirms RWD.\n")
+        self.assertEqual(self.xdrive([], value=1), "Transfer case confirms AWD.\n")
+
+    def test_xdrive_refuses_motion_off_implausible_and_wrong_identity(self):
+        for changes in ({"speed": "0001"}, {"speed": "0001", "value": 1},
+                        {"speed": "ffff"}, {"rpm": "0000"},
+                        {"rpm": "ffff"}, {"index": "040506"}):
+            with self.subTest(changes=changes):
+                self.assertIn("Needs engine running", self.xdrive([], **changes))
+
+    def test_xdrive_refuses_nrc_without_claiming_success(self):
+        self.assertIn("refused this request", self.xdrive([], ack="7f2e31"))
+
+    def test_missing_write_ack_still_requires_transfer_case_readback(self):
+        self.assertEqual(self.xdrive([], ack=None), "Transfer case confirms RWD.\n")
+
+    def test_missing_owner_vin_sends_no_actuation(self):
+        tx = [("22f150", ["62f1500f1860"]), ("22dbe1", ["62dbe101"]),
+              ("22f150", ["62f1500f1480"]), ("224002", ["62400209c4200f"])]
+        # Empty explicitly overrides any developer's real consent environment.
+        out = test_drive_apps.DriveAppsTest.run_worker(self, "xdrive-control", ["--drive-mode", "0"], tx,
+                                      targets=["29", "29", "19", "19"],
+                                      env=dict(os.environ, NBTEVO_OWN_VIN=""))
+        self.assertIn("Owner VIN missing", out)
+
+    def test_mismatched_owner_vin_sends_no_actuation(self):
+        tx = [("22f150", ["62f1500f1860"]), ("22dbe1", ["62dbe101"]),
+              ("22f150", ["62f1500f1480"]), ("224002", ["62400209c4200f"]),
+              ("22f190", ["62f190" + b"TEST0000000000002".hex()])]
+        out = test_drive_apps.DriveAppsTest.run_worker(self, "xdrive-control", ["--drive-mode", "0"], tx,
+                                      targets=["29", "29", "19", "19", "12"],
+                                      env=dict(os.environ, NBTEVO_OWN_VIN=VIN))
+        self.assertIn("Owner VIN missing, unreadable or mismatched", out)
+
+    def gauges(self, actual=INDEX):
+        errors, seen = [], []
+        values = {0x4841: 25122, 0x4CF0: 32768, 0x4746: 39321, 0x461B: 19000,
+                  0x4846: 2931, 0x4517: 19000, 0x5242: 14500, 0x5955: 1600,
+                  0x4C14: 0, 0x47DC: 1000, 0x50A6: 2931}
+        with socket.socket() as tcp, socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as udp:
+            tcp.bind(("127.0.0.1", 0)); tcp.listen(); tcp.settimeout(3)
+            udp.bind(("127.0.0.1", 0)); udp.settimeout(3)
+            def serve():
+                defined = []
+                try:
+                    with tcp.accept()[0] as conn:
+                        conn.settimeout(3)
+                        while True:
+                            try:
+                                size, ctrl = struct.unpack(">IH", exact(conn, 6))
+                            except EOFError:
+                                break
+                            body = exact(conn, size)
+                            self.assertEqual(ctrl, 1)
+                            ecu, req = body[1], body[2:]
+                            self.assertEqual(body[0], 0xF4)
+                            seen.append((ecu, req.hex()))
+                            reply = bytes([0x7F, req[0], 0x31])
+                            if req == b"\x22\xf1\x50":
+                                reply = b"\x62\xf1\x50" + bytes.fromhex(actual)
+                            elif req == b"\x2c\x03\xf3\x03":
+                                defined.clear(); reply = b"\x6c\x03\xf3\x03"
+                            elif req[:4] == b"\x2c\x01\xf3\x03":
+                                did = int.from_bytes(req[4:6], "big")
+                                self.assertEqual(req[6:], b"\x01\x02")
+                                defined.append(did); reply = b"\x6c\x01\xf3\x03"
+                            elif req == b"\x22\xf3\x03":
+                                reply = b"\x62\xf3\x03" + b"".join(values[d].to_bytes(2, "big") for d in defined)
+                            elif ecu == 0x18 and req == b"\x22\xda\x12":
+                                reply = b"\x62\xda\x12\x00\x83"
+                            conn.sendall(frame(1, bytes([ecu, 0xF4]) + reply))
+                except Exception as exc:
+                    errors.append(exc)
+            thread = threading.Thread(target=serve)
+            thread.start()
+            result = subprocess.run([BUILD / "boostdeck-n57", "--host", "127.0.0.1", "--port", str(tcp.getsockname()[1]),
+                                     "--n57-sgbd", INDEX, "--signals", str((1 << 31) - 1), "--cycles", "1",
+                                     "--udp-port", str(udp.getsockname()[1])],
+                                    capture_output=True, timeout=5, check=True)
+            packet = udp.recv(2048).decode().split()
+            thread.join(4)
+            self.assertFalse(thread.is_alive())
+            if errors:
+                raise errors[0]
+        return packet, seen, result
+
+    def test_gauges_factory_values_and_gasoline_channels_blank(self):
+        p, seen, _ = self.gauges()
+        self.assertEqual(p[0], "NBG7")
+        valid = int(p[3])
+        value = lambda slot: float(p[5 + 2 * slot])
+        self.assertAlmostEqual(value(0), 1.30 * 14.5037738, places=3)
+        self.assertAlmostEqual(value(5), 1799.997417, places=5)  # 0x9999 * .045777
+        self.assertEqual(value(7), 90)
+        self.assertEqual(value(11), 800)
+        self.assertFalse(valid & ((1 << 1) | (1 << 2) | (1 << 6)))  # AFR/timing/oil pressure
+        self.assertFalse(any(q.startswith("01") for _, q in seen))
+        self.assertTrue(all(q.startswith(("22", "2c")) for _, q in seen))
+
+    def test_wrong_dde_pin_leaves_all_values_blank(self):
+        p, seen, _ = self.gauges(actual="040506")
+        self.assertEqual(int(p[3]), 0)
+        self.assertEqual(seen, [(0x12, "22f150")])
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -21,12 +21,13 @@ ntoarm-gcc -dumpmachine
 c() { qcc -V4.4.2,gcc_ntoarmv7le -Wc,-std=c99 -Wall -Wextra -Werror "$@"; }
 cxx() { qcc -V4.4.2,gcc_ntoarmv7le_gpp -lang-c++ -Wc,-std=gnu++98 -Wall -Wextra -Werror "$@"; }
 c -DPERF_LAB -Isrc -O2 -fPIC -c src/gauge_core.c -o out/core.o
-cxx -DPERF_LAB -Isrc -Isdk -O2 -fno-strict-aliasing -fno-exceptions -fPIC -shared src/plugin.cpp out/core.o \
+c -Isrc -O2 -fPIC -c src/n57.c -o out/n57.o
+cxx -DPERF_LAB -Isrc -Isdk -O2 -fno-strict-aliasing -fno-exceptions -fPIC -shared src/plugin.cpp out/core.o out/n57.o \
     "$frameworks/libAppFramework.A.so" "$frameworks/libCoreFramework.A.so" -Lout -lm -lsocket \
     -Wl,--allow-shlib-undefined -Wl,-soname,libBoostDeck.so -o out/libBoostDeck.so
 # Every worker carries the HSFZ-then-MOST link. dlopen and pthreads are in QNX libc; the DSI library is
 # opened only at run time, so nothing private is linked.
-worker() { c -Isrc -O2 "$@" src/diag_link.c src/most/*.c -Lout -lm -lsocket; }
+worker() { c -Isrc -O2 "$@" src/diag_link.c src/n57.c src/most/*.c -Lout -lm -lsocket; }
 worker -DNATIVE_FAST -DPERF_LAB src/collector.c out/core.o -o out/boostdeck-collector-qnx
 cxx -DPERF_LAB -Isrc -Isdk -O2 -fno-exceptions -fPIC -shared src/mhd_maps.cpp \
     "$frameworks/libAppFramework.A.so" "$frameworks/libCoreFramework.A.so" -Lout \

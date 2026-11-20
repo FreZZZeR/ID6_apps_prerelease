@@ -6,6 +6,7 @@
 #include "diagnostic_worker.h"
 #include "diagnostic_gateway.h"
 #include "gauge_preferences.h"
+#include "n57.h"
 #include <arpa/inet.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -252,10 +253,16 @@ void BoostDeck::startVisibleCollector() {
     char selected[16];
     snprintf(selected,sizeof selected,"%u",mask);
     const char *args[]={kCollector,"--host",gateway.host(),"--session","--signals",selected,
-                       0,0,0};
+                       0,0,0,0,0};
+    char n57[7];
+    const unsigned index=diesel_ ? n57_index_file(ID6_N57_SETTINGS) : 0;
     unsigned next=6;
     if (mask & (1u<<BD_ETHANOL)) args[next++]="--ethanol";
-    if (diesel_) args[next]="--diesel";
+    if (diesel_) args[next++]="--diesel";
+    if (index) {
+        snprintf(n57,sizeof n57,"%06X",index);
+        args[next++]="--n57-sgbd"; args[next]=n57;
+    }
     collector_=launch(args,-1);
     retry_at_=bd_mono_ms()+2000;
 }
@@ -344,7 +351,8 @@ void BoostDeck::updateAssignments() {
                             signal==BD_TRANS ? "Transmission" : bd_name(signal);
         updateModel(370u+i,bmw::BasicString<char>(caption));
     }
-    updateModel(360u,bmw::BasicString<char>(diesel_ ? "Selected: Diesel" : "Selected: Gasoline"));
+    updateModel(360u,bmw::BasicString<char>(diesel_ ?
+        (n57_index_file(ID6_N57_SETTINGS) ? "Selected: N57 (experimental)" : "Selected: Diesel") : "Selected: Gasoline"));
     refresh();
 }
 
@@ -378,7 +386,9 @@ void BoostDeck::refresh() {
                 signal==BD_RPM || signal==BD_RAIL || signal==BD_ETHANOL ? 0 : 1;
             snprintf(label,sizeof label,"%.*f%s%s",decimals,reading,
                      *unit && *unit!='%' ? " " : "",unit);
-            const unsigned step=(bd_bar(signal,value)*steps+500)/1000;
+            const int bar=diesel_ && signal==BD_RAIL ?
+                static_cast<int>(fmax(0,fmin(1000,value*1000/2500))) : bd_bar(signal,value);
+            const unsigned step=(bar*steps+500)/1000;
             if (step) {
                 const unsigned palette=!vertical && color_==kMulticolor ? kMulticolor+i : color_;
                 image+=palette*steps+step;

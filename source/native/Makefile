@@ -2,8 +2,8 @@ CC ?= cc
 PYTHON ?= python3
 CFLAGS ?= -O2 -std=c99 -Wall -Wextra -Werror
 CORE = src/gauge_core.c
-CORE_LINK = $(CORE) src/diag_link.c
-HEADERS = src/gauge_core.h src/boost_signals.def src/drive_frame.h src/diagnostic_lease.h src/diag_link.h
+CORE_LINK = $(CORE) src/diag_link.c src/n57.c
+HEADERS = src/gauge_core.h src/boost_signals.def src/drive_frame.h src/diagnostic_lease.h src/diag_link.h src/n57.h src/n57_signals.def
 # Every host worker carries the HSFZ-then-MOST link, with a fake DSI selected by ID6_FAKE_MOST.
 MOST = src/most/most_link.c src/most/dsi_client.c src/most/most_proto.c src/most/dsi_bind.c
 MOST_HEADERS = src/most/most_link.h src/most/dsi_client.h src/most/most_proto.h src/most/dsi_abi.h
@@ -21,6 +21,12 @@ build:
 
 build/boostdeck-collector: $(WORKER) | build
 	$(HOST_LINK) $(filter %.c,$^) -lm -o $@
+
+build/boostdeck-n57: $(WORKER) | build
+	$(HOST_LINK) -DPERF_LAB $(filter %.c,$^) -lm -o $@
+
+build/test-n57: tests/test_n57.c src/n57.c src/n57.h src/n57_signals.def | build
+	$(CC) $(CFLAGS) -Isrc $(filter %.c,$^) -lm -o $@
 
 build/shift-deck: $(WORKER) | build
 	$(HOST_LINK) -DSHIFT_DECK_ONLY $(filter %.c,$^) -lm -o $@
@@ -61,7 +67,8 @@ build/test-launch-records: tests/test_launch_records.cpp build/launch_timer.o sr
 launch-assets:
 	$(PYTHON) tools/launch_art.py
 
-test: build/xdrive-control build/boostdeck-collector build/shift-deck build/mhd-maps build/engine-codes build/test-core build/test-most build/test-diag-link build/bootmod3 build/exhaust-flap build/test-launch-timer build/test-launch-records
+test: build/xdrive-control build/boostdeck-collector build/boostdeck-n57 build/test-n57 build/shift-deck build/mhd-maps build/engine-codes build/test-core build/test-most build/test-diag-link build/bootmod3 build/exhaust-flap build/test-launch-timer build/test-launch-records
+	./build/test-n57
 	./build/test-launch-timer
 	./build/test-launch-records
 	./build/test-core
@@ -70,3 +77,4 @@ test: build/xdrive-control build/boostdeck-collector build/shift-deck build/mhd-
 	$(PYTHON) -B tests/test_drive_apps.py
 	$(PYTHON) -B tests/test_oneshot_most.py
 	$(PYTHON) -B tests/test_transport.py
+	$(PYTHON) -B tests/test_n57.py

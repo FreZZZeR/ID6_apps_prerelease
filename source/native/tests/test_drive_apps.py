@@ -146,15 +146,18 @@ class DriveAppsTest(unittest.TestCase):
         self.assertIn("requires a verified LMV", result)
 
         current = ident + [("22f150", ["62f1500f1480"]), ("224002", ["62400209c4200f"])]
-        targets = ["29", "29", "19", "19", "18"]
+        vin = ("22f190", ["62f190" + b"TEST0000000000001".hex()])
+        env = dict(os.environ, NBTEVO_OWN_VIN="TEST0000000000001")
+        current = current + [vin]
+        targets = ["29", "29", "19", "19", "12", "18"]
         result = self.run_worker("xdrive-control", ["--drive-mode", "0"],
-            current + [("22da2e", ["62da2e0005"])], targets=targets)
+            current + [("22da2e", ["62da2e0005"])], targets=targets, env=env)
         self.assertIn("confirmed Park", result)
 
         result = self.run_worker("xdrive-control", ["--drive-mode", "0"],
             current + [("22da2e", ["62da2e0006"]), ("010c", ["410c0c80"]), ("010d", ["410d00"]),
                        ("2edbe100", ["6edbe1"]), ("224002", ["62400209c4280f"])],
-            targets=targets + ["12", "12", "29", "19"])
+            targets=targets + ["12", "12", "29", "19"], env=env)
         self.assertEqual(result, "Transfer case confirms RWD.\n")
 
     def test_shift_worker_waits_for_a_busy_gateway(self):
@@ -169,7 +172,7 @@ class DriveAppsTest(unittest.TestCase):
                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
             ) as worker:
                 try:
-                    with self.assertRaises(TimeoutError):
+                    with self.assertRaises(socket.timeout):
                         gateway.accept()
                     self.assertIsNone(worker.poll())
                     lock.close()

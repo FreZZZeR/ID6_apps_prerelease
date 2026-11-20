@@ -1,5 +1,8 @@
 # AgentReadMe
 
+This fork's experimental N57 source changes are documented in [N57.md](source/docs/N57.md).
+They are not in the bundled ZIPs and have not been validated on a car. Read that document before building or proposing an N57 installation.
+
 ## Select the apps
 
 Ask the owner for their choice of **MHD+ Suite** or **Bootmod3 Suite**, and whether they want **xDrive Control (experimental)** and **HUD Gauges**. Install only the selected tuning menu. Install xDrive Control (experimental) only when selected. BoostDeck, ShiftDeck, and Engine Fault Codes are independent apps.
