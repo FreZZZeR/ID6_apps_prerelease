@@ -1,5 +1,5 @@
 // LaunchDeck: standing-start and rolling acceleration timers. Read-only: it reuses ShiftDeck's speed worker,
-// which polls OBD PID 0x0D from the DME on its own UDP port.
+// which polls OBD speed or pinned N57 DDE speed on its own UDP port.
 #include "plugin_factory.h"
 #include "diagnostic_worker.h"
 #include "diagnostic_gateway.h"
@@ -31,7 +31,6 @@ unsigned glyphIndex(char c) {
     return found && *found ? static_cast<unsigned>(found - kGlyphs) : kBlank;
 }
 
-int mphFromKph(int kph) { return kph < 0 ? -1 : (kph * 621371 + 500000) / 1000000; }
 }
 
 class LaunchDeck : public bmw::PluginApp {
@@ -40,7 +39,7 @@ class LaunchDeck : public bmw::PluginApp {
     unsigned generation_;
     bool visible_;
     uint64_t retry_at_, opened_;
-    drive_frame frame_;
+    drive_sample frame_;
     launch_timer timer_;
     LaunchRecords records_;
     bool new_best_;
@@ -104,7 +103,7 @@ class LaunchDeck : public bmw::PluginApp {
     void draw(uint64_t now) {
         bool live = visible_ && frame_.sampled_ms && frame_.sampled_ms <= now &&
                     now - frame_.sampled_ms < DRIVE_STALE_MS;
-        int kph = live ? frame_.kph : -1;
+        int mkph = live ? frame_.mkph : -1;
 
         unsigned status = statusFor(live);
         if (status != shown_status_) {
@@ -112,11 +111,11 @@ class LaunchDeck : public bmw::PluginApp {
             shown_status_ = status;
         }
 
-        int speed=mode_>=LT_0_100 ? kph : mphFromKph(kph);
+        int speed=drive_display_speed(mkph,mode_>=LT_0_100);
         unsigned bar = 0;
         if (timer_.state == LT_DONE) bar = kLaunchBarSteps;
-        else if (kph>0 && static_cast<unsigned>(kph)*1000>timer_.start_mkph) {
-            const unsigned value=static_cast<unsigned>(kph)*1000-timer_.start_mkph;
+        else if (mkph>0 && static_cast<unsigned>(mkph)>timer_.start_mkph) {
+            const unsigned value=static_cast<unsigned>(mkph)-timer_.start_mkph;
             const unsigned span=timer_.finish_mkph-timer_.start_mkph;
             bar=value>=span ? kLaunchBarSteps : value*kLaunchBarSteps/span;
         }
@@ -145,7 +144,7 @@ class LaunchDeck : public bmw::PluginApp {
 
     void feed(uint64_t now) {
         bool live = frame_.sampled_ms && frame_.sampled_ms <= now && now - frame_.sampled_ms < DRIVE_STALE_MS;
-        int event = lt_update(&timer_, live ? frame_.sampled_ms : now, live ? frame_.kph : -1);
+        int event = lt_update_mkph(&timer_, live ? frame_.sampled_ms : now, live ? frame_.mkph : -1);
         if (event == LT_EV_STARTED) new_best_ = false;
         if (event != LT_EV_FINISHED) return;
         new_best_ = lt_is_better(timer_.result_ms, records_.best_ms);
@@ -248,14 +247,15 @@ public:
             retry_at_ = now + 1000;
         }
         for (unsigned i = 0; i < 8; ++i) {
-            drive_frame next;
-            ssize_t n = recv(socket_, &next, sizeof next, 0);
+            char packet[sizeof(drive_n57_frame)+1];
+            drive_sample next;
+            ssize_t n = recv(socket_, packet, sizeof packet, 0);
             if (n <= 0) break;
-            if (n == sizeof next && visible_ && next.sampled_ms > frame_.sampled_ms && next.sampled_ms>=opened_ &&
-                next.sampled_ms <= now && next.rpm >= -1 && next.rpm <= 16383 &&
-                next.kph >= -1 && next.kph <= 255) {
-                if (frame_.sampled_ms && next.sampled_ms-frame_.sampled_ms>=DRIVE_STALE_MS)
-                    lt_update(&timer_,frame_.sampled_ms+1,-1);
+            if (visible_ && drive_parse(packet,static_cast<size_t>(n),&next) &&
+                next.sampled_ms > frame_.sampled_ms && next.sampled_ms>=opened_ && next.sampled_ms <= now) {
+                if (frame_.sampled_ms && (next.n57!=frame_.n57 ||
+                    next.sampled_ms-frame_.sampled_ms>=DRIVE_STALE_MS))
+                    lt_update_mkph(&timer_,frame_.sampled_ms+1,-1);
                 frame_=next;
                 feed(now);
             }

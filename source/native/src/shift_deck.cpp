@@ -5,6 +5,7 @@
 #include "gauge_core.h"
 #include "gauge_preferences.h"
 #include "shift_assets.h"
+#include "n57.h"
 #include <arpa/inet.h>
 #include <stdio.h>
 #include <sys/socket.h>
@@ -14,6 +15,7 @@ namespace {
 const unsigned kShiftPoll=0x53484654u;
 const char kShiftWorker[]="/var/opt/hmi/data/ID5/Plugins/ShiftDeck/shift-deck-qnx";
 const char kPreferences[]="/var/opt/hmi/data/ID5/ShiftDeck.prefs";
+const char kN57Preferences[]="/var/opt/hmi/data/ID5/ShiftDeck.n57.prefs";
 #ifdef NATIVE_SHIFT_SMOOTH
 const unsigned kSweepSteps=128, kSweepBase=56400, kSweepAlert=56529;
 const unsigned kEaseMs=50;
@@ -27,11 +29,18 @@ class ShiftDeck : public bmw::PluginApp {
     bool visible_;
     unsigned target_;
     uint64_t retry_at_;
-    drive_frame frame_;
+    drive_sample frame_;
     unsigned bar_, lights_;
     int rpm_,kph_;
     bool shift_;
     bool metric_;
+    bool n57_;
+    const char *preferences() const { return n57_ ? kN57Preferences : kPreferences; }
+    void loadPreferences() {
+        target_=n57_ ? kDefaultN57Target : kDefaultTarget;
+        metric_=false;
+        loadGaugePreferences(preferences(),sizeof kShiftTargets/sizeof kShiftTargets[0],target_,metric_);
+    }
 #ifdef NATIVE_SHIFT_SMOOTH
     double rpm_from_;
     uint64_t rpm_started_;
@@ -76,7 +85,13 @@ class ShiftDeck : public bmw::PluginApp {
         bool live=visible_ && frame_.sampled_ms && frame_.sampled_ms<=now &&
                   now-frame_.sampled_ms<DRIVE_STALE_MS;
         int rpm=live ? frame_.rpm : -1;
-        int kph=live ? frame_.kph : -1;
+        int speed=live ? drive_display_speed(frame_.mkph,
+#ifdef NATIVE_SHIFT_SMOOTH
+            metric_
+#else
+            0
+#endif
+        ) : -1;
         int target=static_cast<int>(kShiftTargets[target_]);
         bool shift=rpm>=target;
         int displayed_rpm=rpm;
@@ -107,17 +122,11 @@ class ShiftDeck : public bmw::PluginApp {
             digits(60u,4u,text,shift ? kDigitWarn : kDigitBase,true);
             rpm_=displayed_rpm;
         }
-        if (kph!=kph_) {
-            if (kph<0) strcpy(text,"--");
-            else {
-            int speed=(kph*621371+500000)/1000000;
-#ifdef NATIVE_SHIFT_SMOOTH
-            if (metric_) speed=kph;
-#endif
-            snprintf(text,sizeof text,"%d",speed);
-        }
+        if (speed!=kph_) {
+            if (speed<0) strcpy(text,"--");
+            else snprintf(text,sizeof text,"%d",speed);
             digits(70u,3u,text,kDigitBase,false);
-            kph_=kph;
+            kph_=speed;
         }
         if (shift!=shift_) {
             updateModel(57u,bmw::ImageID(shift ? kShiftOn : kShiftOff));
@@ -139,7 +148,7 @@ class ShiftDeck : public bmw::PluginApp {
     }
     template <unsigned Index> bool setTarget(const bmw::Parcel&) {
         target_=Index;
-        saveGaugePreferences(kPreferences, target_, metric_);
+        saveGaugePreferences(preferences(), target_, metric_);
         showTarget();
         draw(bd_mono_ms());
         return true;
@@ -147,7 +156,7 @@ class ShiftDeck : public bmw::PluginApp {
 #ifdef NATIVE_SHIFT_SMOOTH
     template <bool Metric> bool setUnits(const bmw::Parcel&) {
         metric_=Metric;
-        saveGaugePreferences(kPreferences, target_, metric_);
+        saveGaugePreferences(preferences(), target_, metric_);
         kph_=-2;
         updateModel(64u,bmw::ImageID(metric_ ? 56660u : 55916u));
         draw(bd_mono_ms());
@@ -167,7 +176,7 @@ public:
               bmw::RHMIInterfaceVersion version,const bmw::Bundle& cfg,const bmw::Bundle& res)
         : PluginApp(d,name,maj,min,version,cfg,res),socket_(-1),child_(-1),generation_(0),
           visible_(false),target_(kDefaultTarget),retry_at_(0),bar_(0),lights_(0),
-          rpm_(-2),kph_(-2),shift_(false),metric_(false) {
+          rpm_(-2),kph_(-2),shift_(false),metric_(false),n57_(false) {
         memset(&frame_,0,sizeof frame_);
 #ifdef NATIVE_SHIFT_SMOOTH
         rpm_from_=0;
@@ -211,7 +220,15 @@ public:
         addHandler(44u,action);
         action.m_exec=&Action::execImpl<ShiftDeck,&ShiftDeck::setTarget<4> >;
         addHandler(45u,action);
-        loadGaugePreferences(kPreferences, sizeof kShiftTargets / sizeof kShiftTargets[0], target_, metric_);
+        action.m_exec=&Action::execImpl<ShiftDeck,&ShiftDeck::setTarget<5> >;
+        addHandler(48u,action);
+        action.m_exec=&Action::execImpl<ShiftDeck,&ShiftDeck::setTarget<6> >;
+        addHandler(49u,action);
+        action.m_exec=&Action::execImpl<ShiftDeck,&ShiftDeck::setTarget<7> >;
+        addHandler(50u,action);
+        unsigned index=0;
+        n57_=n57_settings(&index)==1;
+        loadPreferences();
 #ifdef NATIVE_SHIFT_SMOOTH
         action.m_exec=&Action::execImpl<ShiftDeck,&ShiftDeck::setUnits<false> >;
         addHandler(46u,action);
@@ -239,15 +256,24 @@ public:
             retry_at_=now+1000;
         }
         for (unsigned i=0;i<8;++i) {
-            drive_frame next;
-            ssize_t n=recv(socket_,&next,sizeof next,0);
+            char packet[sizeof(drive_n57_frame)+1];
+            drive_sample next;
+            ssize_t n=recv(socket_,packet,sizeof packet,0);
             if (n<=0) break;
-            if (n==sizeof next && visible_ && next.sampled_ms>=frame_.sampled_ms &&
-                next.sampled_ms<=now && next.rpm>=-1 && next.rpm<=16383 &&
-                next.kph>=-1 && next.kph<=255) {
+            if (visible_ && drive_parse(packet,static_cast<size_t>(n),&next) &&
+                next.sampled_ms>=frame_.sampled_ms && next.sampled_ms<=now) {
+                if ((next.n57!=0)!=n57_) {
+                    n57_=next.n57!=0;
+                    loadPreferences();
+                    showTarget();
+                    kph_=-2;
+#ifdef NATIVE_SHIFT_SMOOTH
+                    updateModel(64u,bmw::ImageID(metric_ ? 56660u : 55916u));
+#endif
+                }
 #ifdef NATIVE_SHIFT_SMOOTH
                 if (next.rpm!=frame_.rpm) {
-                    const bool continuous=next.rpm>=0 && frame_.rpm>=0 && frame_.sampled_ms &&
+                    const bool continuous=next.n57==frame_.n57 && next.rpm>=0 && frame_.rpm>=0 && frame_.sampled_ms &&
                                           now-frame_.sampled_ms<DRIVE_STALE_MS;
                     rpm_from_=continuous ? animatedRpm(now) : next.rpm;
                     rpm_started_=continuous ? now : 0;

@@ -34,6 +34,15 @@ build/test-n57: tests/test_n57.c src/n57.c src/n57.h src/n57_signals.def | build
 build/shift-deck: $(WORKER) | build
 	$(HOST_LINK) -DSHIFT_DECK_ONLY $(filter %.c,$^) -lm -o $@
 
+build/shift-deck-fast: $(WORKER) | build
+	$(HOST_LINK) -DNATIVE_FAST -DSHIFT_DECK_ONLY $(filter %.c,$^) -lm -o $@
+
+build/test-drive-frame: tests/test_drive_frame.c src/drive_frame.h | build
+	$(CC) $(CFLAGS) -Isrc $< -o $@
+
+build/test-hud-reader: tests/test_hud_reader.c hud/parked_check.c hud/hud_sample.h $(CORE) src/n57.c $(HEADERS) | build
+	$(CC) $(CFLAGS) -Isrc -Ihud $(filter %.c,$^) -lm -o $@
+
 build/mhd-maps: $(WORKER) | build
 	$(HOST_LINK) -DMHD_MAPS_ONLY $(filter %.c,$^) -lm -o $@
 
@@ -73,8 +82,10 @@ build/test-launch-records: tests/test_launch_records.cpp build/launch_timer.o sr
 launch-assets:
 	$(PYTHON) tools/launch_art.py
 
-test: build/xdrive-control build/boostdeck-collector build/boostdeck-n57 build/test-n57 build/shift-deck build/mhd-maps build/engine-codes build/test-core build/test-gauges-extended build/test-most build/test-diag-link build/bootmod3 build/exhaust-flap build/test-launch-timer build/test-launch-records
+test: build/xdrive-control build/boostdeck-collector build/boostdeck-n57 build/test-n57 build/shift-deck build/shift-deck-fast build/test-drive-frame build/test-hud-reader build/mhd-maps build/engine-codes build/test-core build/test-gauges-extended build/test-most build/test-diag-link build/bootmod3 build/exhaust-flap build/test-launch-timer build/test-launch-records
 	./build/test-n57
+	./build/test-drive-frame
+	./build/test-hud-reader
 	./build/test-launch-timer
 	./build/test-launch-records
 	./build/test-core
@@ -86,3 +97,4 @@ test: build/xdrive-control build/boostdeck-collector build/boostdeck-n57 build/t
 	$(PYTHON) -B tests/test_oneshot_most.py
 	$(PYTHON) -B tests/test_transport.py
 	$(PYTHON) -B tests/test_n57.py
+	$(PYTHON) -B tests/test_drive_n57.py

@@ -32,7 +32,7 @@ worker -DNATIVE_FAST -DPERF_LAB src/collector.c out/core.o -o out/boostdeck-coll
 cxx -DPERF_LAB -Isrc -Isdk -O2 -fno-exceptions -fPIC -shared src/mhd_maps.cpp \
     "$frameworks/libAppFramework.A.so" "$frameworks/libCoreFramework.A.so" -Lout \
     -Wl,--allow-shlib-undefined -Wl,-soname,libMhdMaps.so -o out/libMhdMaps.so
-cxx -DPERF_LAB -Isrc -Isdk -O2 -fno-exceptions -fPIC -shared -DNATIVE_SHIFT_SMOOTH src/shift_deck.cpp out/core.o \
+cxx -DPERF_LAB -Isrc -Isdk -O2 -fno-exceptions -fPIC -shared -DNATIVE_SHIFT_SMOOTH src/shift_deck.cpp out/core.o out/n57.o \
     "$frameworks/libAppFramework.A.so" "$frameworks/libCoreFramework.A.so" -Lout -lm -lsocket \
     -Wl,--allow-shlib-undefined -Wl,-soname,libShiftDeck.so -o out/libShiftDeck.so
 worker -DPERF_LAB -DMHD_MAPS_ONLY src/collector.c src/gauge_core.c -o out/mhd-maps-qnx
@@ -72,6 +72,7 @@ cxx -DPERF_LAB -Isrc -Isdk -O2 -fno-exceptions -fPIC -shared src/launch_deck.cpp
 if test -n "${NBTAAD_SOURCE:-}"; then
     aad="$NBTAAD_SOURCE"
     c -D_QNX_SOURCE -Isrc -O2 -c hud/parked_check.c -o out/hud-sample.o
+    c -Isrc -O2 -c src/n57.c -o out/hud-n57.o
     for file in src/diag_link.c src/most/*.c; do
         c -Isrc -O2 -c "$file" -o "out/hud-$(basename "$file" .c).o"
     done

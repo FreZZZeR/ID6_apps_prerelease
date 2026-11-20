@@ -14,6 +14,8 @@ These are the reference Gen 1 B58/340i candidates in the current source. They ar
 | Coolant temperature | DME `12` | `4300` | Two big-endian bytes, raw ÷ 10 − 273.15 °C. |
 | ShiftDeck RPM | DME `12` | OBD `01 0C` | Two big-endian bytes ÷ 4. |
 | ShiftDeck speed | DME `12` | OBD `01 0D` | One byte in km/h, displayed in mph. |
+| N57 ShiftDeck / LaunchDeck | DDE `12` | Dynamic 5955 / 4C14 | Explicit verified DDE pin; RPM raw ÷ 2 and speed raw × 2289 ÷ 500000 km/h. LaunchDeck reads speed only and retains fractions. |
+| N57 HUD Gauges | DDE `12` | Dynamic 5955, 4841, 4CF0 | RPM plus absolute-minus-ambient pressure in hPa, converted to PSI. Park checks use dynamic 4C14 and EGS DA2E. |
 | Oil temperature | DME `12` | OBD `01 5C` | One byte, raw − 40 °C. Values above 170 °C are rejected. Read with `--extended`. |
 | Battery voltage | DME `12` | OBD `01 42` | Two big-endian bytes ÷ 1000 V (control module voltage). Accepted from 6 to 18 V. Read with `--extended`. |
 

@@ -12,6 +12,8 @@ typedef int (*n57_exchange_fn)(void *, unsigned, const unsigned char *, unsigned
                                const unsigned char *, unsigned, unsigned char *, unsigned,
                                unsigned, unsigned *);
 unsigned n57_index_file(const char *path);
+/* 1 pinned, 0 absent, -1 invalid/unreadable; absence alone allows the legacy profile. */
+int n57_settings(unsigned *index);
 unsigned n57_parse_index(const char *text);
 int n57_decode(unsigned did, const unsigned char *p, size_t len, double *out);
 /* 1 valid/matching, 0 refused/invalid, negative transport failure. Callback includes reply echo.

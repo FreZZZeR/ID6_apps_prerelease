@@ -42,7 +42,7 @@ Extract and verify SHA256SUMS. Stage only the HudTest directory and check for an
 
 ## LaunchDeck
 
-Install [LaunchDeck](packages/launchdeck.zip) as a separate plugin folder with connector ID 120. Use the same firmware and screen checks as BoostDeck. Its diagnostic worker is read-only and measures vehicle speed via OBD.
+Install [LaunchDeck](packages/launchdeck.zip) as a separate plugin folder with connector ID 120. Use the same firmware and screen checks as BoostDeck. Its packaged diagnostic worker is read-only and measures vehicle speed via OBD. This fork's source additionally supports pinned N57 DDE speed in LaunchDeck, ShiftDeck and HUD Gauges; see [N57 source requirements](source/docs/N57.md#shiftdeck-launchdeck-and-hud-gauges). The packaged ZIPs do not include those changes.
 
 ## Uninstall
 

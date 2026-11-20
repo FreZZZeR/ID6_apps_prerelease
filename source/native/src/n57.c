@@ -1,5 +1,6 @@
 #define _POSIX_C_SOURCE 200809L
 #include "n57.h"
+#include <errno.h>
 #include <math.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -40,9 +41,15 @@ unsigned n57_index_file(const char *path) {
     unsigned value=0;
     FILE *f=fopen(path,"r");
     if (!f) return 0;
-    if (fscanf(f,"%6s %c",text,&extra)==1) value=n57_parse_index(text);
+    if (fscanf(f,"%6s %c",text,&extra)==1 && !ferror(f)) value=n57_parse_index(text);
     fclose(f);
     return value;
+}
+
+int n57_settings(unsigned *index) {
+    errno=0;
+    *index=n57_index_file(ID6_N57_SETTINGS);
+    return *index ? 1 : errno==ENOENT ? 0 : -1;
 }
 
 int n57_decode(unsigned did, const unsigned char *p, size_t len, double *out) {

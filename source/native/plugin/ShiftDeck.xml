@@ -16,6 +16,9 @@
       <raAction id="45" />
       <raAction id="46" />
       <raAction id="47" />
+      <raAction id="48" />
+      <raAction id="49" />
+      <raAction id="50" />
     </actions>
     <models>
       <raDataModel id="53" modelType="Richtext" />
@@ -203,6 +206,9 @@
           <button id="303" action="43" text="6,250 RPM" />
           <button id="304" action="44" text="6,500 RPM" />
           <button id="305" action="45" text="6,700 RPM" />
+          <button id="306" action="48" text="3,500 RPM" />
+          <button id="307" action="49" text="4,000 RPM" />
+          <button id="308" action="50" text="4,500 RPM" />
         </components>
       </hmiState>
     </hmiStates>

@@ -7,18 +7,27 @@
 extern "C" {
 #endif
 
+enum { HUD_RPM_STALE_MS=1100, HUD_BOOST_STALE_MS=1200 };
 typedef struct {
     unsigned rpm;
     uint64_t rpm_ms;
     int boost_tenths;
     int have_boost;
+    uint64_t boost_ms;
     char gear;
+    int n57;
 } hud_sample;
+
+static inline int hud_boost_fresh(const hud_sample *s, uint64_t now) {
+    return s->have_boost && s->boost_ms && s->boost_ms<=now && now-s->boost_ms<HUD_BOOST_STALE_MS;
+}
 
 typedef struct {
     int fd, lock;
     uint64_t lease_until, retry_at, boost_due, boost_seen;
     int boost_tenths;
+    unsigned n57_index;
+    int config_error;
 } hud_reader;
 
 void hud_reader_init(hud_reader *reader);

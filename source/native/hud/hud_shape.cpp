@@ -106,7 +106,7 @@ static void tachBand(hud::Batch& batch, unsigned buffer, unsigned index,
 }
 
 static int shownBoost(const hud_sample& sample) {
-    return sample.have_boost && (sample.boost_tenths < -1 || sample.boost_tenths > 1)
+    return hud_boost_fresh(&sample,bd_mono_ms()) && (sample.boost_tenths < -1 || sample.boost_tenths > 1)
         ? sample.boost_tenths : 0;
 }
 
@@ -124,9 +124,9 @@ static bool draw(hud::HudTerminal& terminal, const hud_sample& sample, unsigned&
     }
     if (tachChanged) {
         batch.add(hud::kRemoveAllItems, hud::removeAllItems(buffer));
-        tachBand(batch, buffer, 0, tachRight, 6, 11);
+        tachBand(batch, buffer, 0, tachRight, 6, sample.n57 ? 6 : 11);
         const int fill = tachX(sample.rpm);
-        if (fill > tachLeft) tachBand(batch, buffer, 1, fill, 17, 22);
+        if (fill > tachLeft) tachBand(batch, buffer, 1, fill, 17, sample.n57 ? 17 : 22);
         digitHalf(batch, buffer, 2, 13, 52, zeroLeft);
         digitHalf(batch, buffer, 3, 13, 52, zeroRight);
         digitHalf(batch, buffer, 4, 93, 52, eightLeft);
@@ -135,7 +135,7 @@ static bool draw(hud::HudTerminal& terminal, const hud_sample& sample, unsigned&
     }
     if (boostChanged) {
         char psi[16];
-        if (sample.have_boost) snprintf(psi, sizeof psi, "%.1f", shownBoost(sample) / 10.0);
+        if (hud_boost_fresh(&sample,bd_mono_ms())) snprintf(psi, sizeof psi, "%.1f", shownBoost(sample) / 10.0);
         else strcpy(psi, "--");
         batch.add(hud::kTextareaSetText, hud::setText(boostValue, psi));
     }
@@ -228,7 +228,7 @@ static int trial(const char* host, bool requirePark) {
         // The MOST client sends on its own thread. Sample during a redraw, then
         // use the newest sample as soon as the preceding frame is acknowledged.
         if (!stop && terminal.waitIdle(0)) {
-            if (!latest.rpm_ms || now - latest.rpm_ms >= 1100) {
+            if (!latest.rpm_ms || now - latest.rpm_ms >= HUD_RPM_STALE_MS) {
                 if (shown) {
                     if (!clear(terminal, visible) && terminal.status() == hud::kReady) {
                         result = 5;
@@ -238,13 +238,14 @@ static int trial(const char* host, bool requirePark) {
                     visible = stock;
                 }
             } else {
-                const bool tachChanged = !shown || tachX(latest.rpm) != tachX(submitted.rpm);
-                const bool boostChanged = !shown || latest.have_boost != submitted.have_boost ||
+                const bool tachChanged = !shown || latest.n57!=submitted.n57 || tachX(latest.rpm) != tachX(submitted.rpm);
+                const bool boostChanged = !shown || hud_boost_fresh(&latest,now) != submitted.have_boost ||
                                           shownBoost(latest) != shownBoost(submitted);
                 if (tachChanged || boostChanged) {
                     if (draw(terminal, latest, visible, !shown, tachChanged, boostChanged)) {
                         shown = true;
                         submitted = latest;
+                        submitted.have_boost = hud_boost_fresh(&latest,now);
                     } else if (terminal.status() == hud::kReady) {
                         result = 4;
                         break;

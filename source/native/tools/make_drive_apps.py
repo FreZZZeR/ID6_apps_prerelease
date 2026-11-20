@@ -54,8 +54,8 @@ def shift_app():
     name="ShiftDeck"
     doc, actions, models, states, page = entry(name,"ShiftDeck",207,104,100,images=True)
     ET.SubElement(actions,"hmiAction",id="40",target="101")
-    for i in range(len(art.TARGETS)):
-        ET.SubElement(actions,"raAction",id=str(41+i))
+    for action in art.TARGET_ACTIONS:
+        ET.SubElement(actions,"raAction",id=str(action))
     ET.SubElement(models,"raDataModel",id="53",modelType="Richtext")
 
     options=ET.SubElement(page,"optionComponents")
@@ -88,7 +88,7 @@ def shift_app():
     items=ET.SubElement(settings,"components")
     ET.SubElement(items,"label",id="300",model="53")
     for i,rpm in enumerate(art.TARGETS):
-        button(items,301+i,41+i,f"{rpm:,} RPM")
+        button(items,301+i,art.TARGET_ACTIONS[i],f"{rpm:,} RPM")
 
     save(doc,f"{name}.xml")
     art.save_assets(ROOT/f"{name}_ALL_Images.zip",ROOT.parent/"src"/"shift_assets.h")

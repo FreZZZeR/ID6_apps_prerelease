@@ -2,9 +2,16 @@
 #include "gauge_core.h"
 #include "diagnostic_lease.h"
 #include "diag_link.h"
+#include "n57.h"
 #include <math.h>
 
 #include "hud_sample.h"
+
+static int native_exchange(void *ctx, unsigned ecu, const unsigned char *req, unsigned n,
+                            const unsigned char *prefix, unsigned pn, unsigned char *reply,
+                            unsigned cap, unsigned timeout, unsigned *negative) {
+    return diag_hsfz_exchange(*(int *)ctx,ecu,req,n,prefix,pn,reply,cap,timeout,negative);
+}
 
 static int pressure(int fd, unsigned did, double *kpa) {
     const unsigned char request[] = {0x22, did >> 8, did & 0xff};
@@ -19,11 +26,12 @@ static int pressure(int fd, unsigned did, double *kpa) {
 void hud_reader_init(hud_reader *reader) {
     memset(reader, 0, sizeof *reader);
     reader->fd = reader->lock = -1;
+    reader->config_error=n57_settings(&reader->n57_index)<0;
 }
 
 void hud_reader_close(hud_reader *reader) {
     release_gateway(&reader->fd, &reader->lock);
-    hud_reader_init(reader);
+    reader->lease_until=reader->retry_at=reader->boost_due=reader->boost_seen=0;
 }
 
 static void pause_gateway(hud_reader *reader, unsigned wait_ms) {
@@ -38,6 +46,7 @@ int hud_reader_poll(hud_reader *reader, const char *host, hud_sample *sample, in
     unsigned char reply[5];
     unsigned negative;
     uint64_t now = bd_mono_ms();
+    if (reader->config_error) return -1;
     if (reader->fd < 0) {
         if (now < reader->retry_at) return 0;
         reader->lock = reserve_gateway();
@@ -49,36 +58,52 @@ int hud_reader_poll(hud_reader *reader, const char *host, hud_sample *sample, in
         }
         reader->lease_until = bd_mono_ms() + DIAGNOSTIC_LEASE_MS;
     }
-    const int fd = reader->fd;
-    const int permitted = !require_park ||
-        (diag_hsfz_exchange(fd, 0x12, speed, 2, speed_prefix, 2, reply, sizeof reply, 350, &negative) == 3 &&
-         reply[2] == 0 &&
-         diag_hsfz_exchange(fd, 0x18, gear, 3, gear_prefix, 3, reply, sizeof reply, 350, &negative) == 5 &&
-         reply[3] == 0 && reply[4] == 6);
-    if (!permitted ||
-        diag_hsfz_exchange(fd, 0x12, rpm, 2, rpm_prefix, 2, reply, sizeof reply, 180, &negative) != 4) {
-        pause_gateway(reader, DIAGNOSTIC_RETRY_MS);
-        return require_park ? -1 : 0;
+    int fd = reader->fd;
+    int permitted=1, have_rpm=0;
+    double rpm_value=0, kph=0;
+    if (reader->n57_index) permitted=n57_match(native_exchange,&fd,reader->n57_index)==1;
+    if (permitted && require_park) {
+        permitted=reader->n57_index ?
+            n57_read(native_exchange,&fd,0x4c14,&kph)==1 && kph==0 :
+            diag_hsfz_exchange(fd,0x12,speed,2,speed_prefix,2,reply,sizeof reply,350,&negative)==3 && reply[2]==0;
+        if (permitted) permitted=
+            diag_hsfz_exchange(fd,0x18,gear,3,gear_prefix,3,reply,sizeof reply,350,&negative)==5 &&
+            reply[3]==0 && reply[4]==6;
     }
-    sample->rpm = ((unsigned)reply[2] * 256 + reply[3]) / 4;
-    sample->rpm_ms = bd_mono_ms();
+    const uint64_t rpm_started=bd_mono_ms();
+    if (permitted) {
+        if (reader->n57_index) have_rpm=n57_read(native_exchange,&fd,0x5955,&rpm_value)==1;
+        else if (diag_hsfz_exchange(fd,0x12,rpm,2,rpm_prefix,2,reply,sizeof reply,180,&negative)==4) {
+            rpm_value=((unsigned)reply[2]*256+reply[3])/4;
+            have_rpm=1;
+        }
+    }
+    if (!permitted || !have_rpm) {
+        reader->boost_seen=0;
+        pause_gateway(reader, DIAGNOSTIC_RETRY_MS);
+        return require_park || reader->n57_index ? -1 : 0;
+    }
+    sample->rpm = (unsigned)round(rpm_value);
+    sample->rpm_ms = reader->n57_index ? rpm_started : bd_mono_ms();
     sample->gear = require_park ? 'P' : '-';
+    sample->n57 = reader->n57_index!=0;
 
     if (sample->rpm_ms >= reader->boost_due) {
         double absolute, ambient;
-        int result = pressure(fd, 0x4205, &absolute);
-        if (result == 1) result = pressure(fd, 0x4201, &ambient);
+        const uint64_t boost_started=bd_mono_ms();
+        int result = reader->n57_index ? n57_read(native_exchange,&fd,0x4841,&absolute) : pressure(fd,0x4205,&absolute);
+        if (result == 1) result = reader->n57_index ? n57_read(native_exchange,&fd,0x4cf0,&ambient) : pressure(fd,0x4201,&ambient);
         reader->boost_due = bd_mono_ms() + 450;
         if (result == 1) {
-            reader->boost_tenths = (int)round((absolute - ambient) * 1.45037738);
-            reader->boost_seen = bd_mono_ms();
-        } else if (result < 0) {
-            pause_gateway(reader, DIAGNOSTIC_YIELD_MS);
+            reader->boost_tenths = (int)round((absolute - ambient) * (reader->n57_index ? .145037738 : 1.45037738));
+            reader->boost_seen = reader->n57_index ? boost_started : bd_mono_ms();
         } else {
             reader->boost_seen = 0;
+            if (result < 0) pause_gateway(reader, DIAGNOSTIC_YIELD_MS);
         }
     }
-    sample->have_boost = reader->boost_seen && bd_mono_ms() - reader->boost_seen < 1200;
+    sample->boost_ms=reader->boost_seen;
+    sample->have_boost = reader->boost_seen && bd_mono_ms() - reader->boost_seen < HUD_BOOST_STALE_MS;
     sample->boost_tenths = reader->boost_tenths;
     if (reader->fd >= 0 && gateway_should_yield(reader->lock, bd_mono_ms(), reader->lease_until))
         pause_gateway(reader, DIAGNOSTIC_YIELD_MS);
