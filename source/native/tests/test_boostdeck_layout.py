@@ -54,6 +54,19 @@ class BoostDeckLayoutTest(unittest.TestCase):
         for model in app.findall("models/imageIdModel"):
             self.assertIn(model.get("imageId"), ids)
 
+    def test_emissions_visibility_controls_and_component_ids(self):
+        app = ET.parse(layout.XML).find("pluginApp")
+        profile = app.find("hmiStates/hmiState[@id='501']/components")
+        self.assertIsNotNone(profile.find("label[@model='361']"))
+        for action, caption in ((504, "Show emissions gauges"), (505, "Hide emissions gauges")):
+            self.assertIsNotNone(app.find(f"actions/raAction[@id='{action}']"))
+            self.assertEqual(profile.find(f"button[@action='{action}']").get("text"), caption)
+        for slot in range(9):
+            page = app.find(f"hmiStates/hmiState[@id='{510 + slot}']/components")
+            for signal in (31, 32, 33, 36):
+                self.assertEqual(page.find(f"button[@action='{600 + signal}']").get("id"),
+                                 str(1001 + slot * 40 + signal))
+
 
 if __name__ == "__main__":
     unittest.main()

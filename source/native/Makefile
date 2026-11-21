@@ -79,15 +79,19 @@ build/launch_timer.o: src/launch_timer.c src/launch_timer.h | build
 build/test-launch-records: tests/test_launch_records.cpp build/launch_timer.o src/launch_records.h | build
 	$(CXX) -O2 -std=gnu++98 -Wall -Wextra -Werror -Isrc $(filter %.cpp %.o,$^) -o $@
 
+build/test-boostdeck-assignments: tests/test_boostdeck_assignments.cpp src/boostdeck_assignments.h src/gauge_preferences.h $(HEADERS) | build
+	$(CXX) -O2 -std=gnu++98 -Wall -Wextra -Werror -DPERF_LAB -Isrc $< -o $@
+
 launch-assets:
 	$(PYTHON) tools/launch_art.py
 
-test: build/xdrive-control build/boostdeck-collector build/boostdeck-n57 build/test-n57 build/shift-deck build/shift-deck-fast build/test-drive-frame build/test-hud-reader build/mhd-maps build/engine-codes build/test-core build/test-gauges-extended build/test-most build/test-diag-link build/bootmod3 build/exhaust-flap build/test-launch-timer build/test-launch-records
+test: build/xdrive-control build/boostdeck-collector build/boostdeck-n57 build/test-n57 build/shift-deck build/shift-deck-fast build/test-drive-frame build/test-hud-reader build/mhd-maps build/engine-codes build/test-core build/test-gauges-extended build/test-most build/test-diag-link build/bootmod3 build/exhaust-flap build/test-launch-timer build/test-launch-records build/test-boostdeck-assignments
 	./build/test-n57
 	./build/test-drive-frame
 	./build/test-hud-reader
 	./build/test-launch-timer
 	./build/test-launch-records
+	./build/test-boostdeck-assignments
 	./build/test-core
 	./build/test-gauges-extended
 	$(PYTHON) -B tests/test_boostdeck_layout.py

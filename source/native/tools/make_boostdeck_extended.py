@@ -57,7 +57,7 @@ def update_xml():
     placed(components, "image", 209, 69, 0, 0, WIDTH, HEIGHT)
     for action, page in ((500, 500), (501, 501)):
         ET.SubElement(actions, "hmiAction", id=str(action), target=str(page))
-    for action in (502, 503, *range(600, 600 + len(SIGNALS))):
+    for action in (502, 503, 504, 505, *range(600, 600 + len(SIGNALS))):
         ET.SubElement(actions, "raAction", id=str(action))
     config = ET.SubElement(states, "hmiState", id="500", parentId="100", text="Configure gauges")
     links = ET.SubElement(config, "components")
@@ -67,6 +67,10 @@ def update_xml():
     ET.SubElement(choices, "label", id="590", model="360")
     ET.SubElement(choices, "button", id="591", action="502", text="Gasoline")
     ET.SubElement(choices, "button", id="592", action="503", text="Diesel / N57")
+    ET.SubElement(models, "raDataModel", id="361", modelType="Richtext")
+    ET.SubElement(choices, "label", id="593", model="361")
+    ET.SubElement(choices, "button", id="594", action="504", text="Show emissions gauges")
+    ET.SubElement(choices, "button", id="595", action="505", text="Hide emissions gauges")
 
     for i in range(SLOTS):
         x, y = tile(i)

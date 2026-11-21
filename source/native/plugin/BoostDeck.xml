@@ -24,6 +24,8 @@
       <hmiAction id="501" target="501" />
       <raAction id="502" />
       <raAction id="503" />
+      <raAction id="504" />
+      <raAction id="505" />
       <raAction id="600" />
       <raAction id="601" />
       <raAction id="602" />
@@ -77,6 +79,7 @@
       <raDataModel id="110" modelType="Richtext" />
       <imageIdModel id="69" imageId="56300" />
       <raDataModel id="360" modelType="Richtext" />
+      <raDataModel id="361" modelType="Richtext" />
       <raDataModel id="300" modelType="Richtext" />
       <raDataModel id="340" modelType="Richtext" />
       <raDataModel id="370" modelType="Richtext" />
@@ -402,6 +405,9 @@
           <label id="590" model="360" />
           <button id="591" action="502" text="Gasoline" />
           <button id="592" action="503" text="Diesel / N57" />
+          <label id="593" model="361" />
+          <button id="594" action="504" text="Show emissions gauges" />
+          <button id="595" action="505" text="Hide emissions gauges" />
         </components>
       </hmiState>
       <hmiState id="510" parentId="500" text="Gauge 1">
