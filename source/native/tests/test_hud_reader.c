@@ -8,7 +8,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-static int native, bad_index, bad_gear, bad_rpm, no_baro, clears, definitions, reads, calls;
+static int native, bad_index, bad_gear, bad_egs, bad_display, bad_button, bad_rpm, no_baro, clears, definitions, reads, calls;
 static unsigned did, speed_raw;
 
 int diag_hsfz_connect(const char *host, unsigned port) {
@@ -24,10 +24,21 @@ int diag_hsfz_exchange(int fd, unsigned ecu, const unsigned char *q, unsigned n,
     assert(ecu==0x12 || ecu==0x18);
     memcpy(r,prefix,pn);
     if (n==3 && !memcmp(q,"\x22\xda\x2e",3)) {
-        assert(ecu==0x18); r[3]=0; r[4]=bad_gear ? 5 : 6; return 5;
+        assert(ecu==0x18 && !native); r[3]=0; r[4]=bad_gear ? 5 : 6; return 5;
     }
     if (native) {
         assert(q[0]!=1); /* A configured N57 must never fall back to mode 01. */
+        if (ecu==0x18) {
+            if (n==3 && !memcmp(q,"\x22\xf1\x50",3)) {
+                memcpy(r+3,bad_egs ? "\x04\x05\x06" : "\x0f\x14\xb0",3); return 6;
+            }
+            if (n==3 && !memcmp(q,"\x22\x43\x06",3)) { r[3]=bad_gear ? 5 : 8; return 4; }
+            assert(n==3 && !memcmp(q,"\x22\xda\x27",3));
+            memcpy(r+3,"\x00\x01\x00\x00\x00\x00",6);
+            if (bad_display) r[4]=3;
+            if (bad_button) r[8]=2;
+            return 9;
+        }
         if (n==3 && !memcmp(q,"\x22\xf1\x50",3)) {
             memcpy(r+3,bad_index ? "\x04\x05\x06" : "\x01\x02\x03",3); return 6;
         }
@@ -76,6 +87,9 @@ int main(void) {
     assert(clears==4 && definitions==4 && reads==4);
     speed_raw=1; assert(poll_case(&sample,1)==-1); speed_raw=0;
     bad_gear=1; assert(poll_case(&sample,1)==-1); bad_gear=0;
+    bad_egs=1; assert(poll_case(&sample,1)==-1); bad_egs=0;
+    bad_display=1; assert(poll_case(&sample,1)==-1); bad_display=0;
+    bad_button=1; assert(poll_case(&sample,1)==-1); bad_button=0;
     bad_index=1; assert(poll_case(&sample,0)==-1); bad_index=0;
     bad_rpm=1; assert(poll_case(&sample,0)==-1); bad_rpm=0;
     no_baro=1; assert(poll_case(&sample,0)==1 && !sample.have_boost); no_baro=0;

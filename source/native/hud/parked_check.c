@@ -66,7 +66,8 @@ int hud_reader_poll(hud_reader *reader, const char *host, hud_sample *sample, in
         permitted=reader->n57_index ?
             n57_read(native_exchange,&fd,0x4c14,&kph)==1 && kph==0 :
             diag_hsfz_exchange(fd,0x12,speed,2,speed_prefix,2,reply,sizeof reply,350,&negative)==3 && reply[2]==0;
-        if (permitted) permitted=
+        if (permitted && reader->n57_index) permitted=n57_park(native_exchange,&fd)==1;
+        else if (permitted) permitted=
             diag_hsfz_exchange(fd,0x18,gear,3,gear_prefix,3,reply,sizeof reply,350,&negative)==5 &&
             reply[3]==0 && reply[4]==6;
     }

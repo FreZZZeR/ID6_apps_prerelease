@@ -246,14 +246,15 @@ static int parked(int fd, int running) {
     const unsigned char rpm[]={1,0x0c}, rpm_ack[]={0x41,0x0c};
     unsigned char reply[8];
     unsigned negative;
-    // Same Park read as the 340i parked probe. Missing or different replies block the write.
-    if (!(exchange(fd,0x18,gear,3,gear_ack,3,reply,sizeof reply,350,&negative)==5 && reply[3]==0 && reply[4]==6)) return 0;
     if (running && n57_index) {
         double speed, rpm_value;
-        return n57_match(n57_fd_exchange,&fd,n57_index)==1 &&
+        return n57_park(n57_fd_exchange,&fd)==1 &&
+               n57_match(n57_fd_exchange,&fd,n57_index)==1 &&
                n57_read(n57_fd_exchange,&fd,0x5955,&rpm_value)==1 && rpm_value>0 &&
                n57_read(n57_fd_exchange,&fd,0x4c14,&speed)==1 && speed==0;
     }
+    // Preserve the separate upstream reference profile; never use its gear read for pinned N57.
+    if (!(exchange(fd,0x18,gear,3,gear_ack,3,reply,sizeof reply,350,&negative)==5 && reply[3]==0 && reply[4]==6)) return 0;
     return
            exchange(fd,0x12,rpm,2,rpm_ack,2,reply,sizeof reply,350,&negative)==4 && ((reply[2]|reply[3])!=0)==running &&
            exchange(fd,0x12,speed,2,speed_ack,2,reply,sizeof reply,350,&negative)==3 && !reply[2];

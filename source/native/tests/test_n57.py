@@ -23,13 +23,20 @@ def dyn(did, raw):
 
 
 class N57Test(unittest.TestCase):
-    def xdrive(self, extra, speed="0000", rpm="0640", vin=VIN, index=INDEX, ack="6edbe1", value=0):
+    def xdrive(self, extra, speed="0000", rpm="0640", vin=VIN, index=INDEX, ack="6edbe1", value=0,
+               egs="0f14b0", selector="08", park_status="000100000000"):
         tx = [("22f150", ["62f1500f1860"]), ("22dbe1", ["62dbe101"]),
               ("22f150", ["62f1500f1480"]), ("224002", ["62400209c4200f"]),
-              ("22f190", ["62f190" + vin.encode().hex()]),
-              ("22da2e", ["62da2e0006"]), ("22f150", ["62f150" + index])]
-        targets = ["29", "29", "19", "19", "12", "18", "12"]
-        if index == INDEX:
+              ("22f190", ["62f190" + vin.encode().hex()]), ("22f150", ["62f150" + egs])]
+        targets = ["29", "29", "19", "19", "12", "18"]
+        if egs == "0f14b0":
+            tx += [("224306", ["624306" + selector])]; targets += ["18"]
+            if selector == "08":
+                tx += [("22da27", ["62da27" + park_status])]; targets += ["18"]
+        park_ok = egs == "0f14b0" and selector == "08" and park_status in ("000100000000", "000100000001")
+        if park_ok:
+            tx += [("22f150", ["62f150" + index])]; targets += ["12"]
+        if park_ok and index == INDEX:
             tx += dyn("5955", rpm)
             targets += ["12"] * 3
             if rpm != "0000" and rpm != "ffff":
@@ -55,6 +62,18 @@ class N57Test(unittest.TestCase):
             with self.subTest(changes=changes):
                 self.assertIn("Needs engine running", self.xdrive([], **changes))
 
+    def test_xdrive_uses_selector_not_actual_gear_for_park(self):
+        for changes in ({"selector": "05"}, {"selector": "06"}, {"selector": "07"},
+                        {"selector": "ff"}, {"selector": "0800"},
+                        {"egs": "040506"}, {"egs": "0f14b000"}, {"park_status": "000300000000"},
+                        {"park_status": "000100030000"}, {"park_status": "000100000002"},
+                        {"park_status": "0001000000ff"}, {"park_status": "0001"},
+                        {"park_status": "00010000000000"}):
+            for value in (0, 1):
+                with self.subTest(changes=changes, value=value):
+                    self.assertIn("confirmed Park", self.xdrive([], value=value, **changes))
+        self.assertEqual(self.xdrive([], park_status="000100000001"), "Transfer case confirms RWD.\n")
+
     def test_xdrive_refuses_nrc_without_claiming_success(self):
         self.assertIn("refused this request", self.xdrive([], ack="7f2e31"))
 
@@ -79,7 +98,8 @@ class N57Test(unittest.TestCase):
                                       env=dict(os.environ, NBTEVO_OWN_VIN=VIN))
         self.assertIn("Owner VIN missing, unreadable or mismatched", out)
 
-    def gauges(self, actual=INDEX, selected=(1 << 39) - 1, overrides=None, dynamic_delay=0, cycles=1):
+    def gauges(self, actual=INDEX, selected=(1 << 39) - 1, overrides=None, dynamic_delay=0, cycles=1,
+               refuse_definition=0):
         errors, seen = [], []
         done = threading.Event()
         values = {0x4841: 25122, 0x4CF0: 32768, 0x4746: 39321, 0x461B: 19000,
@@ -122,7 +142,8 @@ class N57Test(unittest.TestCase):
                                     did = int.from_bytes(req[4:6], "big")
                                     width = 4 if did == 0x44BF else 2
                                     self.assertEqual(req[6:], bytes([1, width]))
-                                    defined.append((did, width)); reply = b"\x6c\x01\xf3\x03"
+                                    if did != refuse_definition:
+                                        defined.append((did, width)); reply = b"\x6c\x01\xf3\x03"
                                 elif req == b"\x22\xf3\x03":
                                     if all(values[d] is not None for d, _ in defined):
                                         reply = b"\x62\xf3\x03" + b"".join(values[d].to_bytes(w, "big") for d, w in defined)
@@ -194,6 +215,14 @@ class N57Test(unittest.TestCase):
     def test_rejected_dpf_does_not_hide_other_diesel_values(self):
         p, _, _ = self.gauges(selected=(1 << 31) | (1 << 36), overrides={0x44BE: None})
         self.assertEqual(int(p[3]), 1 << 36)
+
+    def test_adblue_definition_nrc31_leaves_it_blank_and_keeps_dpf(self):
+        # Captured 2C 01 F303 5306 01 02 -> 7F 2C 31; do not read a rejected slot.
+        p, seen, _ = self.gauges(selected=(1 << 31) | (1 << 36), refuse_definition=0x5306)
+        self.assertEqual(int(p[3]), 1 << 31)
+        self.assertEqual([q for _, q in seen], ["22f150"] +
+                         [q for q, _ in dyn("44be", "03e8")] +
+                         ["2c03f303", "2c01f30353060102"])
 
     def test_bad_signal_mask_never_starts_a_collector(self):
         for mask in ("-1", "0", str(1 << 39), str(1 << 64), "1x"):

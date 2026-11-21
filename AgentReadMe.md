@@ -1,7 +1,7 @@
 # AgentReadMe
 
 This fork's experimental N57 source changes are documented in [N57.md](source/docs/N57.md).
-They are not in the bundled ZIPs and have not been validated on a car. Read that document before building or proposing an N57 installation.
+They are not in the bundled ZIPs. Native diagnostic readers have a limited parked ENET check, but the N57 apps have not been installed or tested in the head-unit HMI. Read that document before building or proposing an N57 installation.
 
 ## Select the apps
 

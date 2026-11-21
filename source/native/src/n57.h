@@ -20,6 +20,8 @@ int n57_decode(unsigned did, const unsigned char *p, size_t len, double *out);
  * Caller must hold the diagnostic lease across EACH WHOLE call; HSFZ only for dynamic reads. */
 int n57_match(n57_exchange_fn, void *, unsigned expected);
 int n57_read(n57_exchange_fn, void *, unsigned did, double *out);
+/* Verified EGS 0F14B0: selector 4306 plus DA27 display/lever/button. DA2E is actual gear. */
+int n57_park(n57_exchange_fn, void *);
 #ifdef __cplusplus
 }
 #endif

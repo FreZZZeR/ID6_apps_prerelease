@@ -79,6 +79,24 @@ int n57_match(n57_exchange_fn exchange, void *ctx, unsigned expected) {
     return actual==expected;
 }
 
+int n57_park(n57_exchange_fn exchange, void *ctx) {
+    const unsigned char ident[]={0x22,0xf1,0x50}, ident_ack[]={0x62,0xf1,0x50};
+    const unsigned char selector[]={0x22,0x43,6}, selector_ack[]={0x62,0x43,6};
+    const unsigned char status[]={0x22,0xda,0x27}, status_ack[]={0x62,0xda,0x27};
+    unsigned char r[16];
+    unsigned negative;
+    int n=exchange(ctx,0x18,ident,3,ident_ack,3,r,sizeof r,800,&negative);
+    if (n<0) return n==-2 ? 0 : n;
+    if (n!=6 || memcmp(r+3,"\x0f\x14\xb0",3)) return 0;
+    n=exchange(ctx,0x18,selector,3,selector_ack,3,r,sizeof r,800,&negative);
+    if (n<0) return n==-2 ? 0 : n;
+    if (n!=4 || r[3]!=8) return 0; /* Factory POS_PRND: 5=D, 6=N, 7=R, 8=P. */
+    n=exchange(ctx,0x18,status,3,status_ack,3,r,sizeof r,800,&negative);
+    if (n<0) return n==-2 ? 0 : n;
+    /* Three BE words: display=P, lever centered, P button valid (released/pressed). */
+    return n==9 && r[3]==0 && r[4]==1 && r[5]==0 && r[6]==0 && r[7]==0 && r[8]<=1;
+}
+
 int n57_read(n57_exchange_fn exchange, void *ctx, unsigned did, double *out) {
     const struct n57_signal *s=find(did);
     const unsigned char clear[]={0x2c,3,0xf3,3}, cleared[]={0x6c,3,0xf3,3};
