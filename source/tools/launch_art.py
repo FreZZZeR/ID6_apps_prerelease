@@ -1,14 +1,15 @@
 """Generate the LaunchDeck acceleration timers RHMI resources.
 
-Writes native/manifests/LaunchDeck.manifest, manifests/LaunchDeck.xml, manifests/LaunchDeck_ALL_Images.zip,
-src/plugins/launch_assets.h and a preview PNG. Layout targets the 1280 x 480 panel content area
-used by ShiftDeck (x 52..1156, y 10..430).
+Writes plugin/LaunchDeck.manifest, plugin/LaunchDeck.xml, plugin/LaunchDeck_ALL_Images.zip,
+src/launch_assets.h and a preview PNG. Coordinates fill the RHMI content viewport;
+the BMW header and back navigation remain outside this area.
 """
 from io import BytesIO
 from pathlib import Path
 from xml.etree import ElementTree as ET
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 import sys
+from content_layout import WIDTH, HEIGHT, flow_widths
 
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
@@ -17,7 +18,7 @@ PLUGIN = NATIVE / "manifests"
 NAME, TITLE, CONNECTOR, WEIGHT = "LaunchDeck", "LaunchDeck", 120, 219
 
 # Panel geometry (content area).
-LEFT, TOP, WIDTH, HEIGHT = 52, 10, 1104, 420
+LEFT, TOP = 0, 0
 
 # Image IDs: one private block that no other packaged app uses.
 BACKGROUND = 57800
@@ -38,13 +39,14 @@ CARD_EDGE = (52, 63, 80)
 
 # Component geometry.
 BIG_W, BIG_H, BIG_CHARS = 112, 168, 5
-BIG_X = LEFT + 150
+BIG_X = LEFT + 150 + (WIDTH - 1104) // 2
 BIG_Y = TOP + 74
 SECONDS_X = BIG_X + BIG_W * BIG_CHARS + 18
 STATUS_RECT = (LEFT + 24, TOP + 14, WIDTH - 48, 46)
 BAR_RECT = (LEFT + 48, TOP + 262, WIDTH - 96, 22)
 SMALL_W, SMALL_H = 34, 50
-CARD_Y, CARD_H, CARD_W, CARD_GAP = TOP + 300, 104, 258, 12
+CARD_Y, CARD_H, CARD_GAP = TOP + 300, 104, 12
+CARD_W = (WIDTH - 36 - 3 * CARD_GAP) // 4
 CARDS = ("LIVE SPEED", "PREVIOUS 1", "PREVIOUS 2", "PREVIOUS 3")
 MODES = (("0–60", "MPH"), ("60–130", "MPH"), ("0–100", "KM/H"), ("100–200", "KM/H"))
 CARD_CHARS = (3, 5, 5, 5)
@@ -100,7 +102,6 @@ def background(mode):
     for y in range(HEIGHT):  # subtle vertical sheen
         shade = int(10 * (1 - abs(y - HEIGHT * 0.35) / HEIGHT))
         draw.line((0, y, WIDTH, y), fill=(PANEL[0] + shade, PANEL[1] + shade, PANEL[2] + shade + 2, 255))
-    draw.rounded_rectangle((0, 0, WIDTH - 1, HEIGHT - 1), radius=18, outline=CARD_EDGE, width=2)
     label = font(25, condensed=True)
     draw.text((BIG_X - LEFT - 22, BIG_Y - TOP + 46), MODES[mode][0], font=label, anchor="rm", fill=MUTED)
     draw.text((BIG_X - LEFT - 22, BIG_Y - TOP + 84), MODES[mode][1], font=label, anchor="rm", fill=ACCENT)
@@ -232,6 +233,7 @@ def description():
     for index, (model, image, x, y, w, h) in enumerate(layout()):
         ET.SubElement(models, "imageIdModel", id=str(model), imageId=str(image))
         place(content, 200 + index, model, x, y, w, h)
+    flow_widths(app)
     save_xml(doc, f"{NAME}.xml")
 
 

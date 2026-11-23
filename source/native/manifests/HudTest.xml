@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='utf-8'?>
+<pluginApps>
+  <pluginApp applicationType="VehicleInformation" applicationWeight="211" text="HUD Gauges">
+    <entryButton id="1" action="10">
+      <properties>
+        <property id="23" value="2" />
+      </properties>
+    </entryButton>
+    <actions>
+      <hmiAction id="10" target="100" />
+      <raAction id="21" />
+    </actions>
+    <models>
+      <raDataModel id="50" modelType="Richtext" />
+      <raBoolModel id="51" />
+    </models>
+    <hmiStates>
+      <hmiState id="100" text="HUD Gauges">
+        <components>
+          <label id="150" model="50">
+            <properties>
+              <property id="20" value="16" />
+              <property id="21" value="70" />
+              <property id="9" value="1204" />
+              <property id="10" value="100" />
+            </properties>
+          </label>
+          <checkbox id="151" action="21" model="51" text="Show HUD gauges">
+            <properties>
+              <property id="20" value="16" />
+              <property id="21" value="190" />
+              <property id="9" value="1204" />
+              <property id="10" value="60" />
+            </properties>
+          </checkbox>
+        </components>
+      </hmiState>
+    </hmiStates>
+  </pluginApp>
+</pluginApps>

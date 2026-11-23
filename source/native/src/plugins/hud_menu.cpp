@@ -2,6 +2,7 @@
 #include "plugin_factory.h"
 #include "diagnostic_worker.h"
 #include "diagnostic_gateway.h"
+#include "dashboard_sample.h"
 #include <sys/wait.h>
 
 namespace {
@@ -25,6 +26,13 @@ class HudTest : public bmw::PluginApp {
     }
 
     void startWorker() {
+        if (projection_hud_installed() || hud_dashboard_most_active()) {
+            enabled_=false;
+            updateModel(51u,false);
+            status(projection_hud_installed() ? "HUD gauges unavailable with the installed Android Auto or CarPlay HUD add-on."
+                                             : "A dashboard needs MOST. Close it before enabling HUD gauges.");
+            return;
+        }
         const DiagnosticGateway gateway("/var/opt/hmi/data/ID5/Plugins/HudTest/gateway-ip.txt");
         const char* args[] = {kWorker, "--draw-live", gateway.host(), 0};
         child_ = launch(args, -1);
@@ -92,13 +100,13 @@ public:
         else if (code == 0 || code == 1 || code == 2)
             retry("Waiting for the supported factory MOST HUD.");
         else if (code == 4 || code == 7 || code == 8) {
-            enabled_ = false;
-            updateModel(51u, false);
-            if (code == 4) status("HUD rejected the overlay. This cluster layout may be unsupported.");
-            else if (code == 7) status("HUD gauges unavailable with the installed Android Auto or CarPlay HUD add-on.");
-            else status("A dashboard needs MOST diagnostics. Enable HUD gauges again after closing it.");
+            enabled_=false;
+            updateModel(51u,false);
+            if (code==4) status("HUD rejected the overlay. This cluster layout may be unsupported.");
+            else if (code==7) status("HUD gauges unavailable with the installed Android Auto or CarPlay HUD add-on.");
+            else status("A dashboard needs MOST. Close it before enabling HUD gauges.");
         }
-        else if (code == 6) retry("No HUD RPM diagnostics. Check the gateway and ignition.");
+        else if (code == 6) retry("No HUD speed/RPM diagnostics. Check the gateway and ignition.");
         else status("HUD gauges stopped. Check ENET and navigation.");
         return true;
     }

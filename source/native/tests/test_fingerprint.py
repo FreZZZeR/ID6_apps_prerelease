@@ -31,8 +31,14 @@ class FingerprintTest(unittest.TestCase):
                     symbols = ELFFile(BytesIO(archive.read(name))).get_section_by_name('.dynsym')
                     imports.update(symbol.name for symbol in symbols.iter_symbols()
                                    if symbol['st_shndx'] == 'SHN_UNDEF' and 'bmw' in symbol.name)
-        self.assertEqual(FINGERPRINT['plugins'], sorted(packaged))
+        # The source-only N57 applications also ship through package_n57.py.
+        native = {"lib" + path.stem + ".so" for path in (ROOT / 'source/native/manifests').glob('*.manifest')}
+        self.assertEqual(FINGERPRINT['plugins'], sorted(set(packaged) | native))
         self.assertEqual(reference_gaps(FINGERPRINT['frameworks'], imports), [])
+
+    def test_native_state_map_handler_is_in_the_reference(self):
+        state_map = '_ZN3bmw9PluginApp17addHandlerWithMapEjjRKNS_8DelegateIbRKNS_3MapIjNS_7VariantEEEvvvEE'
+        self.assertEqual(reference_gaps(FINGERPRINT['frameworks'], {state_map}), [])
 
     def test_reports_missing_imports_and_vtables(self):
         frameworks = deepcopy(FINGERPRINT['frameworks'])

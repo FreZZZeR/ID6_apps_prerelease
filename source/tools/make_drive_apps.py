@@ -6,7 +6,7 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 from PIL import Image, ImageDraw, ImageFont
 import shift_art as art
 
-ROOT = Path(__file__).resolve().parents[1] / "native" / "manifests"
+ROOT = Path(__file__).resolve().parents[1] / "native/manifests"
 
 
 def save(doc, name):
@@ -51,11 +51,13 @@ def button(group, identifier, action, text):
 
 
 def shift_app():
+    # Seed one consistent legacy grid; extend_shift_n57 converts it once.
+    legacy_width=1104
     name="ShiftDeck"
     doc, actions, models, states, page = entry(name,"ShiftDeck",207,104,100,images=True)
     ET.SubElement(actions,"hmiAction",id="40",target="101")
-    for i in range(len(art.TARGETS)):
-        ET.SubElement(actions,"raAction",id=str(41+i))
+    for action in art.TARGET_ACTIONS:
+        ET.SubElement(actions,"raAction",id=str(action))
     ET.SubElement(models,"raDataModel",id="53",modelType="Richtext")
 
     options=ET.SubElement(page,"optionComponents")
@@ -70,17 +72,17 @@ def shift_app():
         ET.SubElement(props,"property",id="2",value="false")
         ET.SubElement(props,"property",id="3",value="true")
 
-    graphic(54,art.BAR_BASE,52,287,art.BAR_WIDTH,90)
-    graphic(55,art.LIGHT_BASE,52,10,1104,76)
+    graphic(54,art.BAR_BASE,52,287,legacy_width,90)
+    graphic(55,art.LIGHT_BASE,52,10,legacy_width,76)
     graphic(56,art.TARGET_BASE+art.DEFAULT_INDEX,1003,113,153,135)
     graphic(57,art.SHIFT_OFF,454,215,350,42)
     for i in range(4):
         graphic(60+i,art.DIGIT_BASE+(10 if i in (1,2) else 11),501+i*64,108,64,100)
     graphic(64,art.SPEED_LEGEND,53,108,200,179)
     graphic(65,art.RPM_LEGEND,764,169,68,35)
-    graphic(66,art.SCALE,52,377,art.BAR_WIDTH,42)
-    graphic(67,art.LOWER,52,420,1104,10)
-    graphic(68,art.MARK_BASE+art.DEFAULT_INDEX,52,278,art.BAR_WIDTH,9)
+    graphic(66,art.SCALE,52,377,legacy_width,42)
+    graphic(67,art.LOWER,52,420,legacy_width,10)
+    graphic(68,art.MARK_BASE+art.DEFAULT_INDEX,52,278,legacy_width,9)
     for i in range(3):
         graphic(70+i,art.DIGIT_BASE+(10 if i==2 else 11),53+i*67,139,67,109)
 
@@ -88,10 +90,12 @@ def shift_app():
     items=ET.SubElement(settings,"components")
     ET.SubElement(items,"label",id="300",model="53")
     for i,rpm in enumerate(art.TARGETS):
-        button(items,301+i,41+i,f"{rpm:,} RPM")
+        button(items,301+i,art.TARGET_ACTIONS[i],f"{rpm:,} RPM")
 
     save(doc,f"{name}.xml")
     art.save_assets(ROOT/f"{name}_ALL_Images.zip",ROOT.parent/"src"/"plugins"/"shift_assets.h")
+    import extend_shift_n57
+    extend_shift_n57.update_xml(ROOT/f"{name}.xml")
 
 
 def map_app():

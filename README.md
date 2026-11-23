@@ -1,11 +1,25 @@
 # NBT Evo ID6 apps
 
+> **Experimental N57 development fork.** We are moving the N57 work from
+> [nbtevo-id6-apps](https://github.com/FreZZZeR/nbtevo-id6-apps) into
+> [upstream ID6 Apps](https://github.com/inotbarnacle/ID6_apps_prerelease).
+> See [N57 support](source/docs/N57.md) and the
+> [data/validation matrix](source/docs/N57-DATA.md) before building this branch.
+> An earlier deployment received data in six apps without ENET, including a
+> same-worker HSFZ-to-MOST transition in BoostDeck. Current right-padding,
+> grouped-read/freshness and PowerDeck preview changes remain offline-only.
+> The current N57 source bundle contains seven apps. The former BaseDiagnostik
+> app is omitted; its voltage, fuel-volume and temperature fields remain
+> configurable in BoostDeck. Historical six-app observations include that former app.
+> The ZIP packages, installers and catalogue downloads below do **not** include
+> these source changes.
+
 Connect your parked car to a computer over wired ENET. Open an AI agent with terminal access on that computer and give it this repository and [AgentReadMe.md](AgentReadMe.md). The agent identifies your head unit, checks compatibility, and installs your chosen apps under **My Vehicle**.
 
 
 ## Unsupported firmware? Run the Trio Compatibility Collector
 
-If your version is unsupported, enable temporary SSH with Bavarian SSH Client first. Run the [Trio Compatibility Collector](source/tools/trio-collector/Quick%20Start.md) and email the ZIP it creates to [nordicbmwdealer@gmail.com](mailto:nordicbmwdealer@gmail.com) so we can get a fix to you quickly.
+If your version is unsupported, enable temporary SSH with Bavarian SSH Client first. Run the [Trio Compatibility Collector](source/tools/trio-collector/Quick%20Start.md) and follow its sharing instructions. Review captures before publishing them; keep credentials and personal vehicle data private.
 
 ## Desktop installer (beta)
 
@@ -29,11 +43,12 @@ Choose **MHD+ Suite**, **Bootmod3 Suite**, or **MG Flasher**. [Download the dash
 
 ## Features
 
-- **BoostDeck** has nine configurable gauges. Open **OPTIONS → BoostDeck settings** to set pressure (psi, bar, or kPa), speed (mph or km/h), and temperature (°F or °C) independently, or switch between bars and circular dials. Picking a value returns to settings and shows the saved choice. **Configure gauges** and **Engine profile** are in the same menu. Gasoline and diesel keep separate gauge assignments.
+- **BoostDeck** has nine configurable gauges. Open **OPTIONS → BoostDeck settings** to set pressure (psi, bar, or kPa), speed (mph or km/h), and temperature (°F or °C) independently, or switch between bars and circular dials. Picking a value returns to settings and shows the saved choice. **Configure gauges** and **Engine profile** are in the same menu. Gasoline and diesel keep separate gauge assignments. In the N57 source profile, supply voltage, fuel volume, coolant and oil temperature are selectable here; a separate basic-diagnostics app is not required.
 - **BoostDeck alerts** use fresh vehicle readings while the dashboard is open. Set separate coolant and oil-temperature limits from 220–260 °F in 5 °F steps, or a low oil-pressure limit from 5–25 psi in 5 psi steps. The choices show in your selected units. Each starts off. Choose **Screen only** or **Screen + soft chime** under **Alert mode**. Units, dial style, thresholds, and alert mode survive an iDrive restart.
 - **WarmDeck** shows engine oil, coolant, and transmission temperatures, with targets of 85, 75, and 40 °C. It estimates the warm-up time when current readings show a rising trend, and displays an advisory RPM guide while warming up. It reads only while open. The temperature targets are WarmDeck's display thresholds. [WarmDeck package](packages/warmdeck.zip)
 - **LaunchDeck** times 0–60 and 60–130 mph or 0–100 and 100–200 km/h. The menu shows a green **Ready** check, **Measuring** during a run, and the last three results for each mode. Display resolution is 0.01 s, with measurement precision limited by OBD speed sampling. [LaunchDeck package](packages/launchdeck.zip)
-- **ShiftDeck** displays live speed, an RPM bar, and shift lights with a selectable RPM threshold. Press **OPTIONS** to switch between mph and km/h. This update includes performance improvements.
+- **ShiftDeck** displays live speed, an RPM bar, and shift lights with a selectable RPM threshold. Press **OPTIONS** to switch between mph and km/h. The N57 source profile adds a 0–6000 RPM scale and a configurable two-stage warning window.
+- **PowerDeck (N57 source)** displays DDE RPM, DDE-reported torque and calculated power, with a live graph and saved RPM curves. Only an explicit recording permits collection in an unfocused preview; MENU and Saved review stop it. This is not a dyno measurement. [Behaviour and limits](source/docs/N57-UPDATE.ru.md#powerdeck).
 - **MHD+ Suite** offers four map slots and puts **Exhaust Flap** and **Max Cooling** under **Options**. The main screen shows the last map and Max Cooling settings accepted by the DME during the current app session.
 - **HybridDeck** displays plug-in hybrid battery charge, health, power, voltage, current, and temperatures. [HybridDeck package](packages/hybriddeck.zip)
 - **MG Flasher** offers map slots, burble slots, and Max Cooling. [MG Flasher package](packages/mgflasher.zip)
