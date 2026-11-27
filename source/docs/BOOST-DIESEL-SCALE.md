@@ -18,6 +18,10 @@ preference encoding is unchanged. Numeric readings are not clipped to the graphi
 range. Unsupported and stale data remain unavailable. No diagnostic request,
 DDE scaling, F303 transaction, pin, freshness or emissions-selection rule changes.
 
+The narrow ninth tile displays its number above its unit (for example, `230.0`
+above `kPa`) in both bar and dial styles. The other eight tiles keep their
+combined number and unit. Missing or stale readings clear the separate unit.
+
 The range is saved atomically in a separate three-byte file:
 `/var/opt/hmi/data/ID5/BoostDeck.rail-scale`, containing `R`, version `1`, and
 choice `0`–`3`. A new instance defaults to 2000 bar; a missing or invalid file

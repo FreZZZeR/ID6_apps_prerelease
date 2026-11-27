@@ -229,17 +229,21 @@ static void railScaleChecks(BoostDeck& app) {
     assert(app.testState(518,11,23,0));
     sampleRail(app,1000);
     assert(app.texts[378]=="Rail\n0-2000" && app.images[328]==56110);
+    assert(app.texts[308]=="1000" && app.texts[380]=="bar" && app.texts[305]=="1000 bar");
+    app.testAction(2400);
+    assert(app.texts[308]=="14504" && app.texts[380]=="psi" && app.texts[305]=="14504 psi");
     app.testAction(2402);
-    assert(app.texts[378]=="Rail\n0-200" && app.texts[308]=="100.0 MPa");
+    assert(app.texts[378]=="Rail\n0-200" && app.texts[308]=="100.0" && app.texts[380]=="MPa");
+    assert(app.texts[305]=="100.0 MPa");
     app.testAction(2401);
     app.testAction(2461);
     assert(app.images[338]==57008 && app.images[335]==57008);
     sampleRail(app,3000);
     assert(app.texts[305]=="3000 bar" && app.images[335]==57014);
     sampleRail(app,1000,BD_STALE_MS);
-    assert(app.texts[305]=="--" && app.texts[308]=="--" && app.images[338]==kDialFirst);
+    assert(app.texts[305]=="--" && app.texts[308]=="--" && app.texts[380].empty() && app.images[338]==kDialFirst);
     sampleRail(app,1000,0,false);
-    assert(app.texts[305]=="--");
+    assert(app.texts[305]=="--" && app.texts[308]=="--" && app.texts[380].empty());
 
     app.testAction(502);finishStopped(app);app.testAction(2460);sampleRail(app,125);
     assert(app.texts[375]=="Rail press." && app.images[325]==55016 && app.texts[305]=="125 bar");
@@ -248,6 +252,47 @@ static void railScaleChecks(BoostDeck& app) {
     app.testAction(503);finishStopped(app);app.testAction(2562);
     assert(app.texts[360]=="Engine profile: N57");
     app.testAction(2461);
+}
+
+static void assignSignal(BoostDeck& app,unsigned slot,unsigned signal) {
+    assert(app.testState(510u+slot,11,23,1));
+    app.testAction(600u+signal);finishStopped(app);
+    assert(app.testState(510u+slot,11,23,0));
+}
+
+static void splitUnitChecks(BoostDeck& app) {
+    unsigned char saved[2][kBoostDeckSlots];
+    bool diesel,hidden;
+    loadBoostDeckAssignments(kAssignments,saved,diesel,hidden,true);
+    assert(diesel);
+    for (unsigned slot=0;slot<kBoostDeckSlots;++slot) assignSignal(app,slot,BD_MAP);
+    assert(app.texts[308]=="--" && app.texts[380].empty());
+    app.testAction(2402);sampleValue(app,BD_MAP,230);
+    for (unsigned slot=0;slot<8;++slot) assert(app.texts[300u+slot]=="230.0 kPa");
+    assert(app.texts[308]=="230.0" && app.texts[380]=="kPa");
+
+    // The number stays unchanged: units must update independently of the number cache.
+    sampleValue(app,BD_MAP,0);
+    assert(app.texts[308]=="0.0" && app.texts[380]=="kPa");
+    app.testAction(2401);assert(app.texts[308]=="0.0" && app.texts[380]=="bar");
+    app.testAction(2400);assert(app.texts[308]=="0.0" && app.texts[380]=="psi");
+    app.testAction(2402);assert(app.texts[308]=="0.0" && app.texts[380]=="kPa");
+    sampleValue(app,BD_MAP,230,BD_TEMP_STALE_MS);
+    assert(app.texts[308]=="--" && app.texts[380].empty());
+    sampleValue(app,BD_MAP,230,0,false);
+    assert(app.texts[308]=="--" && app.texts[380].empty());
+
+    assignSignal(app,8,BD_REL_TORQUE_DDE);sampleValue(app,BD_REL_TORQUE_DDE,75);
+    assert(app.texts[308]=="75.0" && app.texts[380]=="%");
+    assignSignal(app,8,BD_COOLANT);app.testAction(2441);sampleValue(app,BD_COOLANT,90);
+    assert(app.texts[308]=="90.0" && app.texts[380]=="\260C");
+    app.testAction(2440);
+
+    app.testAction(502);finishStopped(app);assignSignal(app,8,BD_AFR);sampleValue(app,BD_AFR,14.7);
+    assert(app.texts[308]=="14.7" && app.texts[380].empty());
+    assignSignal(app,8,saved[0][8]);app.testAction(503);finishStopped(app);
+    for (unsigned slot=0;slot<kBoostDeckSlots;++slot) assignSignal(app,slot,saved[1][slot]);
+    app.testAction(2401);
 }
 
 int main() {
@@ -276,6 +321,7 @@ int main() {
     assert(launches.back().size()>=9 && launches.back().back()=="010203");
 
     railScaleChecks(app);
+    splitUnitChecks(app);
 
     app.testAction(504);finishStopped(app);
     assert(!(launchedMask()&BD_BIT(BD_ADBLUE)));
@@ -304,7 +350,9 @@ int main() {
     fixture_now+=10000;tick(app);assert(collectorLaunches()==stopped);
     assert(activeCollectors()==0);
     app.onFinalize();
+    app.texts[380]="old unit"; // A retained HMI model must be cleared even when the internal unit cache is empty.
     assert(app.onInit());
+    assert(app.texts[308]=="--" && app.texts[380].empty());
     assert(app.texts[128]=="Diesel rail scale: 0 - 2000 bar" && app.bools[5162]);
     assert(app.texts[378]=="Rail\n0-2000");
     app.onFinalize();

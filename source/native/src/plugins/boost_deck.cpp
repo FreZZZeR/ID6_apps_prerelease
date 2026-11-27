@@ -109,6 +109,8 @@ class BoostDeck : public bmw::PluginApp {
     void reapTone();
     void restartCollector();
     char labels_[kBarCount][128];
+    char vertical_unit_[32];
+    bool unit_dirty_;
     unsigned images_[kBarCount], dials_[kBarCount];
     void postPoll();
 public:
@@ -234,6 +236,8 @@ public:
     }
     void resetDisplay() {
         memset(&frame_,0,sizeof frame_); memset(labels_,0,sizeof labels_);
+        vertical_unit_[0]=0;
+        unit_dirty_=true;
         memset(images_,0,sizeof images_);
         memset(dials_,0,sizeof dials_);
         received_=0;
@@ -543,6 +547,7 @@ void BoostDeck::updateAssignments() {
         const unsigned parts[]={260u+i,310u+i,280u+i,290u+i};
         bmw::Parcel visible(!boostDeckSignalHidden(signal,diesel_,hide_emissions_,n57_index_!=0));
         for (unsigned part=0;part<4;++part) setProperty(parts[part],3u,visible);
+        if (i==kVerticalSlot) setProperty(319u,3u,visible);
         for (unsigned candidate=0;candidate<BD_COUNT;++candidate) {
             bmw::Parcel choice(!boostDeckSignalHidden(candidate,diesel_,hide_emissions_,n57_index_!=0));
             setProperty(3500u+i*64u+candidate,3u,choice);
@@ -578,6 +583,7 @@ void BoostDeck::refresh() {
     const uint64_t elapsed=received_ ? now-received_ : static_cast<uint64_t>(BD_STALE_MS);
     updateAlerts(now,elapsed);
     const bool circular=preferences_.choice[BOOST_STYLE]!=0;
+    char vertical_unit[32]="";
     for (unsigned i=0;i<kBarCount;++i) {
         const unsigned signal=signals_[diesel_][i];
         char label[128];
@@ -594,8 +600,13 @@ void BoostDeck::refresh() {
             if (signal==BD_BOOST && fabs(reading)<0.05) reading=0;
             const int decimals=rail_si ? 1 : signal==BD_BATTERY || signal==BD_LAMBDA_TARGET ? 2 :
                 signal==BD_RPM || signal==BD_RAIL || signal==BD_ETHANOL ? 0 : 1;
-            snprintf(label,sizeof label,"%.*f%s%s",decimals,reading,
-                     *unit && *unit!='%' ? " " : "",unit);
+            if (vertical) {
+                snprintf(label,sizeof label,"%.*f",decimals,reading);
+                snprintf(vertical_unit,sizeof vertical_unit,"%s",unit);
+            } else {
+                snprintf(label,sizeof label,"%.*f%s%s",decimals,reading,
+                         *unit && *unit!='%' ? " " : "",unit);
+            }
             const unsigned color=preferences_.color;
             const unsigned palette=color==kMulticolor ? kMulticolor+(i%8) : color;
             const int fill=rail_scale_.bar(signal,value,diesel_);
@@ -621,6 +632,11 @@ void BoostDeck::refresh() {
             updateModel(300u+i,bmw::BasicString<char>(label));
             strcpy(labels_[i],label);
         }
+    }
+    if (unit_dirty_ || strcmp(vertical_unit,vertical_unit_)) {
+        updateModel(380u,bmw::BasicString<char>(vertical_unit));
+        strcpy(vertical_unit_,vertical_unit);
+        unit_dirty_=false;
     }
 }
 

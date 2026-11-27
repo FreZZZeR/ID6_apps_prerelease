@@ -142,6 +142,7 @@ def update_xml():
         choose(actions, 2212 + i, 504 + i, 3012 + i, 520)
         radio(profile, 593 + i, 2212 + i, 5212 + i, caption)
     config = page(states, 500, 520, "Configure gauges")
+    richtext(models, 380)
     for signal in range(len(SIGNALS)):
         radio_model(models, 5300 + signal)
         choose(actions, 3500 + signal, 600 + signal, 4500 + signal, 500)
@@ -160,7 +161,8 @@ def update_xml():
             placed(components, "label", 260+i, 370+i, x+10, y+10, 120, 46)
             placed(components, "image", 280+i, 320+i, x+50, y+58, 40, 250)
             placed(components, "image", 290+i, 330+i, x+22, y+128, DIAL_SIZE, DIAL_SIZE)
-            placed(components, "label", 310+i, 300+i, x+24, y+322, 112, 63)
+            placed(components, "label", 310+i, 300+i, x+24, y+322, 112, 36)
+            placed(components, "label", 319, 380, x+24, y+360, 112, 40)
         target = 510 + i
         goto(actions, target, target)
         button(config, 540 + i, target, model=340+i)

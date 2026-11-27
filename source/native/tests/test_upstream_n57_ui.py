@@ -22,6 +22,9 @@ class UpstreamN57UI(unittest.TestCase):
             with self.subTest(app=app), ZipFile(PACKAGES / package) as archive:
                 expected = geometry(ET.fromstring(archive.read(f"{app}/{app}.xml")))
                 actual = geometry(ET.parse(NATIVE / "manifests" / f"{app}.xml"))
+                if app == "BoostDeck":
+                    expected["318"]["10"] = "36"  # The former combined value gives room to its unit below.
+                    self.assertEqual(actual["319"], {"20": "1080", "21": "373", "9": "112", "10": "40"})
                 self.assertEqual({key: actual[key] for key in expected}, expected)
 
     def test_boost_remains_one_panel_with_upstream_dials_radios_and_alerts(self):

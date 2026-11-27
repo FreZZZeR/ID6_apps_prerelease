@@ -33,9 +33,17 @@ class BoostScaleResources(unittest.TestCase):
         with ZipFile(ROOT.parent / "packages/dashboard.zip") as package:
             original = ET.fromstring(package.read("BoostDeck/BoostDeck.xml"))
         for component in original.findall(".//hmiState[@id='100']/components/*"):
+            if component.get("id") == "318":
+                component.find("properties/property[@id='10']").set("value", "36")
             updated = self.current.find(f".//hmiState[@id='100']/components/*[@id='{component.get('id')}']")
             self.assertIsNotNone(updated)
             self.assertEqual(ET.tostring(component).strip(), ET.tostring(updated).strip())
+        unit = self.current.find(".//hmiState[@id='100']/components/label[@id='319']")
+        self.assertIsNotNone(unit)
+        self.assertEqual(unit.get("model"), "380")
+        self.assertEqual({p.get("id"): p.get("value") for p in unit.findall("properties/property")},
+                         {"20": "1080", "21": "373", "9": "112", "10": "40"})
+        self.assertIsNotNone(self.current.find(".//models/raDataModel[@id='380'][@modelType='Richtext']"))
         for model in original.findall(".//models/imageIdModel"):
             self.assertEqual(model.attrib, self.current.find(f".//models/imageIdModel[@id='{model.get('id')}']").attrib)
 

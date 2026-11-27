@@ -712,6 +712,7 @@
       <raBoolModel id="5211" />
       <raBoolModel id="5212" />
       <raBoolModel id="5213" />
+      <raDataModel id="380" modelType="Richtext" />
       <raBoolModel id="5300" />
       <raBoolModel id="5301" />
       <raBoolModel id="5302" />
@@ -1154,7 +1155,15 @@
               <property id="20" value="1080" />
               <property id="21" value="335" />
               <property id="9" value="112" />
-              <property id="10" value="63" />
+              <property id="10" value="36" />
+            </properties>
+          </label>
+          <label id="319" model="380">
+            <properties>
+              <property id="20" value="1080" />
+              <property id="21" value="373" />
+              <property id="9" value="112" />
+              <property id="10" value="40" />
             </properties>
           </label>
         </components>
