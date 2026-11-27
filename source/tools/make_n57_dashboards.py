@@ -27,6 +27,19 @@ def text_image(size, text, points, color=INK):
     return image
 
 
+def digit_image(glyph):
+    image = text_image((104, 98), glyph, 94)
+    bounds = image.getbbox()
+    result = Image.new("RGBA", (52, 98))
+    if bounds:
+        ink = image.crop(bounds)
+        # Keep the fixed HMI digit spacing with wider fallback fonts too.
+        if ink.width > 34:
+            ink = ink.resize((34, ink.height), Image.Resampling.LANCZOS)
+        result.alpha_composite(ink, ((52 - ink.width) // 2, bounds[1]))
+    return result
+
+
 def own_bitmaps(name):
     if name not in APPS:
         raise KeyError(name)
@@ -39,10 +52,10 @@ def own_bitmaps(name):
     yield 60000, background
     for i, title in enumerate(("ENGINE RPM", "DDE TORQUE", "POWER CALC. (kW)")):
         yield 60001 + i, text_image((WIDTH // 3 - 24, 40), title, 30, MUTED)
-    for i, unit in enumerate(("RPM", "Nm", "kW", "л.с.")):
+    for i, unit in enumerate(("RPM", "Nm", "kW", "PS")):
         yield 60005 + i, text_image((70, 32), unit, 30, MUTED)
     for index, glyph in enumerate("0123456789- ."):
-        yield 60010 + index, text_image((52, 98), glyph, 94)
+        yield 60010 + index, digit_image(glyph)
 
 
 def position(component, x, y, width, height):

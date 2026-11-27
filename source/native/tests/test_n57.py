@@ -37,17 +37,16 @@ class N57Test(unittest.TestCase):
         if park_ok:
             tx += [("22f150", ["62f150" + index])]; targets += ["12"]
         if park_ok and index == INDEX:
-            tx += dyn("5955", rpm)
+            tx += [("2c03f303", ["6c03f303"]),
+                   ("2c01f303595501024c140102", ["6c01f303"]),
+                   ("22f303", ["62f303" + rpm + speed])]
             targets += ["12"] * 3
-            if rpm != "0000" and rpm != "ffff":
-                tx += dyn("4c14", speed)
-                targets += ["12"] * 3
-                if speed == "0000":
-                    tx += [("2edbe1%02x" % value, [ack] if ack else [])]
-                    targets += ["29"]
-                    if ack in ("6edbe1", None):
-                        tx += [("224002", ["62400209c4" + ("20" if value else "28") + "0f"])]
-                        targets += ["19"]
+            if rpm not in ("0000", "ffff") and speed == "0000":
+                tx += [("2edbe1%02x" % value, [ack] if ack else [])]
+                targets += ["29"]
+                if ack in ("6edbe1", None):
+                    tx += [("224002", ["62400209c4" + ("20" if value else "28") + "0f"])]
+                    targets += ["19"]
         return test_drive_apps.DriveAppsTest.run_worker(self, "xdrive-control", ["--drive-mode", str(value), "--n57-sgbd", INDEX, *extra],
                                        tx, targets=targets, env=dict(os.environ, NBTEVO_OWN_VIN=VIN))
 
@@ -99,7 +98,7 @@ class N57Test(unittest.TestCase):
         self.assertIn("Owner VIN missing, unreadable or mismatched", out)
 
     def gauges(self, actual=INDEX, selected=(1 << 39) - 1, overrides=None, dynamic_delay=0, cycles=1,
-               refuse_definition=0):
+               refuse_definition=0, read_reply=None):
         errors, seen = [], []
         done = threading.Event()
         values = {0x4841: 25122, 0x4CF0: 32768, 0x4746: 39321, 0x461B: 19000,
@@ -107,7 +106,7 @@ class N57Test(unittest.TestCase):
                   0x4C14: 0, 0x47DC: 1000, 0x50A6: 2931,
                   0x44BE: 1000, 0x44F8: 22000, 0x44BF: 1500000,
                   0x44EF: 16000, 0x44F2: 18000, 0x5306: 50000, 0x48A5: 28000,
-                  0x4458: 26000}
+                  0x4458: 26000, 0x464C: 0x8000}
         values.update(overrides or {})
         with socket.socket() as tcp, socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as udp:
             tcp.bind(("127.0.0.1", 0)); tcp.listen(); tcp.settimeout(.1)
@@ -148,6 +147,8 @@ class N57Test(unittest.TestCase):
                                 elif req == b"\x22\xf3\x03":
                                     if all(values[d] is not None for d, _ in defined):
                                         reply = b"\x62\xf3\x03" + b"".join(values[d].to_bytes(w, "big") for d, w in defined)
+                                    if read_reply is not None:
+                                        reply = bytes.fromhex(read_reply)
                                 elif ecu == 0x18 and req == b"\x22\xda\x12":
                                     reply = b"\x62\xda\x12\x00\x83"
                                 conn.sendall(frame(1, bytes([ecu, 0xF4]) + reply))
@@ -172,7 +173,7 @@ class N57Test(unittest.TestCase):
 
     def test_gauges_factory_values_and_gasoline_channels_blank(self):
         p, seen, _ = self.gauges()
-        self.assertEqual(p[0], "NBG9")
+        self.assertEqual(p[0], "NBGA")
         valid = int(p[3])
         value = lambda slot: float(p[5 + 2 * slot])
         self.assertAlmostEqual(value(0), 1.30 * 14.5037738, places=3)
@@ -188,6 +189,31 @@ class N57Test(unittest.TestCase):
         self.assertFalse(valid & ((1 << 1) | (1 << 2) | (1 << 6)))  # AFR/timing/oil pressure
         self.assertFalse(any(q.startswith("01") for _, q in seen))
         self.assertTrue(all(q.startswith(("22", "2c")) for _, q in seen))
+        self.assertFalse(any("464c" in q for _, q in seen))  # Explicit selection only.
+
+    def test_relative_torque_is_separate_from_sae_load_and_uses_f303(self):
+        mask = 1 << 40
+        p, seen, _ = self.gauges(selected=mask | (1 << 13) | (1 << 23))
+        self.assertEqual(int(p[3]), mask)
+        self.assertAlmostEqual(float(p[5 + 2 * 40]), 50.003968, places=6)
+        self.assertEqual([q for _, q in seen], ["22f150"] + [q for q, _ in dyn("464c", "8000")])
+
+    def test_relative_torque_rejects_wrong_pin_nrc_format_and_bounds(self):
+        p, seen, _ = self.gauges(selected=1 << 40, actual="040506")
+        self.assertEqual(int(p[3]), 0)
+        self.assertEqual(seen, [(0x12, "22f150")])
+        p, seen, _ = self.gauges(selected=1 << 40, refuse_definition=0x464C)
+        self.assertEqual(int(p[3]), 0)
+        self.assertNotIn((0x12, "22f303"), seen)
+        for reply in ("7f2231", "62f30380", "62f303800000", "62f3048000", "62f303ffff"):
+            with self.subTest(reply=reply):
+                p, _, _ = self.gauges(selected=1 << 40, read_reply=reply)
+                self.assertEqual(int(p[3]), 0)
+
+    def test_relative_torque_sample_age_includes_hsfz_read_latency(self):
+        p, _, _ = self.gauges(selected=1 << 40, dynamic_delay=.15)
+        self.assertEqual(int(p[3]), 1 << 40)
+        self.assertGreaterEqual(int(p[6 + 2 * 40]), 400)
 
     def test_power_alone_reads_both_dependencies(self):
         p, seen, _ = self.gauges(selected=1 << 38)
@@ -268,7 +294,7 @@ class N57Test(unittest.TestCase):
                          ["2c03f303", "2c01f30353060102"])
 
     def test_bad_signal_mask_never_starts_a_collector(self):
-        for mask in ("-1", "0", str(1 << 40), str(1 << 64), "1x"):
+        for mask in ("-1", "0", str(1 << 41), str(1 << 64), "1x"):
             with self.subTest(mask=mask):
                 result = subprocess.run([BUILD / "boostdeck-n57", "--demo", "--signals", mask],
                                         capture_output=True, timeout=2)

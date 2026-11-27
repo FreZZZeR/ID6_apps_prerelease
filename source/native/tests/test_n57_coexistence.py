@@ -75,7 +75,7 @@ class App:
             data = self.data.recv(4096)
         except socket.timeout:
             return
-        if data.startswith(b"NBG9 "):
+        if data.startswith(b"NBGA "):
             self.frames.append(int(data.split()[3]) != 0)
         else:
             magic, _, rpm, speed = struct.unpack("=QQii", data)

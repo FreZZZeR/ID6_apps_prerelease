@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <sys/socket.h>
 #include <sys/wait.h>
+#include <errno.h>
 
 namespace {
 const unsigned kLaunchPoll = 0x4C4E4348u;

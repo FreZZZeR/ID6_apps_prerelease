@@ -38,5 +38,7 @@ void fake_dme_set_handshake(void (*hs)(void));               /* NULL: no handsha
 void fake_dme_run_hook(void *app);                           /* the handshake, then park until stopped */
 void fake_dme_deliver_tunnel_reply(uint16_t fkt, const uint8_t *inner, size_t ilen);
 void fake_dme_deliver_payload(uint16_t fkt, const uint8_t *payload, size_t n);
+void fake_dme_deliver_message(uint8_t fb, uint8_t inst, uint8_t op, uint16_t fkt,
+                             const uint8_t *payload, size_t n);
 
 #endif

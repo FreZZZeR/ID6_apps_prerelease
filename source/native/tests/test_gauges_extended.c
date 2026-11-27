@@ -24,13 +24,13 @@ int main(void) {
     unsigned i;
     int n;
     /* IDs are persisted as bytes; new selectors must be appended. */
-    assert(BD_BOOST==0 && BD_THROTTLE_TARGET==30 && BD_DPF_SOOT==31 && BD_POWER==38 && BD_FUEL_VOLUME==39 && BD_COUNT==40);
+    assert(BD_BOOST==0 && BD_THROTTLE_TARGET==30 && BD_DPF_SOOT==31 && BD_POWER==38 && BD_FUEL_VOLUME==39 && BD_REL_TORQUE_DDE==40 && BD_COUNT==41);
     memset(&f,0,sizeof f);
     f.valid=BD_ALL_SIGNALS; f.seq=42; f.sent_ms=123456789;
     for (i=0;i<BD_COUNT;i++) { f.value[i]=19999.999999; f.age_ms[i]=999999; }
     f.value[BD_DPF_REGEN_DIST]=2000000;
     n=bd_encode(&f,packet,sizeof packet);
-    assert(n>768 && n<BD_MAX_PACKET && !memcmp(packet,"NBG9",4));
+    assert(n>768 && n<BD_MAX_PACKET && !memcmp(packet,"NBGA",4));
     assert(bd_parse(packet,(size_t)n,&decoded) && decoded.valid==BD_ALL_SIGNALS);
     assert(decoded.value[BD_DPF_REGEN_DIST]==2000000 && decoded.age_ms[BD_POWER]==999999);
     assert(!bd_parse(packet,(size_t)(strrchr(packet,' ')-packet),&decoded));
@@ -40,6 +40,9 @@ int main(void) {
     assert(!legacy("NBG8",39,BD_BIT(39),&decoded));
     assert(legacy("NBG8",39,BD_BIT(38),&decoded) && !(decoded.valid & BD_BIT(BD_FUEL_VOLUME)));
     assert(!legacy("NBG9",40,BD_BIT(40),&decoded));
+    assert(legacy("NBG9",40,BD_BIT(39),&decoded) && !(decoded.valid & BD_BIT(BD_REL_TORQUE_DDE)));
+    assert(!legacy("NBGA",40,BD_BIT(39),&decoded));
+    assert(!legacy("NBGA",41,BD_BIT(41),&decoded));
     assert(!legacy("NBG8",39,UINT64_MAX,&decoded));
     assert(legacy("NBG6",22,BD_BIT(21),&decoded));
     assert(legacy("NBG5",11,BD_BIT(10),&decoded));
@@ -60,8 +63,12 @@ int main(void) {
     label(BD_POWER,.7456998716*300,0,"300.0 hp");
     label(BD_FUEL_VOLUME,49.582,1,"49.6 L");
     label(BD_FUEL_VOLUME,3.785411784,0,"1.0 US gal");
+    label(BD_REL_TORQUE_DDE,50.003968,0,"50.0%");
+    label(BD_REL_TORQUE_DDE,50.003968,1,"50.0%");
+    f.valid=BD_BIT(BD_REL_TORQUE_DDE); f.age_ms[BD_REL_TORQUE_DDE]=2000;
+    assert(bd_is_fresh(&f,BD_REL_TORQUE_DDE,499) && !bd_is_fresh(&f,BD_REL_TORQUE_DDE,500));
     assert(fabs(bd_display_value(BD_TORQUE,1.3558179483,0)-1)<1e-9);
     assert(bd_bar(BD_ADBLUE,50)==500 && bd_bar(BD_POWER,-10)==0 && bd_bar(BD_POWER,600)==1000);
-    puts("Extended gauges: NBG9 masks/length, old frames, labels/units, stable IDs and freshness OK");
+    puts("Extended gauges: NBGA masks/length, legacy NBG9, labels/units, stable IDs and freshness OK");
     return 0;
 }

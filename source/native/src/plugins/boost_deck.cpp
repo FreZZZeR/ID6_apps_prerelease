@@ -1,14 +1,13 @@
 // Native NBT EVO RA plugin. Models are touched only on the HMI dispatcher.
 // Network diagnostics run in the separate collector process, never in HmiMain3D.
 #include "plugin_factory.h"
-#include "hmi_state_activity.h"
 #include "gauge_core.h"
 #include "dial_scales.h"
 #include "diagnostic_worker.h"
 #include "diagnostic_gateway.h"
 #include "boost_preferences.h"
-#include "gauge_preferences.h"
 #include "boostdeck_assignments.h"
+#include "hmi_state_activity.h"
 #include "n57.h"
 #include <arpa/inet.h>
 #include <errno.h>
@@ -39,8 +38,8 @@ const unsigned kActivePollIntervalMs = 25u;
 const unsigned kIdlePollIntervalMs = 250u;
 const char kCollector[] = "/var/opt/hmi/data/ID5/Plugins/BoostDeck/boostdeck-collector-qnx";
 const char kPreferences[] = "/var/opt/hmi/data/ID5/BoostDeck.prefs";
-const unsigned kBarCount = kBoostDeckSlots;
-const unsigned kVerticalSlot = kBarCount;
+const unsigned kBarCount = 9;
+const unsigned kVerticalSlot = 8;
 const char* const kGaugeCaptions[][2] = {
 #define SIGNAL(id, name, lo, hi, unit, wide, narrow) {wide, narrow},
 #include "boost_signals.def"
@@ -84,16 +83,15 @@ class BoostDeck : public bmw::PluginApp {
     pid_t collector_;
     bool stopping_;
     bool gauges_visible_;
+    unsigned shown_,focused_,n57_index_;
     BoostPreferences preferences_;
     BoostAlerts alerts_;
     pid_t tone_;
     uint64_t last_tone_;
     unsigned alert_mask_;
-    unsigned shown_,focused_;
     uint64_t retry_at_;
     unsigned char signals_[2][kBarCount];
     bool diesel_;
-    unsigned n57_index_;
     bool hide_emissions_;
     unsigned editing_;
     void loadAssignments();
@@ -114,15 +112,15 @@ public:
               bmw::RHMIInterfaceVersion rhmi, const bmw::Bundle& cfg, const bmw::Bundle& res)
         : bmw::PluginApp(d,name,maj,mn,rhmi,cfg,res), fd_(-1), poll_generation_(0),
           received_(0), collector_(-1), stopping_(false), gauges_visible_(false),
-          tone_(-1), last_tone_(0), alert_mask_(0), shown_(0), focused_(0),
-          retry_at_(0), diesel_(false), n57_index_(0), hide_emissions_(false), editing_(kBarCount) {
+          shown_(0),focused_(0),n57_index_(0),tone_(-1), last_tone_(0), alert_mask_(0),
+          retry_at_(0), diesel_(false),hide_emissions_(false), editing_(kBarCount) {
         resetDisplay();
     }
     virtual ~BoostDeck() { shutdown(); }
     virtual bool onInit();
     virtual bool onFinalize() { shutdown(); return true; }
     virtual bool invokeDataUpdate(unsigned key, const bmw::Parcel& data);
-    template <unsigned Key> bool gaugeActivity(const bmw::Map<unsigned,bmw::Variant>& event);
+    template <unsigned Key> bool gaugeActivity(const bmw::Map<unsigned,bmw::Variant>&);
     template <unsigned Color> bool changeColor(const bmw::Parcel&) {
         BoostPreferences changed=preferences_;
         changed.color=Color;
@@ -165,8 +163,7 @@ public:
         return true;
     }
     template <unsigned Signal> bool changeGauge(const bmw::Parcel&) {
-        if (editing_<kBarCount && !boostDeckSignalHidden(Signal,diesel_,hide_emissions_,n57_index_!=0) &&
-            signals_[diesel_][editing_]!=Signal) {
+        if (editing_<kBarCount && !boostDeckSignalHidden(Signal,diesel_,hide_emissions_,n57_index_!=0) && signals_[diesel_][editing_]!=Signal) {
             unsigned char& selected=signals_[diesel_][editing_];
             const unsigned char before=selected;
             selected=Signal;
@@ -189,15 +186,11 @@ public:
         }
         return true;
     }
-    template <bool Hide> bool changeEmissions(const bmw::Parcel&) {
-        if (hide_emissions_!=Hide) {
-            hide_emissions_=Hide;
-            if (saveAssignments()) assignmentsChanged();
-            else {
-                hide_emissions_=!Hide;
-                updateModel(361u,bmw::BasicString<char>("Could not save gauge visibility"));
-            }
-        }
+    template <bool Hidden> bool hideEmissions(const bmw::Parcel&) {
+        const bool before=hide_emissions_;
+        hide_emissions_=Hidden;
+        if (saveAssignments()) assignmentsChanged();
+        else { hide_emissions_=before;updateModel(118u,bmw::BasicString<char>("Could not save emissions setting")); }
         return true;
     }
     void reapCollector() {
@@ -296,9 +289,9 @@ bool BoostDeck::onInit() {
     addHandler(502u,action);
     action.m_exec=&Action::execImpl<BoostDeck,&BoostDeck::changeProfile<true> >;
     addHandler(503u,action);
-    action.m_exec=&Action::execImpl<BoostDeck,&BoostDeck::changeEmissions<false> >;
+    action.m_exec=&Action::execImpl<BoostDeck,&BoostDeck::hideEmissions<true> >;
     addHandler(504u,action);
-    action.m_exec=&Action::execImpl<BoostDeck,&BoostDeck::changeEmissions<true> >;
+    action.m_exec=&Action::execImpl<BoostDeck,&BoostDeck::hideEmissions<false> >;
     addHandler(505u,action);
     typedef bool (*Editor)(void*,const bmw::Map<unsigned,bmw::Variant>&);
     static const Editor editors[] = {
@@ -353,21 +346,20 @@ void BoostDeck::startVisibleCollector() {
     const DiagnosticGateway gateway("/var/opt/hmi/data/ID5/Plugins/" "BoostDeck" "/gateway-ip.txt");
     bd_mask mask=boostDeckSelectionMask(signals_[diesel_],diesel_,hide_emissions_,n57_index_!=0);
     for (unsigned i=0;i<3;++i)
-        if (preferences_.choice[BOOST_COOLANT_ALERT+i]) mask |= BD_BIT(kAlertSignals[i]);
-    if (preferences_.choice[BOOST_OIL_PRESSURE_ALERT]) mask |= BD_BIT(BD_RPM);
+        if (preferences_.choice[BOOST_COOLANT_ALERT+i] &&
+            !boostDeckSignalHidden(kAlertSignals[i],diesel_,hide_emissions_,n57_index_!=0)) mask |= BD_BIT(kAlertSignals[i]);
+    if (preferences_.choice[BOOST_OIL_PRESSURE_ALERT] && (!diesel_ || !n57_index_)) mask |= BD_BIT(BD_RPM);
     if (!mask) return;
-    char selected[24];
+    char selected[24],pin[9];
     snprintf(selected,sizeof selected,"%llu",static_cast<unsigned long long>(mask));
     const char *args[]={kCollector,"--host",gateway.host(),"--session","--signals",selected,
-                       0,0,0,0,0};
-    char n57[7];
-    const unsigned index=diesel_ ? n57_index_file(ID6_N57_SETTINGS) : 0;
+                       0,0,0,0,0,0};
     unsigned next=6;
     if (mask & BD_BIT(BD_ETHANOL)) args[next++]="--ethanol";
     if (diesel_) args[next++]="--diesel";
-    if (index) {
-        snprintf(n57,sizeof n57,"%06X",index);
-        args[next++]="--n57-sgbd"; args[next]=n57;
+    if (diesel_ && n57_index_) {
+        snprintf(pin,sizeof pin,"%06X",n57_index_);
+        args[next++]="--n57-sgbd";args[next++]=pin;
     }
     collector_=launch(args,-1);
     retry_at_=bd_mono_ms()+2000;
@@ -412,7 +404,8 @@ void BoostDeck::updateAlerts(uint64_t now, uint64_t elapsed) {
         const unsigned signal=kAlertSignals[i];
         if (i==2 && received_ && bd_is_fresh(&frame_,BD_RPM,elapsed) && frame_.value[BD_RPM]<600)
             alerts_.reset(i);
-        const bool valid=received_ && bd_is_fresh(&frame_,signal,elapsed) &&
+        const bool valid=!boostDeckSignalHidden(signal,diesel_,hide_emissions_,n57_index_!=0) &&
+            received_ && bd_is_fresh(&frame_,signal,elapsed) &&
             (i!=2 || (bd_is_fresh(&frame_,BD_RPM,elapsed) && frame_.value[BD_RPM]>=600));
         bool entered=false;
         const uint64_t sample=valid && received_>frame_.age_ms[signal] ?
@@ -467,7 +460,7 @@ void BoostDeck::poll() {
     reapCollector();
     reapTone();
     startVisibleCollector();
-    // A bounded non-blocking drain: at most 8 packets per UI tick.
+    // A bounded non-blocking drain: at most 8 * 512 bytes per UI tick.
     char data[BD_MAX_PACKET];
     for (unsigned n=0;fd_>=0 && n<8;++n) {
         ssize_t k=recv(fd_,data,sizeof data,0);
@@ -489,28 +482,25 @@ void BoostDeck::loadAssignments() {
 
 void BoostDeck::updateAssignments() {
     for (unsigned i=0;i<kBarCount;++i) {
-        char name[64];
+        char name[128];
         snprintf(name,sizeof name,"Gauge %u: %s",i+1,bd_name(signals_[diesel_][i]));
         updateModel(340u+i,bmw::BasicString<char>(name));
         const unsigned signal=signals_[diesel_][i];
-        const unsigned components[]={260u+i,310u+i,280u+i};
-        for (unsigned j=0;j<3;++j) {
-            bmw::Parcel visible(!boostDeckSignalHidden(signal,diesel_,hide_emissions_,n57_index_!=0));
-            setProperty(components[j],3u,visible);
-        }
-        for (unsigned j=0;j<BD_COUNT;++j) if (boostDeckEmissionsSignal(j) || (n57_index_ && !n57_gauge_supported(j))) {
-            bmw::Parcel choice(!boostDeckSignalHidden(j,diesel_,hide_emissions_,n57_index_!=0));
-            setProperty(1001u+i*(BD_COUNT+1u)+j,3u,choice);
-        }
-        const char* caption=kGaugeCaptions[signal][0];
+        const char* caption=kGaugeCaptions[signal][i==kVerticalSlot];
         updateModel(370u+i,bmw::BasicString<char>(caption));
+        const unsigned parts[]={260u+i,310u+i,280u+i,290u+i};
+        bmw::Parcel visible(!boostDeckSignalHidden(signal,diesel_,hide_emissions_,n57_index_!=0));
+        for (unsigned part=0;part<4;++part) setProperty(parts[part],3u,visible);
+        for (unsigned candidate=0;candidate<BD_COUNT;++candidate) {
+            bmw::Parcel choice(!boostDeckSignalHidden(candidate,diesel_,hide_emissions_,n57_index_!=0));
+            setProperty(3500u+i*64u+candidate,3u,choice);
+        }
     }
-    updateModel(360u,bmw::BasicString<char>(diesel_ ?
-        (n57_index_ ? "Selected: N57 (experimental)" : "Selected: Diesel") : "Selected: Gasoline"));
-    updateModel(361u,bmw::BasicString<char>(hide_emissions_ ?
-        "Diesel emissions gauges: hidden" : "Diesel emissions gauges: shown"));
+    updateModel(360u,bmw::BasicString<char>(diesel_ ? (n57_index_ ? "Engine profile: N57" : "Engine profile: Diesel") : "Engine profile: Gasoline"));
     updateModel(5210u,!diesel_);
     updateModel(5211u,diesel_);
+    updateModel(5212u,hide_emissions_);
+    updateModel(5213u,!hide_emissions_);
     refresh();
 }
 
@@ -555,8 +545,7 @@ void BoostDeck::refresh() {
                      *unit && *unit!='%' ? " " : "",unit);
             const unsigned color=preferences_.color;
             const unsigned palette=color==kMulticolor ? kMulticolor+(i%8) : color;
-            const int fill=diesel_ && signal==BD_RAIL ?
-                static_cast<int>(fmax(0,fmin(1000,value*1000/2500))) : bd_bar(signal,value);
+            const int fill=bd_bar(signal,value);
             if (circular) {
                 const unsigned step=(fill*kCircularSteps+500)/1000;
                 dial+=1+palette*(kCircularSteps+1)+step;

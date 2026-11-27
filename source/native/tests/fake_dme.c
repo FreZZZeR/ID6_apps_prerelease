@@ -89,7 +89,8 @@ void fake_dme_give_registry_without_key(void)
 }
 
 /* informationProcessMessage, kind 2, flags 0: a report rather than a transmission status. */
-void fake_dme_deliver_payload(uint16_t fkt, const uint8_t *payload, size_t n)
+void fake_dme_deliver_message(uint8_t fb, uint8_t inst, uint8_t op, uint16_t fkt,
+                             const uint8_t *payload, size_t n)
 {
     pb_t p;
     p.n = 0;
@@ -98,15 +99,20 @@ void fake_dme_deliver_payload(uint16_t fkt, const uint8_t *payload, size_t n)
     p32(&p, 0);                      /* flags */
     p16(&p, 0x0101);                 /* target */
     p16(&p, 0x0301);                 /* source */
-    p.b[p.n++] = 0x06;               /* FBlock */
-    p.b[p.n++] = 0xF0;               /* instance */
+    p.b[p.n++] = fb;
+    p.b[p.n++] = inst;
     p16(&p, fkt);
-    p.b[p.n++] = 0x0C;               /* OpType */
+    p.b[p.n++] = op;
     p32(&p, 0x1234);                 /* client echo */
     p32(&p, (uint32_t)n);
     memcpy(p.b + p.n, payload, n);
     p.n += n;
     deliver(0x80000001u, &p);
+}
+
+void fake_dme_deliver_payload(uint16_t fkt, const uint8_t *payload, size_t n)
+{
+    fake_dme_deliver_message(0x06, 0xF0, 0x0C, fkt, payload, n);
 }
 
 void fake_dme_deliver_tunnel_reply(uint16_t fkt, const uint8_t *inner, size_t ilen)

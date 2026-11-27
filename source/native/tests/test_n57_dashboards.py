@@ -18,6 +18,16 @@ import power_graph_art as graph
 
 
 class N57DashboardTest(unittest.TestCase):
+    def test_digit_ink_fits_fixed_hmi_spacing_with_fallback_fonts(self):
+        for glyph in "0123456789- .":
+            image = layout.digit_image(glyph)
+            self.assertEqual(image.size, (52, 98))
+            bounds = image.getbbox()
+            if bounds:
+                self.assertLessEqual(bounds[2] - bounds[0], 34)
+                self.assertGreater(bounds[0], 0)
+                self.assertLess(bounds[2], 52)
+
     def test_value_freshness_and_canonical_bounds(self):
         self.compile_case("test_n57_dashboard_values.cpp")
 
@@ -118,7 +128,7 @@ class N57DashboardTest(unittest.TestCase):
         page = app.find("hmiStates/hmiState[@id='111']")
         self.assertEqual(page.get("text"), "PowerDeck - RPM curves")
         components = page.find("components")
-        self.assertEqual(len(components), 50)
+        self.assertEqual(len(components), 52)
         for series in range(2):
             for line in range(24):
                 index = series * 24 + line
@@ -127,10 +137,18 @@ class N57DashboardTest(unittest.TestCase):
                 properties = {int(item.get("id")): item.get("value") for item in image.findall("properties/property")}
                 self.assertEqual([int(properties[key]) for key in (20, 21, 9, 10)], [graph.SAVED_LEFT + line * graph.SAVED_STEP, 30, 64, 3])
         self.assertEqual(app.find("models/imageIdModel[@id='2499']").get("imageId"), "64300")
-        # Rasterized axes keep this state under the HMI's 64-component ceiling.
-        self.assertEqual([node.get("model") for node in components.findall("label")], ["2500"])
-        self.assertIsNone(app.find("models/raDataModel[@id='2510']"))
-        self.assertIsNone(app.find("models/raDataModel[@id='2520']"))
+        # Rasterized axes plus two dynamic peak labels stay under the 64-component ceiling.
+        self.assertEqual([node.get("model") for node in components.findall("label")],
+                         ["2500", "2510", "2520"])
+        self.assertIsNotNone(app.find("models/raDataModel[@id='2510']"))
+        self.assertIsNotNone(app.find("models/raDataModel[@id='2520']"))
+        for component, width, height in ((4190, 150, 34), (4191, 280, 26)):
+            peak = components.find(f"label[@id='{component}']")
+            properties = {int(item.get("id")): item.get("value")
+                          for item in peak.findall("properties/property")}
+            self.assertEqual([int(properties[key]) for key in (20, 21, 9, 10)],
+                             [graph.SAVED_LEFT, graph.SAVED_TOP, width, height])
+            self.assertEqual(properties[3], "false")
         footer = components.find("label[@id='4181']")
         properties = {int(item.get("id")): int(item.get("value")) for item in footer.findall("properties/property")
                       if item.get("id") in ("20", "21", "9", "10")}
@@ -190,17 +208,13 @@ class N57DashboardTest(unittest.TestCase):
             for left, right, color in ((graph.SAVED_RIGHT+22, graph.SAVED_RIGHT+51, red), (graph.SAVED_RIGHT+56, graph.SAVED_RIGHT+68, gray), (graph.SAVED_RIGHT+74, graph.SAVED_RIGHT+103, blue)):
                 pixels = image.crop((left, y - 9, right, y + 10)).getcolors(maxcolors=2048) or []
                 self.assertTrue(any(p[:3] == color[:3] and p[3] for _, p in pixels))
-            self.assertLess(font.getbbox(str(ps))[2], 30)
+            self.assertLessEqual(font.getbbox(str(ps))[2], layout.WIDTH-(graph.SAVED_RIGHT+74))
         # Paired labels derive PS from each kW major tick; no independent PS scale.
         self.assertEqual(graph.saved_power_ticks(400)[1], (50, 293))
         with self.assertRaises(ValueError):
             graph.saved_power_ticks(650)
-        # Cyrillic glyphs must be present in the selected bitmap font.
-        font = graph.shift_art.font(30)
-        for letter in "лс":
-            self.assertNotEqual(bytes(font.getmask(letter)), bytes(font.getmask("\uffff")))
         unit_image = dict(layout.own_bitmaps("PowerDeck"))[60008]
-        self.assertEqual(unit_image.tobytes(), layout.text_image((70, 32), "л.с.", 30, layout.MUTED).tobytes())
+        self.assertEqual(unit_image.tobytes(), layout.text_image((70, 32), "PS", 30, layout.MUTED).tobytes())
 
 
 if __name__ == "__main__":

@@ -21,3 +21,5 @@ N57_GAUGE(EGT_PRE_CAT, 0x44f2, 1)
 N57_GAUGE(ADBLUE, 0x5306, 1)
 N57_GAUGE(TORQUE, 0x48a5, 1)
 N57_GAUGE(POWER, 0x48a5, 1)
+/* Experimental CoETS_rTrq, not SAE calculated/absolute engine load. */
+N57_GAUGE(REL_TORQUE_DDE, 0x464c, 1)

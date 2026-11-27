@@ -10,7 +10,7 @@ class PowerDeck : public N57Dashboard {
     uint64_t graph_due_;
     enum { LineCount=PowerPlot::Segments*3 > PowerRpmPlot::Segments*2 ? PowerPlot::Segments*3 : PowerRpmPlot::Segments*2 };
     int line_image_[LineCount],line_y_[LineCount],line_height_[LineCount];
-    char graph_caption_[96];
+    char graph_caption_[192];
     char measurement_status_[64];
     const char* savedPath() const { return "/var/opt/hmi/data/ID5/PowerDeck.last.csv"; }
     void recordingChanged() {
@@ -89,6 +89,32 @@ class PowerDeck : public N57Dashboard {
             snprintf(graph_caption_,sizeof graph_caption_,"%s",text);
         }
     }
+    void graphPeak(unsigned series,const PowerRpmPlot& plot,bool show) {
+        const unsigned component=4190u+series, model=2510u+series*10u;
+        bmw::Parcel visible(show);
+        setProperty(component,3u,visible);
+        if (!show) {
+            updateModel(model,bmw::BasicString<char>(""));
+            return;
+        }
+        const int width=series ? 280 : 150;
+        int x=plot.peakX(series)-width/2;
+        const int right=PowerRpmPlot::Left+PowerRpmPlot::Segments*PowerRpmPlot::Step;
+        if (x<PowerRpmPlot::Left) x=PowerRpmPlot::Left;
+        if (x+width>right) x=right-width;
+        const int point=plot.peakY(series), height=series ? 26 : 34;
+        int y=series ? point+4 : point-height-4;
+        if (y<PowerRpmPlot::Top) y=point+4;
+        if (y+height>PowerRpmPlot::Top+PowerRpmPlot::Height) y=point-height-4;
+        if (y<PowerRpmPlot::Top) y=PowerRpmPlot::Top;
+        property(component,20u,static_cast<unsigned>(x));
+        property(component,21u,static_cast<unsigned>(y));
+        char text[48];
+        if (series) snprintf(text,sizeof text,"%.0f kW / %.0f PS",plot.drawnPeakKw,
+                             PowerRpmPlot::metricHorsepower(plot.drawnPeakKw));
+        else snprintf(text,sizeof text,"%.0f Nm",plot.drawnPeakNm);
+        updateModel(model,bmw::BasicString<char>(text));
+    }
     void drawLiveGraph(uint64_t now) {
         PowerPlot plot;
         plot.build(live_,now>20000 ? now-20000 : 0,now);
@@ -109,6 +135,7 @@ class PowerDeck : public N57Dashboard {
         graphCaption(2300u,caption);
     }
     void drawSavedGraph() {
+        if (*graph_caption_) return; /* The loaded CSV is immutable while review is open. */
         PowerRpmPlot plot;plot.build(saved_);
         for(unsigned series=0;series<2;++series) for(unsigned line=0;line<PowerRpmPlot::Segments;++line) {
             const unsigned i=series*PowerRpmPlot::Segments+line;
@@ -119,15 +146,23 @@ class PowerDeck : public N57Dashboard {
             }
             graphLine(i,4000u+i,2400u+i,asset,y,height);
         }
-        if (!*graph_caption_)
-            updateModel(2499u,bmw::ImageID(64300u));
-        char caption[96];
+        const bool drawable=plot.validRun && plot.drawableSegments()!=0;
+        graphPeak(0,plot,drawable);
+        graphPeak(1,plot,drawable && plot.drawnPeakKw<=plot.kwMax);
+        updateModel(2499u,bmw::ImageID(64300u));
+        char caption[192];
         if (!saved_.size()) snprintf(caption,sizeof caption,"No saved measurement");
         else if (!plot.validRun) snprintf(caption,sizeof caption,"Need a continuous rise in RPM");
         else if (!plot.drawableSegments()) snprintf(caption,sizeof caption,"Not enough RPM coverage");
-        else if (plot.peakKw>plot.kwMax) snprintf(caption,sizeof caption,"Power >400 kW | curve limited | %u samples",plot.sampleCount);
-        else snprintf(caption,sizeof caption,"RPM rise %.0f-%.0f | %u samples | calc. kW",
-                      saved_.at(plot.firstIndex).rpm,saved_.at(plot.lastIndex).rpm,plot.sampleCount);
+        else if (plot.peakKw>plot.kwMax)
+            snprintf(caption,sizeof caption,
+                     "Peaks: %.0f Nm @ %.0f RPM | %.0f kW / %.0f PS (off scale)",
+                     plot.peakNm,plot.peakNmRpm,plot.peakKw,
+                     PowerRpmPlot::metricHorsepower(plot.peakKw));
+        else snprintf(caption,sizeof caption,
+                      "Peaks: %.0f Nm @ %.0f RPM | %.0f kW / %.0f PS @ %.0f RPM",
+                      plot.peakNm,plot.peakNmRpm,plot.peakKw,
+                      PowerRpmPlot::metricHorsepower(plot.peakKw),plot.peakKwRpm);
         graphCaption(2500u,caption);
     }
     void drawGraph(uint64_t now) {
@@ -195,5 +230,5 @@ public:
 };
 
 extern "C" {
-PluginAppInfo pluginAppInfo={1,"PowerDeck","owner-development",1,create_app<PowerDeck>,destroy_app};
+PluginAppInfo pluginAppInfo={1,"PowerDeck","N57",1,create_app<PowerDeck>,destroy_app};
 }

@@ -2,7 +2,6 @@
 #include "gauge_core.h"
 #include "gauge_coexistence.h"
 #include "diagnostic_lease.h"
-#include "gauge_coexistence.h"
 #include "diag_link.h"
 #include "n57.h"
 #include <arpa/inet.h>
@@ -23,9 +22,6 @@ static unsigned number(const char *s, unsigned lo, unsigned hi) {
     if (!*s || *end || n < lo || n > hi) { fprintf(stderr, "Invalid number: %s\n", s); exit(2); }
     return (unsigned)n;
 }
-
-
-
 #include "most/dsi_client.h"
 #include "most/most_link.h"
 
@@ -163,7 +159,7 @@ static void read_n57_profile(struct diag_link *link, bd_frame *f, uint64_t *obse
         /* A recorded power triple must come from the same complete torque/RPM pair. */
         if (paired && (slot==BD_RPM || slot==BD_TORQUE)) continue;
         due[slot]=now+(slot==BD_BOOST || slot==BD_RPM || slot==BD_SPEED ||
-                      slot==BD_TORQUE || slot==BD_POWER ? 250 : 2000);
+                      slot==BD_TORQUE || slot==BD_POWER || slot==BD_REL_TORQUE_DDE ? 250 : 2000);
         f->valid &= ~BD_BIT(slot);
         if (paired && slot==BD_POWER) f->valid &= ~power_pair;
         rc=slot==BD_TRANS ? read_did(link,0x18,0xda12,&value) :
@@ -188,7 +184,7 @@ static void read_n57_profile(struct diag_link *link, bd_frame *f, uint64_t *obse
         if (rc<0) { diag_link_end(link,0); diag_link_drop(link); return; }
         if (rc==1) {
             f->value[slot]=value/map[pos].divisor;
-            observed[slot]=slot==BD_BOOST || slot==BD_POWER || diag_link_on_most(link) ? now : bd_mono_ms();
+            observed[slot]=slot==BD_BOOST || slot==BD_POWER || slot==BD_REL_TORQUE_DDE || diag_link_on_most(link) ? now : bd_mono_ms();
             f->valid |= BD_BIT(slot);
             if (slot!=BD_TRANS) complete=1;
         }

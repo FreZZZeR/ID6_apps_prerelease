@@ -34,6 +34,8 @@ static void noDataAndReset() {
     assert(!plot.validRun && !plot.sampleCount && !plot.drawableSegments());
     for (unsigned i=0;i<PowerRpmPlot::Points;++i) assert(!plot.valid[i]);
     assert(plot.nmMax==1000 && plot.kwMax==400 && !plot.peakNm && !plot.peakKw);
+    assert(!plot.peakNmRpm && !plot.peakKwRpm);
+    assert(!plot.drawnPeakNm && !plot.drawnPeakKw);
 }
 
 static void fixedAxisAndSparseInterpolation() {
@@ -51,6 +53,7 @@ static void fixedAxisAndSparseInterpolation() {
     assert(plot.rpmMin==0 && plot.rpmMax==6000);
     assert(plot.nmMax==1000 && plot.kwMax==400);
     assert(near(plot.peakNm,550) && near(plot.peakKw,history.at(1).kw));
+    assert(near(plot.peakNmRpm,5000) && near(plot.peakKwRpm,5000));
     assert(plot.drawableSegments()==16);
     for (unsigned i=0;i<PowerRpmPlot::Points;++i) assert(plot.valid[i]==(i>=4 && i<=20));
     assert(near(plot.columns[12].rpm,3000));
@@ -227,6 +230,35 @@ static void powerAxisAndMetricHorsepower() {
     assert(plot.kwMax==400 && plot.peakKw>225 && plot.peakKw<250);
 }
 
+static void peakLocationsUseRawSamples() {
+    PowerHistory history;
+    add(history,1000,1000,400);
+    add(history,2000,2000,600);
+    add(history,3000,3000,600);
+    add(history,4000,4000,500);
+    PowerRpmPlot plot;
+    plot.build(history);
+    assert(plot.validRun && near(plot.peakNm,600) && near(plot.peakNmRpm,3000));
+    assert(near(plot.peakKw,history.at(3).kw) && near(plot.peakKwRpm,4000));
+    assert(plot.peakX(0)==PowerRpmPlot::Left+12*PowerRpmPlot::Step);
+    assert(plot.peakX(1)==PowerRpmPlot::Left+16*PowerRpmPlot::Step);
+    assert(plot.peakY(0)==150);
+    assert(plot.peakY(1)>=172 && plot.peakY(1)<=174);
+}
+
+static void offGridRawSpikeDoesNotFloatLabel() {
+    PowerHistory history;
+    add(history,1000,3000,200);
+    add(history,2000,3125,900);
+    add(history,3000,3250,200);
+    PowerRpmPlot plot;
+    plot.build(history);
+    assert(plot.validRun && near(plot.peakNm,900) && near(plot.peakNmRpm,3125));
+    assert(near(plot.drawnPeakNm,200) && near(plot.drawnPeakNmRpm,3250));
+    assert(plot.peakX(0)==PowerRpmPlot::Left+13*PowerRpmPlot::Step);
+    assert(plot.peakY(0)==270); /* Label belongs to the visible 200-Nm line. */
+}
+
 int main() {
     noDataAndReset();
     fixedAxisAndSparseInterpolation();
@@ -237,5 +269,7 @@ int main() {
     tinySpanDoesNotExtrapolate();
     fullHistoryRemainsOneRun();
     powerAxisAndMetricHorsepower();
+    peakLocationsUseRawSamples();
+    offGridRawSpikeDoesNotFloatLabel();
     puts("Saved RPM plot: truthful pull, fixed 400 kW, metric PS, over-range gap and no extrapolation OK");
 }

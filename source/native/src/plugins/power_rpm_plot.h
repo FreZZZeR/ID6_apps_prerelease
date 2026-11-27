@@ -5,12 +5,13 @@
 
 /* A saved chart represents one acceleration run, without joining separate pulls. */
 struct PowerRpmPlot {
-    enum { Points=25, Segments=24, Height=300, Top=30 };
+    enum { Points=25, Segments=24, Height=300, Top=30, Left=70, Step=42 };
     bool validRun;
     unsigned firstIndex,lastIndex,sampleCount;
     uint64_t startMs,endMs;
     unsigned rpmMin,rpmMax,nmMax,kwMax;
-    double peakNm,peakKw;
+    double peakNm,peakKw,peakNmRpm,peakKwRpm;
+    double drawnPeakNm,drawnPeakKw,drawnPeakNmRpm,drawnPeakKwRpm;
     bool valid[Points];
     PowerPoint columns[Points];
 
@@ -44,8 +45,14 @@ struct PowerRpmPlot {
         startMs=history.at(firstIndex).ms;
         endMs=history.at(lastIndex).ms;
         for (unsigned i=firstIndex;i<=lastIndex;++i) {
-            if (history.at(i).nm>peakNm) peakNm=history.at(i).nm;
-            if (history.at(i).kw>peakKw) peakKw=history.at(i).kw;
+            if (history.at(i).nm>=peakNm) {
+                peakNm=history.at(i).nm;
+                peakNmRpm=history.at(i).rpm;
+            }
+            if (history.at(i).kw>=peakKw) {
+                peakKw=history.at(i).kw;
+                peakKwRpm=history.at(i).rpm;
+            }
         }
         for (unsigned column=0;column<Points;++column) {
             const double rpm=static_cast<double>(rpmMax)*column/Segments;
@@ -69,6 +76,17 @@ struct PowerRpmPlot {
             columns[column]=value;
             valid[column]=true;
         }
+        for (unsigned column=0;column<Points;++column) {
+            if (!valid[column]) continue;
+            if (columns[column].nm>=drawnPeakNm) {
+                drawnPeakNm=columns[column].nm;
+                drawnPeakNmRpm=columns[column].rpm;
+            }
+            if (columns[column].kw>=drawnPeakKw) {
+                drawnPeakKw=columns[column].kw;
+                drawnPeakKwRpm=columns[column].rpm;
+            }
+        }
     }
 
     unsigned drawableSegments() const {
@@ -85,13 +103,26 @@ struct PowerRpmPlot {
         return true;
     }
 
+    int peakX(unsigned series) const {
+        double rpm=series ? drawnPeakKwRpm : drawnPeakNmRpm;
+        if (rpm<0) rpm=0;
+        if (rpm>rpmMax) rpm=rpmMax;
+        return Left+static_cast<int>(rpm*Segments*Step/rpmMax+.5);
+    }
+
+    int peakY(unsigned series) const {
+        PowerPoint peak={0,0,drawnPeakNm,drawnPeakKw};
+        return Top+y(peak,series);
+    }
+
 private:
     void reset() {
         validRun=false;
         firstIndex=lastIndex=sampleCount=0;
         startMs=endMs=0;
         rpmMin=0; rpmMax=6000; nmMax=1000; kwMax=400;
-        peakNm=peakKw=0;
+        peakNm=peakKw=peakNmRpm=peakKwRpm=0;
+        drawnPeakNm=drawnPeakKw=drawnPeakNmRpm=drawnPeakKwRpm=0;
         for (unsigned i=0;i<Points;++i) {
             valid[i]=false;
             PowerPoint empty={0,0,0,0};

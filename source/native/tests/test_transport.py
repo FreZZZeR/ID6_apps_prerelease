@@ -138,7 +138,7 @@ class TransportTest(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stderr)
             packets = [udp.recv(2048).decode().split() for _ in range(cycles)]
             packet = packets[-1]
-            self.assertEqual(packet[0], "NBG9")
+            self.assertEqual(packet[0], "NBGA")
             self.assertGreater(int(packet[4]), 0)
             t.join(2)
             self.assertFalse(t.is_alive())
@@ -168,7 +168,7 @@ class TransportTest(unittest.TestCase):
     def test_fast_channels_and_staggered_slow_updates(self):
         packet, requests, trace = self.run_collector("paced", ("--trace",), cycles=32)
         self.assertEqual(int(packet[3]), 255)
-        self.assertEqual(len(packet), 85)  # five header fields, value and age for all40 signals
+        self.assertEqual(len(packet), 87)  # five header fields, value and age for all41 signals
         self.assertNotIn(bytes.fromhex("f4120152"), requests)
         # Correct for host timer coalescing in the mock gateway. Keep the same
         # collector budget at the intended delay, including the slow DID reads.
@@ -441,7 +441,7 @@ class TransportTest(unittest.TestCase):
             r = subprocess.run([BIN, "--demo", "--cycles", "1", "--udp-port", str(udp.getsockname()[1])],
                                capture_output=True, timeout=2)
             self.assertEqual(r.returncode, 0)
-            self.assertEqual(udp.recv(2048).decode().split()[2:4], ["1", str((1 << 40) - 1)])  # demo marks all40 signals valid
+            self.assertEqual(udp.recv(2048).decode().split()[2:4], ["1", str((1 << 41) - 1)])  # demo marks all41 signals valid
         r = subprocess.run([BIN, "--demo", "--host", "127.0.0.1"], capture_output=True)
         self.assertEqual(r.returncode, 2)
 

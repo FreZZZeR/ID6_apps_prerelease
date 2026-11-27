@@ -38,7 +38,14 @@ int main() {
     assert(!n57DashboardPacket(packet,length,999,0,parsed));
     assert(!n57DashboardPacket(packet,length,1100,1001,parsed));
     packet[3]='8'; assert(!n57DashboardPacket(packet,length,1100,0,parsed));
+    packet[3]='A';
+    /* A real old NBG9 has 40 fields, not a relabelled 41-field NBGA. */
+    char* tail=strrchr(packet,' '); assert(tail); *tail=0;
+    tail=strrchr(packet,' '); assert(tail); *tail=0;
+    assert(!n57DashboardPacket(packet,strlen(packet),1100,0,parsed));
     packet[3]='9';
+    assert(n57DashboardPacket(packet,strlen(packet),1100,1000,parsed));
+    assert(!(parsed.valid & BD_BIT(BD_REL_TORQUE_DDE)));
     frame.demo=1; length=bd_encode(&frame,packet,sizeof packet);
     assert(!n57DashboardPacket(packet,length,1100,0,parsed));
     frame.demo=0; frame.sent_ms=0; length=bd_encode(&frame,packet,sizeof packet);

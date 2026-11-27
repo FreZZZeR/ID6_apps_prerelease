@@ -98,6 +98,8 @@
       <imageIdModel id="2047" imageId="61387" />
       <imageIdModel id="2499" imageId="64300" />
       <raDataModel id="2500" modelType="Richtext" />
+      <raDataModel id="2510" modelType="Richtext" />
+      <raDataModel id="2520" modelType="Richtext" />
       <imageIdModel id="2400" imageId="64202" />
       <imageIdModel id="2401" imageId="64202" />
       <imageIdModel id="2402" imageId="64202" />
@@ -1510,6 +1512,26 @@
               <property id="10" value="50" />
               <property id="2" value="false" />
               <property id="3" value="true" />
+            </properties>
+          </label>
+          <label id="4190" model="2510">
+            <properties>
+              <property id="20" value="70" />
+              <property id="21" value="30" />
+              <property id="9" value="150" />
+              <property id="10" value="34" />
+              <property id="2" value="false" />
+              <property id="3" value="false" />
+            </properties>
+          </label>
+          <label id="4191" model="2520">
+            <properties>
+              <property id="20" value="70" />
+              <property id="21" value="30" />
+              <property id="9" value="280" />
+              <property id="10" value="26" />
+              <property id="2" value="false" />
+              <property id="3" value="false" />
             </properties>
           </label>
         </components>

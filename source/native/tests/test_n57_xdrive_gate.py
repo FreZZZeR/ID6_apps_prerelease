@@ -1,6 +1,7 @@
 """Keep pinned N57 xDrive controls inside the verified DSC/LMV profile. Host only."""
 import os
 import subprocess
+import time
 import unittest
 
 import test_drive_apps
@@ -69,6 +70,34 @@ class N57XDriveGateTest(unittest.TestCase):
             with self.subTest(value=value):
                 self.assertIn("Needs engine running, stationary, and confirmed Park.",
                               self.run_control(tx, targets, value=value))
+
+    def test_pinned_n57_write_requires_a_fresh_atomic_drive_snapshot(self):
+        class Delayed(list):
+            def __iter__(self):
+                time.sleep(.45)
+                return super().__iter__()
+
+        for stale in (False, True):
+            for value in (0, 1):
+                with self.subTest(stale=stale, value=value):
+                    tx, targets = self.fseries()
+                    tx += [("22f190", ["62f190" + VIN.encode().hex()]),
+                           ("22f150", ["62f1500f14b0"]), ("224306", ["62430608"]),
+                           ("22da27", ["62da27000100000000"]), ("22f150", ["62f150" + INDEX]),
+                           ("2c03f303", Delayed(["6c03f303"]) if stale else ["6c03f303"]),
+                           ("2c01f303595501024c140102", Delayed(["6c01f303"]) if stale else ["6c01f303"]),
+                           ("22f303", ["62f30305220000"])]
+                    targets += ["12", "18", "18", "18", "12", "12", "12", "12"]
+                    if not stale:
+                        tx += [("2edbe1%02x" % value, ["6edbe1"]),
+                               ("224002", ["62400209c4" + ("20" if value else "28") + "0f"])]
+                        targets += ["29", "19"]
+                    result = self.run_control(tx, targets, value=value)
+                    if stale:
+                        # Each reply meets its own timeout; the combined Park snapshot is too old.
+                        self.assertIn("Needs engine running, stationary, and confirmed Park.", result)
+                    else:
+                        self.assertEqual(result, "Transfer case confirms %s.\n" % ("AWD" if value else "RWD"))
 
     def test_invalid_dde_pin_never_opens_diagnostics(self):
         for pin in ("000000", "0x1234", "010203x"):

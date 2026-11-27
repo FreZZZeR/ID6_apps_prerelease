@@ -12,7 +12,7 @@
 #include <sys/socket.h>
 #include <sys/wait.h>
 
-/* Shared lifecycle for the two small N57-only dashboards. Diagnostic requests
+/* PowerDeck lifecycle. Diagnostic requests
  * remain in the existing collector, including its identity check and lease. */
 class N57Dashboard : public bmw::PluginApp {
     const char* worker_;
@@ -59,7 +59,7 @@ class N57Dashboard : public bmw::PluginApp {
         retry_at_=bd_mono_ms()+2000;
         if (n57_settings(&index)!=1) return;
         const DiagnosticGateway gateway(gateway_);
-        char selected[24], pin[7], port[6];
+        char selected[24], pin[9], port[6];
         snprintf(selected,sizeof selected,"%llu",static_cast<unsigned long long>(mask_));
         snprintf(pin,sizeof pin,"%06X",index);
         snprintf(port,sizeof port,"%u",port_);

@@ -14,14 +14,10 @@ These are the reference Gen 1 B58/340i candidates in the current source. They ar
 | Coolant temperature | DME `12` | `4300`, OBD `01 05` fallback | Two big-endian bytes, raw ÷ 10 − 273.15 °C. OBD fallback is one byte minus 40 °C. |
 | ShiftDeck RPM | DME `12` | OBD `01 0C` | Two big-endian bytes ÷ 4. |
 | ShiftDeck speed | DME `12` | OBD `01 0D` | One byte in km/h, displayed in mph. |
-| N57 ShiftDeck / LaunchDeck | DDE `12` | Dynamic 5955 / 4C14 | Explicit verified DDE pin; RPM raw ÷ 2 and speed raw × 2289 ÷ 500000 km/h. Current ShiftDeck groups both values in one F303 read; LaunchDeck remains speed-only. This new grouped path is not yet vehicle-validated. |
-| N57 HUD Gauges | DDE `12` | Dynamic 5955, 4841, 4CF0 | RPM plus absolute-minus-ambient pressure in hPa, converted to PSI. Park requires exact zero dynamic 4C14 speed and verified EGS 0F14B0 with selector 4306=P and DA27 confirmation; DA2E is actual gear on this EGS. |
 | Oil temperature | DME `12` | OBD `01 5C` | One byte, raw − 40 °C. Values above 170 °C are rejected. Read with `--extended`. |
 | Battery voltage | DME `12` | OBD `01 42` | Two big-endian bytes ÷ 1000 V (control module voltage). Accepted from 6 to 18 V. Read with `--extended`. |
 
 The two `--extended` channels are standard SAE J1979 PIDs, not BMW DIDs. On an F22 M240i (B58 Gen 1, `NBTevo_S19322I`) at idle the DME answered `01 5C` with `94` (108 °C) and `01 42` with `39 F8` (14.84 V), consistent with the car. On the same car the DME's `01 46` ambient (32 °C against 23 °C on the cluster) and `01 2F` fuel level (78 % against a full gauge) did not match the cluster, so they are not used.
-
-For the pinned N57 profile, use the [data-availability matrix](N57-DATA.md): it separates channel implementation, functional no-ENET observations and unverified calibration. DDE `0F1F70` / EGS `0F14B0` are one observed configuration, not a universal compatibility entry. The table above otherwise describes the generic reference profiles.
 
 The worker enforces data length, plausibility limits, and freshness. BoostDeck keeps a fresh BMW coolant reading when available and uses standard OBD coolant when it is unavailable. In [the F87 S55 capture](https://github.com/inotbarnacle/ID6_apps_prerelease/issues/66), the standard PID returned 82 °C and the BMW DID returned one data byte, which the reference decoder rejects. [Request table](../native/src/workers/boost_deck_worker.c) · [Decoder](../native/src/common/gauge_core.c)
 
@@ -42,7 +38,7 @@ Oil temperature (`01 5C`) and module voltage (`01 42`) were checked on the F22 M
 
 The original nine dashboard positions can also select spark advance (`0E`), absolute load (`43`), short- and long-term fuel trims for banks 1 and 2 (`06`–`09`), commanded lambda (`44`), bank 1 sensor 1 catalyst temperature (`3C`), and commanded throttle (`4C`). These are standardized OBD readings where the ECU reports them. MHD's full logging catalog varies by DME and tune, and the official app also accepts tuner-supplied custom channel definitions. A name from the logger does not establish the request, byte layout, or scale for an ID6 gauge.
 
-The Diesel profile uses `01 05` coolant, `01 0F` intake air, `01 23` direct-injection rail gauge pressure, and `01 0B` manifold pressure minus `01 33` ambient pressure for boost. It retains the existing EGS transmission-temperature query over HSFZ. AFR, timing, oil pressure, and active ethanol require separate DDE-specific evidence. The standard PIDs can also be selected individually where available. Generic OBD support must be checked for each DDE; the available N57 observations do not establish it for other engines. Selecting Diesel with a valid verified shared N57 pin activates the [N57 dynamic-DID profile](N57.md), including supported DPF, EGT, AdBlue, DDE torque and calculated power channels. Without that setting the generic Diesel path is retained; an invalid existing pin blocks N57 collection. Unsupported N57 choices are hidden through the shared source map, with no mode-01 substitution.
+The Diesel profile uses `01 05` coolant, `01 0F` intake air, `01 23` direct-injection rail gauge pressure, and `01 0B` manifold pressure minus `01 33` ambient pressure for boost. It retains the existing EGS transmission-temperature query over HSFZ. AFR, timing, oil pressure, and active ethanol require separate DDE-specific evidence. The standard PIDs can also be selected individually where available. A B47 or N57 parked capture is still needed to verify what each DDE supports.
 
 
 ## MHD+ setting display

@@ -42,6 +42,8 @@ static int exchange(int fd, unsigned ecu, const unsigned char *uds, unsigned uds
 #define ID6_XDRIVE_OWNER "/var/opt/hmi/data/ID5/xdrive-owner-vin.txt"
 #endif
 static unsigned n57_index;
+static uint64_t parked_at;
+enum { N57_PARK_SNAPSHOT_MS=750 };
 
 static int n57_fd_exchange(void *ctx, unsigned ecu, const unsigned char *req, unsigned n,
                             const unsigned char *prefix, unsigned pn, unsigned char *reply,
@@ -121,10 +123,11 @@ static int parked(int fd, int running) {
     unsigned negative;
     if (running && n57_index) {
         double speed, rpm_value;
+        parked_at=bd_mono_ms();
         return n57_park(n57_fd_exchange,&fd)==1 &&
                n57_match(n57_fd_exchange,&fd,n57_index)==1 &&
-               n57_read(n57_fd_exchange,&fd,0x5955,&rpm_value)==1 && rpm_value>0 &&
-               n57_read(n57_fd_exchange,&fd,0x4c14,&speed)==1 && speed==0;
+               n57_read_drive(n57_fd_exchange,&fd,&rpm_value,&speed)==1 &&
+               rpm_value>0 && speed==0 && bd_mono_ms()-parked_at<=N57_PARK_SNAPSHOT_MS;
     }
     // Preserve the separate upstream reference profile; never use its gear read for pinned N57.
     if (!(exchange(fd,0x18,gear,3,gear_ack,3,reply,sizeof reply,350,&negative)==5 && reply[3]==0 && reply[4]==(running ? 1 : 6))) return 0;
@@ -186,6 +189,9 @@ static void control(int fd, const char *mode, unsigned value) {
     {
         const unsigned char request[]={0x2e,0xdb,0xe1,(unsigned char)value}, ack[]={0x6e,0xdb,0xe1};
         const struct timespec pause={0,250000000};
+        if (n57_index && bd_mono_ms()-parked_at>N57_PARK_SNAPSHOT_MS) {
+            puts("Park/drive snapshot expired. No mode change sent."); return;
+        }
         n=exchange(fd,0x29,request,4,ack,3,reply,sizeof reply,2400,&negative);
         if (n==-2) { printf("DSC refused this request (NRC %02X).\n",negative); return; }
         // DSC_25 acknowledged after more than 2 s on the car, so read back even without an ack.

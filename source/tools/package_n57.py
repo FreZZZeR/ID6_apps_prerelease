@@ -7,17 +7,11 @@ from pathlib import Path
 import stat
 import struct
 import subprocess
-import sys
-import tempfile
 import xml.etree.ElementTree as ET
 from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED
 
 ROOT = Path(__file__).resolve().parents[2]
 NATIVE = ROOT / "source/native"
-sys.path.insert(0, str(ROOT / "source/tools"))
-import extend_shift_n57
-import make_boostdeck_extended
-import make_engine_codes_layout
 
 # Unrelated tuning, lighting and game menus are not part of the N57 bundle.
 APPS = {
@@ -27,12 +21,11 @@ APPS = {
     "EngineCodes": ("core", "dashboard", "engine-codes-qnx", 102),
     "PowerDeck": ("core", None, "boostdeck-collector-qnx", 121),
     "XDriveControl": ("optional", "xdrive", "xdrive-control-qnx", 112),
-    "HudTest": ("optional", "hud-gauges", "hud-shape-qnx", 107),
 }
 
 
 def app_resources(app):
-    """Use current generators; never silently ship an old upstream layout bitmap."""
+    """Use regenerated resources when present, retaining the upstream layout."""
     _, package, _, _ = APPS[app]
     files = {}
     if package:
@@ -44,23 +37,14 @@ def app_resources(app):
         if source.exists():
             files[source.name] = source.read_bytes()
     archive = app + "_ALL_Images.zip"
-    if app in ("BoostDeck", "ShiftDeck", "EngineCodes"):
-        generator = {"BoostDeck": make_boostdeck_extended, "ShiftDeck": extend_shift_n57,
-                     "EngineCodes": make_engine_codes_layout}[app]
-        with tempfile.TemporaryDirectory() as directory:
-            original, updated = Path(directory) / "original.zip", Path(directory) / "updated.zip"
-            original.write_bytes(files[archive])
-            generator.update_images(original, updated)
-            files[archive] = updated.read_bytes()
-    elif app in ("LaunchDeck", "PowerDeck"):
-        if app == "LaunchDeck":
-            import launch_art
-            bitmaps = launch_art.assets().items()
-        else:
-            import make_n57_dashboards
-            bitmaps = list(make_n57_dashboards.own_bitmaps(app))
-            import power_graph_art
-            bitmaps += list(power_graph_art.bitmaps())
+    generated = NATIVE / "manifests" / archive
+    if generated.is_file():
+        files[archive] = generated.read_bytes()
+    elif app == "PowerDeck":
+        import make_n57_dashboards
+        bitmaps = list(make_n57_dashboards.own_bitmaps(app))
+        import power_graph_art
+        bitmaps += list(power_graph_art.bitmaps())
         output = BytesIO()
         with ZipFile(output, "w", ZIP_DEFLATED) as images:
             for identifier, bitmap in sorted(bitmaps):
@@ -142,8 +126,6 @@ def verify_zip(path):
             files = {n[len(base):]: z.read(n) for n in names if n.startswith(base)}
             verify_checksums(files)
             validate_app(files, app, worker, connector)
-            if app == "HudTest" and files.get("hud-enabled") != b"0\n":
-                raise ValueError("HUD must be disabled in the initial package")
             if not (z.getinfo(base + worker).external_attr >> 16) & stat.S_IXUSR:
                 raise ValueError("Worker is not executable: " + app)
         forbidden = {"xdrive-owner-vin.txt", "gateway-ip.txt", "n57-sgbd.txt",
@@ -152,7 +134,7 @@ def verify_zip(path):
             raise ValueError("Private library or active vehicle setting in ZIP")
 
 
-def assemble(output, binaries, build_info, hud_license):
+def assemble(output, binaries, build_info):
     commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
     if subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT, text=True).strip():
         raise ValueError("Commit source changes before labelling a package")
@@ -160,41 +142,31 @@ def assemble(output, binaries, build_info, hud_license):
     native_tree = subprocess.check_output(["git", "rev-parse", "HEAD:source/native"], cwd=ROOT, text=True).strip()
     if info["source_commit"] != commit or info["native_tree"] != native_tree or info["car_access"] is not False:
         raise ValueError("Build report must describe the current offline source commit")
-    label = "ID6-N57-" + commit[:7] + "-local-candidate"
+    label = "iDriveDeck-N57-" + commit[:7] + "-local-candidate"
     output.mkdir(parents=True, exist_ok=True)
     dest = output / (label + ".zip")
     if dest.exists():
         raise FileExistsError(dest)
     payload = {}
     executable = set()
-    with tempfile.TemporaryDirectory() as temporary:
-        tmp = Path(temporary)
-        for app, (group, package, worker, connector) in APPS.items():
-            files = app_resources(app)
-            for name in ("lib" + app + ".so", worker):
-                files[name] = (binaries / name).read_bytes()
-                if hashlib.sha256(files[name]).hexdigest() != info["binaries"][name]:
-                    raise ValueError("Binary differs from build report: " + name)
-            if app == "HudTest":
-                files["hud-enabled"] = b"0\n"
-            files.pop("SHA256SUMS", None)
-            validate_app(files, app, worker, connector)
-            files["SHA256SUMS"] = checksums(files)
-            base = group + "/" + app + "/"
-            payload.update({base + n: data for n, data in files.items()})
-            executable.add(base + worker)
-    payload["INSTALL.ru.md"] = (ROOT / "source/docs/INSTALL-N57.ru.md").read_bytes()
-    for doc in ("N57.md", "N57-DATA.md", "N57-UPDATE.ru.md", "MOST.md", "BUILD.md", "PORTING.md", "SIGNALS.md", "INSTALL-N57.ru.md"):
+    for app, (group, _, worker, connector) in APPS.items():
+        files = app_resources(app)
+        for name in ("lib" + app + ".so", worker):
+            files[name] = (binaries / name).read_bytes()
+            if hashlib.sha256(files[name]).hexdigest() != info["binaries"][name]:
+                raise ValueError("Binary differs from build report: " + name)
+        files.pop("SHA256SUMS", None)
+        validate_app(files, app, worker, connector)
+        files["SHA256SUMS"] = checksums(files)
+        base = group + "/" + app + "/"
+        payload.update({base + n: data for n, data in files.items()})
+        executable.add(base + worker)
+    payload["INSTALL.md"] = (ROOT / "source/docs/N57.md").read_bytes()
+    for doc in ("N57.md", "MOST.md", "BUILD.md", "PORTING.md", "SIGNALS.md"):
         payload["docs/" + doc] = (ROOT / "source/docs" / doc).read_bytes()
     for name in ("LICENSE", "NOTICE"):
         payload["licenses/nbtevo-diag-" + name] = (ROOT / "source/third_party/nbtevo-diag" / name).read_bytes()
-    payload["licenses/NBT-AAD-PolyForm-Noncommercial.md"] = hud_license.read_bytes()
-    payload["licenses/NOTICE.txt"] = (
-        "Required Notice: Copyright (c) 2026 nanaisu - NBT-AAD "
-        "(https://github.com/Sq00ky/Supra-iDrive6-Android-Auto)\n"
-        "HUD reference: 47ff0ae89712f2b5cbfe743cc8b7ff413ed235cc.\n"
-        "ID6 Apps source: https://github.com/FreZZZeR/ID6_apps_prerelease/tree/" + commit + "\n"
-    ).encode()
+    payload["licenses/iDriveDeck-LICENSE"] = (ROOT / "source/LICENSE").read_bytes()
     payload["config/n57-sgbd.txt.example"] = b"0F1F70\n"
     payload["BUILD-INFO.json"] = json.dumps(info, indent=2).encode() + b"\n"
     payload["SHA256SUMS"] = checksums(payload)
@@ -215,6 +187,5 @@ if __name__ == "__main__":
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--binaries", type=Path, default=NATIVE / "out")
     parser.add_argument("--build-info", type=Path, required=True)
-    parser.add_argument("--hud-license", type=Path, required=True)
     args = parser.parse_args()
-    print(assemble(args.output, args.binaries, args.build_info, args.hud_license))
+    print(assemble(args.output, args.binaries, args.build_info))

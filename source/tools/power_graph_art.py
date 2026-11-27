@@ -43,7 +43,7 @@ def saved_background(kw_max):
     draw.text((right, 0), "Power", font=shift_art.font(22), fill=SAVED_COLORS[1], anchor="rt")
     draw.text((SAVED_RIGHT + 50, 0), "kW", font=shift_art.font(20), fill=SAVED_COLORS[1], anchor="rt")
     draw.text((SAVED_RIGHT + 62, 0), "/", font=shift_art.font(20), fill="#a9b9c9", anchor="mt")
-    draw.text((SAVED_RIGHT + 74, 0), "л.с.", font=shift_art.font(20), fill=SAVED_COLORS[0])
+    draw.text((SAVED_RIGHT + 74, 0), "PS", font=shift_art.font(20), fill=SAVED_COLORS[0])
     for torque in range(0, 1001, 100):
         y = SAVED_TOP + SAVED_HEIGHT * (1000 - torque) // 1000
         draw.line((SAVED_LEFT, y, right, y), fill="#344455")
@@ -141,6 +141,8 @@ def augment(app):
 
     ET.SubElement(models, "imageIdModel", id="2499", imageId=str(SAVED_BACKGROUND_BASE))
     ET.SubElement(models, "raDataModel", id="2500", modelType="Richtext")
+    ET.SubElement(models, "raDataModel", id="2510", modelType="Richtext")
+    ET.SubElement(models, "raDataModel", id="2520", modelType="Richtext")
     for line in range(2 * (SAVED_POINTS - 1)):
         ET.SubElement(models, "imageIdModel", id=str(2400 + line), imageId=str(SAVED_EMPTY))
     page = ET.SubElement(states, "hmiState", id="111", parentId="100", text="PowerDeck - RPM curves")
@@ -154,3 +156,7 @@ def augment(app):
             position(part, SAVED_LEFT + line * SAVED_STEP, SAVED_TOP, SAVED_IMAGE_WIDTH, 3)
     label = ET.SubElement(components, "label", id="4181", model="2500")
     position(label, 0, 370, WIDTH, 50)
+    for component, model, width, height in ((4190, 2510, 150, 34), (4191, 2520, 280, 26)):
+        peak = ET.SubElement(components, "label", id=str(component), model=str(model))
+        position(peak, SAVED_LEFT, SAVED_TOP, width, height)
+        peak.find("properties/property[@id='3']").set("value", "false")

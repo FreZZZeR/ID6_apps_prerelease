@@ -44,33 +44,17 @@
     <hmiStates>
       <hmiState id="100" text="LaunchDeck">
         <optionComponents>
-          <button id="30" action="41" text="0–60 mph">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
-          <button id="31" action="42" text="60–130 mph">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
-          <button id="32" action="43" text="0–100 km/h">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
-          <button id="33" action="44" text="100–200 km/h">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
+          <button id="30" action="41" text="0–60 mph" />
+          <button id="31" action="42" text="60–130 mph" />
+          <button id="32" action="43" text="0–100 km/h" />
+          <button id="33" action="44" text="100–200 km/h" />
         </optionComponents>
         <components>
           <image id="200" model="50">
             <properties>
-              <property id="20" value="0" />
-              <property id="21" value="0" />
-              <property id="9" value="1236" />
+              <property id="20" value="52" />
+              <property id="21" value="10" />
+              <property id="9" value="1104" />
               <property id="10" value="420" />
               <property id="2" value="false" />
               <property id="3" value="true" />
@@ -78,9 +62,9 @@
           </image>
           <image id="201" model="51">
             <properties>
-              <property id="20" value="24" />
-              <property id="21" value="14" />
-              <property id="9" value="1188" />
+              <property id="20" value="76" />
+              <property id="21" value="24" />
+              <property id="9" value="1056" />
               <property id="10" value="46" />
               <property id="2" value="false" />
               <property id="3" value="true" />
@@ -88,9 +72,9 @@
           </image>
           <image id="202" model="52">
             <properties>
-              <property id="20" value="48" />
-              <property id="21" value="262" />
-              <property id="9" value="1140" />
+              <property id="20" value="100" />
+              <property id="21" value="272" />
+              <property id="9" value="1008" />
               <property id="10" value="22" />
               <property id="2" value="false" />
               <property id="3" value="true" />
@@ -98,8 +82,8 @@
           </image>
           <image id="203" model="60">
             <properties>
-              <property id="20" value="216" />
-              <property id="21" value="74" />
+              <property id="20" value="202" />
+              <property id="21" value="84" />
               <property id="9" value="112" />
               <property id="10" value="168" />
               <property id="2" value="false" />
@@ -108,8 +92,8 @@
           </image>
           <image id="204" model="61">
             <properties>
-              <property id="20" value="328" />
-              <property id="21" value="74" />
+              <property id="20" value="314" />
+              <property id="21" value="84" />
               <property id="9" value="112" />
               <property id="10" value="168" />
               <property id="2" value="false" />
@@ -118,8 +102,8 @@
           </image>
           <image id="205" model="62">
             <properties>
-              <property id="20" value="440" />
-              <property id="21" value="74" />
+              <property id="20" value="426" />
+              <property id="21" value="84" />
               <property id="9" value="112" />
               <property id="10" value="168" />
               <property id="2" value="false" />
@@ -128,8 +112,8 @@
           </image>
           <image id="206" model="63">
             <properties>
-              <property id="20" value="552" />
-              <property id="21" value="74" />
+              <property id="20" value="538" />
+              <property id="21" value="84" />
               <property id="9" value="112" />
               <property id="10" value="168" />
               <property id="2" value="false" />
@@ -138,8 +122,8 @@
           </image>
           <image id="207" model="64">
             <properties>
-              <property id="20" value="664" />
-              <property id="21" value="74" />
+              <property id="20" value="650" />
+              <property id="21" value="84" />
               <property id="9" value="112" />
               <property id="10" value="168" />
               <property id="2" value="false" />
@@ -148,8 +132,8 @@
           </image>
           <image id="208" model="70">
             <properties>
-              <property id="20" value="112" />
-              <property id="21" value="340" />
+              <property id="20" value="148" />
+              <property id="21" value="350" />
               <property id="9" value="34" />
               <property id="10" value="50" />
               <property id="2" value="false" />
@@ -158,8 +142,8 @@
           </image>
           <image id="209" model="71">
             <properties>
-              <property id="20" value="146" />
-              <property id="21" value="340" />
+              <property id="20" value="182" />
+              <property id="21" value="350" />
               <property id="9" value="34" />
               <property id="10" value="50" />
               <property id="2" value="false" />
@@ -168,8 +152,8 @@
           </image>
           <image id="210" model="72">
             <properties>
-              <property id="20" value="180" />
-              <property id="21" value="340" />
+              <property id="20" value="216" />
+              <property id="21" value="350" />
               <property id="9" value="34" />
               <property id="10" value="50" />
               <property id="2" value="false" />
@@ -178,8 +162,8 @@
           </image>
           <image id="211" model="75">
             <properties>
-              <property id="20" value="381" />
-              <property id="21" value="340" />
+              <property id="20" value="384" />
+              <property id="21" value="350" />
               <property id="9" value="34" />
               <property id="10" value="50" />
               <property id="2" value="false" />
@@ -188,8 +172,8 @@
           </image>
           <image id="212" model="76">
             <properties>
-              <property id="20" value="415" />
-              <property id="21" value="340" />
+              <property id="20" value="418" />
+              <property id="21" value="350" />
               <property id="9" value="34" />
               <property id="10" value="50" />
               <property id="2" value="false" />
@@ -198,8 +182,8 @@
           </image>
           <image id="213" model="77">
             <properties>
-              <property id="20" value="449" />
-              <property id="21" value="340" />
+              <property id="20" value="452" />
+              <property id="21" value="350" />
               <property id="9" value="34" />
               <property id="10" value="50" />
               <property id="2" value="false" />
@@ -208,8 +192,8 @@
           </image>
           <image id="214" model="78">
             <properties>
-              <property id="20" value="483" />
-              <property id="21" value="340" />
+              <property id="20" value="486" />
+              <property id="21" value="350" />
               <property id="9" value="34" />
               <property id="10" value="50" />
               <property id="2" value="false" />
@@ -218,8 +202,8 @@
           </image>
           <image id="215" model="79">
             <properties>
-              <property id="20" value="517" />
-              <property id="21" value="340" />
+              <property id="20" value="520" />
+              <property id="21" value="350" />
               <property id="9" value="34" />
               <property id="10" value="50" />
               <property id="2" value="false" />
@@ -228,8 +212,8 @@
           </image>
           <image id="216" model="80">
             <properties>
-              <property id="20" value="684" />
-              <property id="21" value="340" />
+              <property id="20" value="654" />
+              <property id="21" value="350" />
               <property id="9" value="34" />
               <property id="10" value="50" />
               <property id="2" value="false" />
@@ -238,8 +222,8 @@
           </image>
           <image id="217" model="81">
             <properties>
-              <property id="20" value="718" />
-              <property id="21" value="340" />
+              <property id="20" value="688" />
+              <property id="21" value="350" />
               <property id="9" value="34" />
               <property id="10" value="50" />
               <property id="2" value="false" />
@@ -248,8 +232,8 @@
           </image>
           <image id="218" model="82">
             <properties>
-              <property id="20" value="752" />
-              <property id="21" value="340" />
+              <property id="20" value="722" />
+              <property id="21" value="350" />
               <property id="9" value="34" />
               <property id="10" value="50" />
               <property id="2" value="false" />
@@ -258,8 +242,8 @@
           </image>
           <image id="219" model="83">
             <properties>
-              <property id="20" value="786" />
-              <property id="21" value="340" />
+              <property id="20" value="756" />
+              <property id="21" value="350" />
               <property id="9" value="34" />
               <property id="10" value="50" />
               <property id="2" value="false" />
@@ -268,8 +252,8 @@
           </image>
           <image id="220" model="84">
             <properties>
-              <property id="20" value="820" />
-              <property id="21" value="340" />
+              <property id="20" value="790" />
+              <property id="21" value="350" />
               <property id="9" value="34" />
               <property id="10" value="50" />
               <property id="2" value="false" />
@@ -278,8 +262,8 @@
           </image>
           <image id="221" model="85">
             <properties>
-              <property id="20" value="987" />
-              <property id="21" value="340" />
+              <property id="20" value="924" />
+              <property id="21" value="350" />
               <property id="9" value="34" />
               <property id="10" value="50" />
               <property id="2" value="false" />
@@ -288,8 +272,8 @@
           </image>
           <image id="222" model="86">
             <properties>
-              <property id="20" value="1021" />
-              <property id="21" value="340" />
+              <property id="20" value="958" />
+              <property id="21" value="350" />
               <property id="9" value="34" />
               <property id="10" value="50" />
               <property id="2" value="false" />
@@ -298,8 +282,8 @@
           </image>
           <image id="223" model="87">
             <properties>
-              <property id="20" value="1055" />
-              <property id="21" value="340" />
+              <property id="20" value="992" />
+              <property id="21" value="350" />
               <property id="9" value="34" />
               <property id="10" value="50" />
               <property id="2" value="false" />
@@ -308,8 +292,8 @@
           </image>
           <image id="224" model="88">
             <properties>
-              <property id="20" value="1089" />
-              <property id="21" value="340" />
+              <property id="20" value="1026" />
+              <property id="21" value="350" />
               <property id="9" value="34" />
               <property id="10" value="50" />
               <property id="2" value="false" />
@@ -318,8 +302,8 @@
           </image>
           <image id="225" model="89">
             <properties>
-              <property id="20" value="1123" />
-              <property id="21" value="340" />
+              <property id="20" value="1060" />
+              <property id="21" value="350" />
               <property id="9" value="34" />
               <property id="10" value="50" />
               <property id="2" value="false" />

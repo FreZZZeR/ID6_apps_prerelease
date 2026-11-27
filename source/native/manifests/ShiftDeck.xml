@@ -16,15 +16,12 @@
       <raAction id="45" />
       <raAction id="46" />
       <raAction id="47" />
-      <raAction id="48" />
-      <raAction id="49" />
-      <raAction id="50" />
-      <hmiAction id="120" target="102" />
       <raAction id="121" />
       <raAction id="122" />
       <raAction id="123" />
       <raAction id="124" />
       <raAction id="125" />
+      <hmiAction id="120" target="102" />
     </actions>
     <models>
       <raDataModel id="53" modelType="Richtext" />
@@ -52,34 +49,21 @@
     <hmiStates>
       <hmiState id="100" text="ShiftDeck">
         <optionComponents>
-          <button id="30" action="40" text="Shift light setting">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
-          <button id="410" action="46" text="Units: Imperial">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
-          <button id="411" action="47" text="Units: Metric">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
+          <button id="30" action="40" text="Shift light setting" />
+          <button id="410" action="46" text="Units: Imperial" />
+          <button id="411" action="47" text="Units: Metric" />
           <button id="412" action="120" text="N57 shift window">
             <properties>
               <property id="3" value="false" />
-              <property id="9" value="1236" />
             </properties>
           </button>
         </optionComponents>
         <components>
           <image id="200" model="54">
             <properties>
-              <property id="20" value="0" />
+              <property id="20" value="52" />
               <property id="21" value="248" />
-              <property id="9" value="1236" />
+              <property id="9" value="1104" />
               <property id="10" value="76" />
               <property id="2" value="false" />
               <property id="3" value="true" />
@@ -87,9 +71,9 @@
           </image>
           <image id="201" model="55">
             <properties>
-              <property id="20" value="0" />
+              <property id="20" value="52" />
               <property id="21" value="18" />
-              <property id="9" value="1236" />
+              <property id="9" value="1104" />
               <property id="10" value="34" />
               <property id="2" value="false" />
               <property id="3" value="true" />
@@ -97,7 +81,7 @@
           </image>
           <image id="202" model="56">
             <properties>
-              <property id="20" value="1055" />
+              <property id="20" value="975" />
               <property id="21" value="94" />
               <property id="9" value="164" />
               <property id="10" value="125" />
@@ -107,8 +91,8 @@
           </image>
           <image id="203" model="57">
             <properties>
-              <property id="20" value="490" />
-              <property id="21" value="205" />
+              <property id="20" value="476" />
+              <property id="21" value="188" />
               <property id="9" value="260" />
               <property id="10" value="42" />
               <property id="2" value="false" />
@@ -117,7 +101,7 @@
           </image>
           <image id="206" model="60">
             <properties>
-              <property id="20" value="492" />
+              <property id="20" value="478" />
               <property id="21" value="83" />
               <property id="9" value="64" />
               <property id="10" value="94" />
@@ -127,7 +111,7 @@
           </image>
           <image id="207" model="61">
             <properties>
-              <property id="20" value="556" />
+              <property id="20" value="542" />
               <property id="21" value="83" />
               <property id="9" value="64" />
               <property id="10" value="94" />
@@ -137,7 +121,7 @@
           </image>
           <image id="208" model="62">
             <properties>
-              <property id="20" value="620" />
+              <property id="20" value="606" />
               <property id="21" value="83" />
               <property id="9" value="64" />
               <property id="10" value="94" />
@@ -147,7 +131,7 @@
           </image>
           <image id="209" model="63">
             <properties>
-              <property id="20" value="684" />
+              <property id="20" value="670" />
               <property id="21" value="83" />
               <property id="9" value="64" />
               <property id="10" value="94" />
@@ -157,7 +141,7 @@
           </image>
           <image id="210" model="64">
             <properties>
-              <property id="20" value="16" />
+              <property id="20" value="68" />
               <property id="21" value="91" />
               <property id="9" value="235" />
               <property id="10" value="140" />
@@ -167,7 +151,7 @@
           </image>
           <image id="211" model="65">
             <properties>
-              <property id="20" value="584" />
+              <property id="20" value="570" />
               <property id="21" value="173" />
               <property id="9" value="68" />
               <property id="10" value="33" />
@@ -177,9 +161,9 @@
           </image>
           <image id="212" model="66">
             <properties>
-              <property id="20" value="0" />
+              <property id="20" value="52" />
               <property id="21" value="324" />
-              <property id="9" value="1236" />
+              <property id="9" value="1104" />
               <property id="10" value="49" />
               <property id="2" value="false" />
               <property id="3" value="true" />
@@ -187,9 +171,9 @@
           </image>
           <image id="214" model="68">
             <properties>
-              <property id="20" value="0" />
+              <property id="20" value="52" />
               <property id="21" value="239" />
-              <property id="9" value="1236" />
+              <property id="9" value="1104" />
               <property id="10" value="9" />
               <property id="2" value="false" />
               <property id="3" value="true" />
@@ -197,7 +181,7 @@
           </image>
           <image id="216" model="70">
             <properties>
-              <property id="20" value="16" />
+              <property id="20" value="68" />
               <property id="21" value="126" />
               <property id="9" value="62" />
               <property id="10" value="86" />
@@ -207,7 +191,7 @@
           </image>
           <image id="217" model="71">
             <properties>
-              <property id="20" value="78" />
+              <property id="20" value="130" />
               <property id="21" value="126" />
               <property id="9" value="62" />
               <property id="10" value="86" />
@@ -217,7 +201,7 @@
           </image>
           <image id="218" model="72">
             <properties>
-              <property id="20" value="140" />
+              <property id="20" value="192" />
               <property id="21" value="126" />
               <property id="9" value="62" />
               <property id="10" value="86" />
@@ -227,7 +211,7 @@
           </image>
           <image id="250" model="81">
             <properties>
-              <property id="20" value="943" />
+              <property id="20" value="894" />
               <property id="21" value="239" />
               <property id="9" value="64" />
               <property id="10" value="9" />
@@ -237,7 +221,7 @@
           </image>
           <image id="251" model="82">
             <properties>
-              <property id="20" value="984" />
+              <property id="20" value="931" />
               <property id="21" value="239" />
               <property id="9" value="64" />
               <property id="10" value="9" />
@@ -247,17 +231,17 @@
           </image>
           <label id="252" model="80">
             <properties>
-              <property id="20" value="932" />
-              <property id="21" value="110" />
+              <property id="20" value="850" />
+              <property id="21" value="120" />
               <property id="9" value="300" />
-              <property id="10" value="60" />
+              <property id="10" value="54" />
               <property id="2" value="false" />
               <property id="3" value="false" />
             </properties>
           </label>
           <image id="253" model="84">
             <properties>
-              <property id="20" value="932" />
+              <property id="20" value="850" />
               <property id="21" value="75" />
               <property id="9" value="300" />
               <property id="10" value="135" />
@@ -269,85 +253,22 @@
       </hmiState>
       <hmiState id="101" parentId="100" text="Shift light setting">
         <components>
-          <label id="300" model="53">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </label>
-          <button id="301" action="41" text="5,800 RPM">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
-          <button id="302" action="42" text="6,000 RPM">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
-          <button id="303" action="43" text="6,250 RPM">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
-          <button id="304" action="44" text="6,500 RPM">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
-          <button id="305" action="45" text="6,700 RPM">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
-          <button id="306" action="48" text="3,500 RPM">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
-          <button id="307" action="49" text="4,000 RPM">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
-          <button id="308" action="50" text="4,500 RPM">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
+          <label id="300" model="53" />
+          <button id="301" action="41" text="5,800 RPM" />
+          <button id="302" action="42" text="6,000 RPM" />
+          <button id="303" action="43" text="6,250 RPM" />
+          <button id="304" action="44" text="6,500 RPM" />
+          <button id="305" action="45" text="6,700 RPM" />
         </components>
       </hmiState>
       <hmiState id="102" parentId="100" text="N57 shift window">
         <components>
-          <label id="450" model="83">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </label>
-          <button id="451" action="121" text="Lower -100 RPM">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
-          <button id="452" action="122" text="Lower +100 RPM">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
-          <button id="453" action="123" text="Upper -100 RPM">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
-          <button id="454" action="124" text="Upper +100 RPM">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
-          <button id="455" action="125" text="Reset: 4600-4800 RPM">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
+          <label id="450" model="83" />
+          <button id="451" action="121" text="Lower -100 RPM" />
+          <button id="452" action="122" text="Lower +100 RPM" />
+          <button id="453" action="123" text="Upper -100 RPM" />
+          <button id="454" action="124" text="Upper +100 RPM" />
+          <button id="455" action="125" text="Reset: 4600-4800 RPM" />
         </components>
       </hmiState>
     </hmiStates>

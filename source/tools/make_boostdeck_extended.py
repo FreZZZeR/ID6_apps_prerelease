@@ -8,7 +8,6 @@ import xml.etree.ElementTree as ET
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 from make_bars import COLORS, MULTICOLOR, THEMES
-from content_layout import WIDTH, HEIGHT, flow_widths
 
 ROOT = Path(__file__).resolve().parents[1] / "native"
 XML = ROOT / "manifests/BoostDeck.xml"
@@ -23,11 +22,7 @@ TRANSPARENT = 57000
 DIAL_FIRST = 57001
 DIAL_STEPS = 12
 DIAL_SIZE = 96
-COLUMN = WIDTH // 3
-TILE_WIDTH, TILE_HEIGHT = COLUMN - 16, 118
-LABEL_WIDTH = TILE_WIDTH - 24
-DIAL_DISPLAY = 72
-ALERT_Y = HEIGHT - 43
+WIDTH, HEIGHT = 1172, 400
 SETTINGS = (
     ("Pressure", 3), ("Speed", 2), ("Temperature", 2), ("Gauge style", 2),
     ("Alert mode", 2), ("Coolant high", 10), ("Oil temp high", 10),
@@ -36,13 +31,13 @@ SETTINGS = (
 
 
 def tile(i):
-    return COLUMN * (i // 3), 124 * (i % 3)
+    return (258 * (i // 2), 208 * (i % 2)) if i < 8 else (1032, 0)
 
 
 def placed(parent, tag, identifier, model, x, y, w, h):
     node = ET.SubElement(parent, tag, id=str(identifier), model=str(model))
     props = ET.SubElement(node, "properties")
-    for prop, value in ((20, x), (21, y), (9, w), (10, h)):
+    for prop, value in ((20, x + 24), (21, y + 13), (9, w), (10, h)):
         ET.SubElement(props, "property", id=str(prop), value=str(value))
     if tag == "image":
         for prop, value in ((2, "false"), (3, "true")):
@@ -106,8 +101,8 @@ def update_xml():
     placed(components, "image", 209, 69, 0, 0, WIDTH, HEIGHT)
     image_model(models, 68, TRANSPARENT)
     richtext(models, 119)
-    placed(components, "image", 208, 68, 0, ALERT_Y, WIDTH, 43)
-    placed(components, "label", 218, 119, 14, ALERT_Y, WIDTH - 28, 43)
+    placed(components, "image", 208, 68, 0, 421, WIDTH, 43)
+    placed(components, "label", 218, 119, 14, 421, WIDTH - 28, 43)
 
     settings = page(states, 520, 100, "BoostDeck settings")
     richtext(models, 118)
@@ -137,16 +132,14 @@ def update_xml():
         choose(actions, 2200 + i, 40 + i, 3000 + i, 520)
         radio(colors, 390 + i, 2200 + i, 5200 + i, name)
     profile = page(states, 501, 520, "Engine profile")
-    for i, caption in enumerate(("Gasoline", "Diesel (OBD or pinned N57 DDE)")):
+    for i, caption in enumerate(("Gasoline", "Diesel / pinned N57")):
         radio_model(models, 5210 + i)
         choose(actions, 2210 + i, 502 + i, 3010 + i, 520)
         radio(profile, 591 + i, 2210 + i, 5210 + i, caption)
-    richtext(models, 361)
-    ET.SubElement(profile, "label", id="593", model="361")
-    for identifier, action, title in ((594, 504, "Show emissions gauges"),
-                                      (595, 505, "Hide emissions gauges")):
-        ET.SubElement(actions, "raAction", id=str(action))
-        button(profile, identifier, action, title)
+    for i, caption in enumerate(("Hide emissions gauges", "Show emissions gauges")):
+        radio_model(models, 5212 + i)
+        choose(actions, 2212 + i, 504 + i, 3012 + i, 520)
+        radio(profile, 593 + i, 2212 + i, 5212 + i, caption)
     config = page(states, 500, 520, "Configure gauges")
     for signal in range(len(SIGNALS)):
         radio_model(models, 5300 + signal)
@@ -155,19 +148,24 @@ def update_xml():
         x, y = tile(i)
         for model in (300 + i, 340 + i, 370 + i):
             richtext(models, model)
-        image_model(models, 320 + i, BAR_EMPTY)
+        image_model(models, 320 + i, BAR_EMPTY if i < 8 else VERTICAL_EMPTY)
         image_model(models, 330 + i, TRANSPARENT)
-        placed(components, "label", 260+i, 370+i, x+12, y+4, LABEL_WIDTH, 40)
-        placed(components, "label", 310+i, 300+i, x+12, y+44, LABEL_WIDTH-84, 52)
-        placed(components, "image", 280+i, 320+i, x+12, y+106, LABEL_WIDTH, 8)
-        placed(components, "image", 290+i, 330+i, x+TILE_WIDTH-84, y+44, DIAL_DISPLAY, DIAL_DISPLAY)
+        if i < 8:
+            placed(components, "label", 260+i, 370+i, x+15, y+16, 216, 40)
+            placed(components, "label", 310+i, 300+i, x+15, y+55, 216, 48)
+            placed(components, "image", 280+i, 320+i, x+15, y+140, 210, 15)
+            placed(components, "image", 290+i, 330+i, x+67, y+94, DIAL_SIZE, DIAL_SIZE)
+        else:
+            placed(components, "label", 260+i, 370+i, x+10, y+10, 120, 46)
+            placed(components, "image", 280+i, 320+i, x+50, y+58, 40, 250)
+            placed(components, "image", 290+i, 330+i, x+22, y+128, DIAL_SIZE, DIAL_SIZE)
+            placed(components, "label", 310+i, 300+i, x+24, y+322, 112, 63)
         target = 510 + i
         goto(actions, target, target)
         button(config, 540 + i, target, model=340+i)
         options = page(states, target, 500, f"Gauge {i+1}")
         for j, caption in enumerate(SIGNALS):
-            radio(options, 1001 + i*(len(SIGNALS)+1)+j, 3500+j, 5300+j, caption)
-    flow_widths(app)
+            radio(options, 3500 + i*64+j, 3500+j, 5300+j, caption)
     ET.indent(tree, space="  ")
     tree.write(XML, encoding="utf-8", xml_declaration=True)
 
@@ -176,17 +174,18 @@ def update_images(source, dest):
     from PIL import Image, ImageDraw
     with ZipFile(source) as original, ZipFile(dest, "w", ZIP_DEFLATED) as updated:
         background_name = f"{BACKGROUND}.png"
-        original.getinfo(background_name)
-        background = Image.new("RGBA", (WIDTH, HEIGHT))
+        background = Image.open(BytesIO(original.read(background_name))).convert("RGBA")
+        if background.size != (WIDTH, HEIGHT):
+            raise ValueError(f"Unexpected BoostDeck background size: {background.size}")
         draw = ImageDraw.Draw(background)
         for i in range(SLOTS):
             x, y = tile(i)
-            draw.rounded_rectangle((x, y, x+TILE_WIDTH-1, y+TILE_HEIGHT-1),
-                                   radius=12, fill="#171e28")
+            right = 232 if i < 8 else 132
+            draw.rectangle((x+8, y+13, x+right, y+51), fill=background.getpixel((x+24,y+65)))
         bitmap = BytesIO()
         background.save(bitmap, format="PNG", optimize=True)
         for entry in original.infolist():
-            if entry.filename.removesuffix(".png").isdigit() and ALERT_BACKGROUND <= int(entry.filename[:-4]) <= DIAL_FIRST+(len(COLORS)+len(MULTICOLOR))*(DIAL_STEPS+1):
+            if entry.filename.removesuffix(".png").isdigit() and int(entry.filename[:-4]) >= ALERT_BACKGROUND:
                 continue
             updated.writestr(entry, bitmap.getvalue() if entry.filename == background_name else original.read(entry))
 

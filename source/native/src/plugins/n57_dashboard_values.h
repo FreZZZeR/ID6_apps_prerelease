@@ -8,7 +8,7 @@
 /* These dashboards require the pinned DDE worker, never demo/legacy OBD data. */
 inline bool n57DashboardPacket(const char* bytes, size_t length, uint64_t now,
                                uint64_t previous, bd_frame& frame) {
-    if (length<5 || memcmp(bytes,"NBG9 ",5) || !bd_parse(bytes,length,&frame)) return false;
+    if (length<5 || (memcmp(bytes,"NBGA ",5) && memcmp(bytes,"NBG9 ",5)) || !bd_parse(bytes,length,&frame)) return false;
     return !frame.demo && frame.sent_ms && frame.sent_ms<=now && frame.sent_ms>=previous;
 }
 

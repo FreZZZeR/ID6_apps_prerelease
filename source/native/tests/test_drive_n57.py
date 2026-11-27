@@ -10,6 +10,7 @@ import tempfile
 import time
 import unittest
 import xml.etree.ElementTree as ET
+from zipfile import ZipFile
 
 import test_drive_apps
 import test_n57
@@ -61,7 +62,7 @@ class DriveN57Test(unittest.TestCase):
     def test_partial_pair_rejects_all_measurements(self):
         self.assertEqual(self.sample(speed=""), (-1, -1))
 
-    def test_shift_layout_and_header_keep_old_ids_and_lower_thresholds(self):
+    def test_shift_layout_keeps_upstream_targets_and_adds_n57_window(self):
         path = NATIVE / "manifests/ShiftDeck.xml"
         original = path.read_bytes()
         with tempfile.TemporaryDirectory() as directory:
@@ -73,9 +74,15 @@ class DriveN57Test(unittest.TestCase):
         actions = [x.get("id") for x in app.find("actions")]
         self.assertEqual(len(actions), len(set(actions)))
         choices = app.find("hmiStates/hmiState[@id='101']/components")
-        for action, caption in (("41", "5,800 RPM"), ("45", "6,700 RPM"), ("48", "3,500 RPM"),
-                                ("49", "4,000 RPM"), ("50", "4,500 RPM")):
-            self.assertEqual(choices.find(f"button[@action='{action}']").get("text"), caption)
+        with ZipFile(NATIVE.parents[1] / "packages/dashboard.zip") as archive:
+            upstream = ET.fromstring(archive.read("ShiftDeck/ShiftDeck.xml"))
+        expected = upstream.find("pluginApp/hmiStates/hmiState[@id='101']/components")
+        self.assertEqual([(b.get("action"), b.get("text")) for b in choices.findall("button")],
+                         [(b.get("action"), b.get("text")) for b in expected.findall("button")])
+        window = app.find("hmiStates/hmiState[@id='102']/components")
+        self.assertEqual([b.get("action") for b in window.findall("button")],
+                         ["121", "122", "123", "124", "125"])
+        self.assertEqual(window.find("button[@action='125']").get("text"), "Reset: 4600-4800 RPM")
         source = (NATIVE.parent / "tools/shift_art.py").read_text()
         targets = ast.literal_eval(re.search(r"^TARGETS = (.+)$", source, re.M)[1])
         header = (NATIVE / "src/plugins/shift_assets.h").read_text()

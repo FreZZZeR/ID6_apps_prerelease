@@ -1,6 +1,7 @@
 """Offline bundle checks with synthetic ELF headers and real public resources."""
 from io import BytesIO
 import json
+import importlib.util
 from pathlib import Path
 import stat
 import struct
@@ -28,21 +29,19 @@ def app_files(app):
 
 
 class PackageTest(unittest.TestCase):
-    def test_seven_app_scope_and_binary_inventory(self):
+    def test_six_app_scope_and_binary_inventory(self):
         self.assertEqual(set(package.APPS), {"BoostDeck", "ShiftDeck", "LaunchDeck", "EngineCodes",
-                                             "PowerDeck", "XDriveControl", "HudTest"})
+                                             "PowerDeck", "XDriveControl"})
         binaries = {"lib" + app + ".so" for app in package.APPS}
         binaries.update(worker for _, _, worker, _ in package.APPS.values())
-        self.assertEqual(len(binaries), 12)
-        self.assertEqual(2 * len(package.APPS), 14)
+        self.assertEqual(len(binaries), 10)
+        self.assertEqual(2 * len(package.APPS), 12)
         count = 0
         for app in package.APPS:
             files = app_files(app)
             files.pop("SHA256SUMS", None)
-            if app == "HudTest":
-                files["hud-enabled"] = b"0\n"
             count += len(files) + 1  # Each app has its own generated SHA256SUMS.
-        self.assertEqual(count, 41)
+        self.assertEqual(count, 35)
 
     def test_rejects_dirty_source_or_mismatched_build_identity(self):
         with tempfile.TemporaryDirectory() as d:
@@ -50,13 +49,13 @@ class PackageTest(unittest.TestCase):
             report = root / "build.json"
             with patch.object(package.subprocess, "check_output", side_effect=["commit\n", " M source"]):
                 with self.assertRaises(ValueError):
-                    package.assemble(root / "output", root, report, root / "license")
+                    package.assemble(root / "output", root, report)
             for field, value in (("source_commit", "wrong"), ("native_tree", "wrong"), ("car_access", True)):
                 info = {"source_commit": "commit", "native_tree": "tree", "car_access": False}
                 info[field] = value; report.write_text(json.dumps(info))
                 with patch.object(package.subprocess, "check_output", side_effect=["commit\n", "", "tree\n"]):
                     with self.assertRaises(ValueError):
-                        package.assemble(root / "output", root, report, root / "license")
+                        package.assemble(root / "output", root, report)
             self.assertFalse((root / "output").exists())
 
     def test_elf_architecture_and_role(self):
@@ -92,8 +91,6 @@ class PackageTest(unittest.TestCase):
             base = group + "/" + app + "/"
             app_data = app_files(app)
             app_data.pop("SHA256SUMS", None)
-            if app == "HudTest":
-                app_data["hud-enabled"] = b"1\n" if change == "hud-enabled" else b"0\n"
             app_data["SHA256SUMS"] = package.checksums(app_data)
             files.update({base + n: data for n, data in app_data.items()})
             workers.add(base + worker)
@@ -101,6 +98,8 @@ class PackageTest(unittest.TestCase):
             files["config/xdrive-owner-vin.txt"] = b"private placeholder"
         if change == "retired-app":
             files["core/BaseDiagnostik/extra.txt"] = b"retired standalone app"
+        if change == "hud-enabled":
+            files["optional/HudTest/hud-enabled"] = b"1\n"
         digest = package.checksums(files)
         if change == "tamper":
             files["core/BoostDeck/BoostDeck.xml"] += b" "
@@ -120,6 +119,48 @@ class PackageTest(unittest.TestCase):
             path = Path(d) / "bundle.zip"
             self.bundle(path)
             package.verify_zip(path)
+
+    def test_installer_overlay_uses_verified_payload_without_private_settings(self):
+        module = importlib.util.spec_from_file_location(
+            "stage_payload", Path(__file__).parent / "desktop-installer/stage-payload.py")
+        stage = importlib.util.module_from_spec(module)
+        module.loader.exec_module(stage)
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "candidate.zip"
+            self.bundle(path)
+            apps = stage.candidate_apps(path, package.ROOT)
+            self.assertEqual(set(apps), set(package.APPS))
+            self.assertIn("libPowerDeck.so", apps["PowerDeck"])
+            self.assertNotIn("SHA256SUMS", apps["PowerDeck"])
+            self.assertNotIn("gateway-ip.txt", apps["PowerDeck"])
+            self.bundle(path, "tamper")
+            with self.assertRaises(ValueError):
+                stage.candidate_apps(path, package.ROOT)
+
+    def test_ordinary_installer_staging_omits_unbundled_powerdeck(self):
+        module = importlib.util.spec_from_file_location(
+            "stage_payload", Path(__file__).parent / "desktop-installer/stage-payload.py")
+        stage = importlib.util.module_from_spec(module)
+        module.loader.exec_module(stage)
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            helper = root / "fileops"
+            helper.write_bytes(elf())
+            installer = root / "installer"
+            stale = installer / "payload/PowerDeck"
+            stale.mkdir(parents=True)
+            (stale / "PowerDeck.manifest").write_bytes(b"old candidate")
+            # Layout scaling is checked here; bitmap resampling has independent coverage.
+            with patch.object(stage, "compact_images", side_effect=lambda data, _: data):
+                stage.stage(package.ROOT, helper, installer)
+            self.assertFalse(stale.exists())
+            self.assertTrue((installer / "payload/BoostDeck/BoostDeck.manifest").is_file())
+            candidate = root / "candidate.zip"
+            self.bundle(candidate)
+            with patch.object(stage, "compact_images", side_effect=lambda data, _: data):
+                stage.stage(package.ROOT, helper, installer, candidate)
+            self.assertEqual((stale / "PowerDeck.manifest").read_bytes(),
+                             app_files("PowerDeck")["PowerDeck.manifest"])
 
     def test_rejects_tampering_uncovered_paths_private_settings_and_permissions(self):
         with tempfile.TemporaryDirectory() as d:

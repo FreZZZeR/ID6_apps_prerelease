@@ -96,7 +96,7 @@ int bd_encode(const bd_frame *f, char *out, size_t len) {
     size_t used;
     unsigned i;
     if (!f || !out || !len) return -1;
-    const char *version = "NBG9";
+    const char *version = "NBGA";
     n = snprintf(out, len, "%s %lu %u %llu %llu", version,
                  (unsigned long)f->seq, f->demo, (unsigned long long)f->valid,
                  (unsigned long long)f->sent_ms);
@@ -143,7 +143,8 @@ int bd_parse(const char *data, size_t len, bd_frame *out) {
     memcpy(b, data, len); b[len] = 0;
     memset(&f, 0, sizeof f);
     if (len<5 || !isspace((unsigned char)b[4])) return 0;
-    if (!memcmp(b,"NBG9",4)) fields=BD_COUNT;
+    if (!memcmp(b,"NBGA",4)) fields=BD_COUNT;
+    else if (!memcmp(b,"NBG9",4)) fields=40;
     else if (!memcmp(b,"NBG8",4)) fields=39;
     else if (!memcmp(b,"NBG7",4)) fields=31;
     else if (!memcmp(b,"NBG6",4)) fields=22;
@@ -179,7 +180,7 @@ int bd_is_fresh(const bd_frame *f, unsigned i, uint64_t elapsed) {
                    : BD_STALE_MS;
     if (i == BD_ETHANOL) limit = 6500;
     if (i >= BD_OIL_TEMP) limit = BD_TEMP_STALE_MS;
-    if (i == BD_TORQUE || i == BD_POWER) limit = BD_STALE_MS;
+    if (i == BD_TORQUE || i == BD_POWER || i == BD_REL_TORQUE_DDE) limit = BD_STALE_MS;
     return i < BD_COUNT && (f->valid & BD_BIT(i)) &&
         elapsed < limit && f->age_ms[i] < limit - elapsed;
 }

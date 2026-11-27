@@ -62,10 +62,8 @@ int main(int argc, char **argv) {
     unsigned source;
     unsigned n57_index=0;
     if (n57_settings(&n57_index)<0) return 2;
-#ifdef NATIVE_FAST
     uint64_t speed_due=0;
     int last_speed=-1;
-#endif
     for (i=1;i<argc;++i) {
         if (!strcmp(argv[i],"--host") && i+1<argc && !cfg.host) cfg.host=argv[++i];
         else if (!strcmp(argv[i],"--port") && i+1<argc) cfg.port=number(argv[++i],1,65535);
@@ -143,15 +141,11 @@ int main(int argc, char **argv) {
                     rc=read_live_pid(&link,0x0d,1,&kph);
                 } else {
                     rc=read_live_pid(&link,0x0c,2,&rpm);
-#ifdef NATIVE_FAST
                     if (!rc && start>=speed_due) {
                         rc=read_live_pid(&link,0x0d,1,&last_speed);
                         speed_due=start+65;
                     }
                     kph=last_speed;
-#else
-                    if (!rc) rc=read_live_pid(&link,0x0d,1,&kph);
-#endif
                 }
                 if (rc==-1) diag_link_drop(&link);
                 else if (!rc) {
@@ -176,11 +170,7 @@ int main(int argc, char **argv) {
             if (diag_running) poll(0,0,elapsed<100 ? (int)(100-elapsed) : 5);
             continue;
         }
-#ifdef NATIVE_FAST
         if (diag_running) poll(0,0,!up ? 25 : elapsed<20 ? (int)(20-elapsed) : 2);
-#else
-        if (diag_running) poll(0,0,elapsed<70 ? (int)(70-elapsed) : 10);
-#endif
     }
     lost=diag_running && diag_link_lost(&link);
     diag_link_close(&link);

@@ -171,8 +171,13 @@ int main() {
     app.testEvent(111,true);
     assert(launches==chart_launches);
     assert(app.images[2499]==64300); /* Fixed 400 kW, 1000 Nm and corresponding metric PS. */
-    assert(!app.texts.count(2510) && !app.texts.count(2520));
-    assert(app.texts[2500].find("RPM rise 1000-5000")!=std::string::npos);
+    assert(app.texts[2510]=="600 Nm" && app.texts[2520]=="262 kW / 356 PS");
+    assert(app.texts[2500]=="Peaks: 600 Nm @ 3500 RPM | 262 kW / 356 PS @ 5000 RPM");
+    assert(app.properties[std::make_pair(4190u,3u)]==1u);
+    assert(app.properties[std::make_pair(4191u,3u)]==1u);
+    assert(app.properties[std::make_pair(4190u,20u)]>=PowerRpmPlot::Left);
+    assert(app.properties[std::make_pair(4191u,20u)]+280u<=
+           PowerRpmPlot::Left+PowerRpmPlot::Segments*PowerRpmPlot::Step);
     assert(app.images[2404]>=63000 && app.images[2404]<63601);
     assert(app.images[2428]>=63601 && app.images[2428]<64202);
     assert(app.properties[std::make_pair(4004u,21u)]==150u);
@@ -188,7 +193,9 @@ int main() {
     }
     assert(curve.save(production_path));
     assert(app.onInit());app.testEvent(111,true);
-    assert(app.texts[2500].find("Power >400 kW")!=std::string::npos);
+    assert(app.texts[2500].find("off scale")!=std::string::npos);
+    assert(app.texts[2510]=="1000 Nm" && app.properties[std::make_pair(4190u,3u)]==1u);
+    assert(app.texts[2520].empty() && app.properties[std::make_pair(4191u,3u)]==0u);
     assert(app.images[2447]==64202); // No false power plateau at the plot ceiling.
     app.onFinalize();assert(read_history().at(10).kw>600);
 

@@ -5,7 +5,6 @@ from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 from PIL import Image, ImageChops, ImageDraw, ImageFont
-from content_layout import WIDTH
 
 BAR_BASE, BAR_WARN = 55800, 55833
 LIGHT_BASE, TARGET_BASE = 55866, 55880
@@ -20,7 +19,7 @@ N57_DEFAULT_INDEX = TARGETS.index(4000)
 WHITE, DIM, BLUE, RED = "#f0f4fb", "#90a4ba", "#7bd2ff", "#ff4548"
 YELLOW = "#ffc34d"
 LINE = "#42556a"
-BAR_WIDTH = WIDTH
+BAR_WIDTH = 1104
 BAR_START, BAR_PITCH, BAR_SLANT = 4, (BAR_WIDTH - 28) / 16, 20
 N57_BAR_BASE, N57_BAR_WARN, N57_SCALE, N57_MARK_BASE = 58800, 58833, 58866, 58867
 N57_MAX_RPM = 6000
@@ -233,7 +232,7 @@ def constants_text():
             ("kN57DigitWarning",N57_DIGIT_WARNING),("kN57LightsWarning",N57_LIGHTS_WARNING),
             ("kN57ShiftWarning",N57_SHIFT_WARNING),("kN57LowerMarker",N57_LOWER_MARKER),
             ("kN57UpperMarker",N57_UPPER_MARKER),("kN57WindowLegend",N57_WINDOW_LEGEND),
-            ("kN57AxisLeft",N57_AXIS_LEFT),("kN57AxisSpan",N57_AXIS_RIGHT-N57_AXIS_LEFT),
+            ("kN57AxisLeft",52+N57_AXIS_LEFT),("kN57AxisSpan",N57_AXIS_RIGHT-N57_AXIS_LEFT),
             ("kShiftOff",SHIFT_OFF),("kShiftOn",SHIFT_ON),("kDefaultTarget",DEFAULT_INDEX),
             ("kDefaultN57Target",N57_DEFAULT_INDEX)))
         + "static const unsigned kShiftTargets[] = {"

@@ -37,7 +37,8 @@ public:
     Parcel():offset_(0){}
     explicit Parcel(bool value):offset_(0){values.push_back(value);}
     bool readUInt32(unsigned& value)const {
-        if(offset_>=values.size())return false;value=values[offset_++];return true;
+        if(offset_>=values.size())return false;
+        value=values[offset_++];return true;
     }
     bool readBool(bool& value)const {unsigned n;if(!readUInt32(n))return false;value=n!=0;return true;}
     void writeUInt32(unsigned value){values.push_back(value);}
@@ -67,6 +68,7 @@ public:
     std::vector<unsigned> queued;
     std::vector<Posted> messages;
     std::map<unsigned,std::string> texts;
+    std::map<unsigned,std::wstring> wide_texts;
     std::map<unsigned,unsigned> images;
     std::map<unsigned,bool> bools;
     std::map<std::pair<unsigned,unsigned>,unsigned> properties;
@@ -76,6 +78,7 @@ public:
     virtual bool onFinalize(){return true;}
     virtual bool invokeDataUpdate(unsigned,const Parcel&){return false;}
     void updateModel(unsigned model,const BasicString<char>& value){texts[model]=value.value;}
+    void updateModel(unsigned model,const wchar_t* value){wide_texts[model]=value;}
     void updateModel(unsigned model,const ImageID& value){images[model]=value.id;}
     void updateModel(unsigned model,bool value){bools[model]=value;}
     void setProperty(unsigned component,unsigned property,const Parcel& value){

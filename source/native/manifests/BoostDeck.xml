@@ -308,8 +308,18 @@
           <hmiAction id="3011" target="520" />
         </actions>
       </combinedAction>
-      <raAction id="504" />
-      <raAction id="505" />
+      <combinedAction id="2212">
+        <actions>
+          <raAction id="504" />
+          <hmiAction id="3012" target="520" />
+        </actions>
+      </combinedAction>
+      <combinedAction id="2213">
+        <actions>
+          <raAction id="505" />
+          <hmiAction id="3013" target="520" />
+        </actions>
+      </combinedAction>
       <combinedAction id="3500">
         <actions>
           <raAction id="600" />
@@ -550,6 +560,12 @@
           <hmiAction id="4539" target="500" />
         </actions>
       </combinedAction>
+      <combinedAction id="3540">
+        <actions>
+          <raAction id="640" />
+          <hmiAction id="4540" target="500" />
+        </actions>
+      </combinedAction>
       <hmiAction id="510" target="510" />
       <hmiAction id="511" target="511" />
       <hmiAction id="512" target="512" />
@@ -660,7 +676,8 @@
       <raBoolModel id="5208" />
       <raBoolModel id="5210" />
       <raBoolModel id="5211" />
-      <raDataModel id="361" modelType="Richtext" />
+      <raBoolModel id="5212" />
+      <raBoolModel id="5213" />
       <raBoolModel id="5300" />
       <raBoolModel id="5301" />
       <raBoolModel id="5302" />
@@ -701,6 +718,7 @@
       <raBoolModel id="5337" />
       <raBoolModel id="5338" />
       <raBoolModel id="5339" />
+      <raBoolModel id="5340" />
       <raDataModel id="300" modelType="Richtext" />
       <raDataModel id="340" modelType="Richtext" />
       <raDataModel id="370" modelType="Richtext" />
@@ -744,34 +762,30 @@
       <raDataModel id="308" modelType="Richtext" />
       <raDataModel id="348" modelType="Richtext" />
       <raDataModel id="378" modelType="Richtext" />
-      <imageIdModel id="328" imageId="55000" />
+      <imageIdModel id="328" imageId="56100" />
       <imageIdModel id="338" imageId="57000" />
     </models>
     <hmiStates>
       <hmiState id="100" text="BoostDeck">
         <optionComponents>
-          <button id="33" action="520" text="BoostDeck settings">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
+          <button id="33" action="520" text="BoostDeck settings" />
         </optionComponents>
         <components>
           <image id="209" model="69">
             <properties>
-              <property id="20" value="0" />
-              <property id="21" value="0" />
-              <property id="9" value="1236" />
-              <property id="10" value="420" />
+              <property id="20" value="24" />
+              <property id="21" value="13" />
+              <property id="9" value="1172" />
+              <property id="10" value="400" />
               <property id="2" value="false" />
               <property id="3" value="true" />
             </properties>
           </image>
           <image id="208" model="68">
             <properties>
-              <property id="20" value="0" />
-              <property id="21" value="377" />
-              <property id="9" value="1236" />
+              <property id="20" value="24" />
+              <property id="21" value="434" />
+              <property id="9" value="1172" />
               <property id="10" value="43" />
               <property id="2" value="false" />
               <property id="3" value="true" />
@@ -779,2580 +793,860 @@
           </image>
           <label id="218" model="119">
             <properties>
-              <property id="20" value="14" />
-              <property id="21" value="377" />
-              <property id="9" value="1208" />
+              <property id="20" value="38" />
+              <property id="21" value="434" />
+              <property id="9" value="1144" />
               <property id="10" value="43" />
             </properties>
           </label>
           <label id="260" model="370">
             <properties>
-              <property id="20" value="12" />
-              <property id="21" value="4" />
-              <property id="9" value="372" />
+              <property id="20" value="39" />
+              <property id="21" value="29" />
+              <property id="9" value="216" />
               <property id="10" value="40" />
             </properties>
           </label>
           <label id="310" model="300">
             <properties>
-              <property id="20" value="12" />
-              <property id="21" value="44" />
-              <property id="9" value="288" />
-              <property id="10" value="52" />
+              <property id="20" value="39" />
+              <property id="21" value="68" />
+              <property id="9" value="216" />
+              <property id="10" value="48" />
             </properties>
           </label>
           <image id="280" model="320">
             <properties>
-              <property id="20" value="12" />
-              <property id="21" value="106" />
-              <property id="9" value="372" />
-              <property id="10" value="8" />
+              <property id="20" value="39" />
+              <property id="21" value="153" />
+              <property id="9" value="210" />
+              <property id="10" value="15" />
               <property id="2" value="false" />
               <property id="3" value="true" />
             </properties>
           </image>
           <image id="290" model="330">
             <properties>
-              <property id="20" value="312" />
-              <property id="21" value="44" />
-              <property id="9" value="72" />
-              <property id="10" value="72" />
+              <property id="20" value="91" />
+              <property id="21" value="107" />
+              <property id="9" value="96" />
+              <property id="10" value="96" />
               <property id="2" value="false" />
               <property id="3" value="true" />
             </properties>
           </image>
           <label id="261" model="371">
             <properties>
-              <property id="20" value="12" />
-              <property id="21" value="128" />
-              <property id="9" value="372" />
+              <property id="20" value="39" />
+              <property id="21" value="237" />
+              <property id="9" value="216" />
               <property id="10" value="40" />
             </properties>
           </label>
           <label id="311" model="301">
             <properties>
-              <property id="20" value="12" />
-              <property id="21" value="168" />
-              <property id="9" value="288" />
-              <property id="10" value="52" />
+              <property id="20" value="39" />
+              <property id="21" value="276" />
+              <property id="9" value="216" />
+              <property id="10" value="48" />
             </properties>
           </label>
           <image id="281" model="321">
             <properties>
-              <property id="20" value="12" />
-              <property id="21" value="230" />
-              <property id="9" value="372" />
-              <property id="10" value="8" />
+              <property id="20" value="39" />
+              <property id="21" value="361" />
+              <property id="9" value="210" />
+              <property id="10" value="15" />
               <property id="2" value="false" />
               <property id="3" value="true" />
             </properties>
           </image>
           <image id="291" model="331">
             <properties>
-              <property id="20" value="312" />
-              <property id="21" value="168" />
-              <property id="9" value="72" />
-              <property id="10" value="72" />
+              <property id="20" value="91" />
+              <property id="21" value="315" />
+              <property id="9" value="96" />
+              <property id="10" value="96" />
               <property id="2" value="false" />
               <property id="3" value="true" />
             </properties>
           </image>
           <label id="262" model="372">
             <properties>
-              <property id="20" value="12" />
-              <property id="21" value="252" />
-              <property id="9" value="372" />
+              <property id="20" value="297" />
+              <property id="21" value="29" />
+              <property id="9" value="216" />
               <property id="10" value="40" />
             </properties>
           </label>
           <label id="312" model="302">
             <properties>
-              <property id="20" value="12" />
-              <property id="21" value="292" />
-              <property id="9" value="288" />
-              <property id="10" value="52" />
+              <property id="20" value="297" />
+              <property id="21" value="68" />
+              <property id="9" value="216" />
+              <property id="10" value="48" />
             </properties>
           </label>
           <image id="282" model="322">
             <properties>
-              <property id="20" value="12" />
-              <property id="21" value="354" />
-              <property id="9" value="372" />
-              <property id="10" value="8" />
+              <property id="20" value="297" />
+              <property id="21" value="153" />
+              <property id="9" value="210" />
+              <property id="10" value="15" />
               <property id="2" value="false" />
               <property id="3" value="true" />
             </properties>
           </image>
           <image id="292" model="332">
             <properties>
-              <property id="20" value="312" />
-              <property id="21" value="292" />
-              <property id="9" value="72" />
-              <property id="10" value="72" />
+              <property id="20" value="349" />
+              <property id="21" value="107" />
+              <property id="9" value="96" />
+              <property id="10" value="96" />
               <property id="2" value="false" />
               <property id="3" value="true" />
             </properties>
           </image>
           <label id="263" model="373">
             <properties>
-              <property id="20" value="424" />
-              <property id="21" value="4" />
-              <property id="9" value="372" />
+              <property id="20" value="297" />
+              <property id="21" value="237" />
+              <property id="9" value="216" />
               <property id="10" value="40" />
             </properties>
           </label>
           <label id="313" model="303">
             <properties>
-              <property id="20" value="424" />
-              <property id="21" value="44" />
-              <property id="9" value="288" />
-              <property id="10" value="52" />
+              <property id="20" value="297" />
+              <property id="21" value="276" />
+              <property id="9" value="216" />
+              <property id="10" value="48" />
             </properties>
           </label>
           <image id="283" model="323">
             <properties>
-              <property id="20" value="424" />
-              <property id="21" value="106" />
-              <property id="9" value="372" />
-              <property id="10" value="8" />
+              <property id="20" value="297" />
+              <property id="21" value="361" />
+              <property id="9" value="210" />
+              <property id="10" value="15" />
               <property id="2" value="false" />
               <property id="3" value="true" />
             </properties>
           </image>
           <image id="293" model="333">
             <properties>
-              <property id="20" value="724" />
-              <property id="21" value="44" />
-              <property id="9" value="72" />
-              <property id="10" value="72" />
+              <property id="20" value="349" />
+              <property id="21" value="315" />
+              <property id="9" value="96" />
+              <property id="10" value="96" />
               <property id="2" value="false" />
               <property id="3" value="true" />
             </properties>
           </image>
           <label id="264" model="374">
             <properties>
-              <property id="20" value="424" />
-              <property id="21" value="128" />
-              <property id="9" value="372" />
+              <property id="20" value="555" />
+              <property id="21" value="29" />
+              <property id="9" value="216" />
               <property id="10" value="40" />
             </properties>
           </label>
           <label id="314" model="304">
             <properties>
-              <property id="20" value="424" />
-              <property id="21" value="168" />
-              <property id="9" value="288" />
-              <property id="10" value="52" />
+              <property id="20" value="555" />
+              <property id="21" value="68" />
+              <property id="9" value="216" />
+              <property id="10" value="48" />
             </properties>
           </label>
           <image id="284" model="324">
             <properties>
-              <property id="20" value="424" />
-              <property id="21" value="230" />
-              <property id="9" value="372" />
-              <property id="10" value="8" />
+              <property id="20" value="555" />
+              <property id="21" value="153" />
+              <property id="9" value="210" />
+              <property id="10" value="15" />
               <property id="2" value="false" />
               <property id="3" value="true" />
             </properties>
           </image>
           <image id="294" model="334">
             <properties>
-              <property id="20" value="724" />
-              <property id="21" value="168" />
-              <property id="9" value="72" />
-              <property id="10" value="72" />
+              <property id="20" value="607" />
+              <property id="21" value="107" />
+              <property id="9" value="96" />
+              <property id="10" value="96" />
               <property id="2" value="false" />
               <property id="3" value="true" />
             </properties>
           </image>
           <label id="265" model="375">
             <properties>
-              <property id="20" value="424" />
-              <property id="21" value="252" />
-              <property id="9" value="372" />
+              <property id="20" value="555" />
+              <property id="21" value="237" />
+              <property id="9" value="216" />
               <property id="10" value="40" />
             </properties>
           </label>
           <label id="315" model="305">
             <properties>
-              <property id="20" value="424" />
-              <property id="21" value="292" />
-              <property id="9" value="288" />
-              <property id="10" value="52" />
+              <property id="20" value="555" />
+              <property id="21" value="276" />
+              <property id="9" value="216" />
+              <property id="10" value="48" />
             </properties>
           </label>
           <image id="285" model="325">
             <properties>
-              <property id="20" value="424" />
-              <property id="21" value="354" />
-              <property id="9" value="372" />
-              <property id="10" value="8" />
+              <property id="20" value="555" />
+              <property id="21" value="361" />
+              <property id="9" value="210" />
+              <property id="10" value="15" />
               <property id="2" value="false" />
               <property id="3" value="true" />
             </properties>
           </image>
           <image id="295" model="335">
             <properties>
-              <property id="20" value="724" />
-              <property id="21" value="292" />
-              <property id="9" value="72" />
-              <property id="10" value="72" />
+              <property id="20" value="607" />
+              <property id="21" value="315" />
+              <property id="9" value="96" />
+              <property id="10" value="96" />
               <property id="2" value="false" />
               <property id="3" value="true" />
             </properties>
           </image>
           <label id="266" model="376">
             <properties>
-              <property id="20" value="836" />
-              <property id="21" value="4" />
-              <property id="9" value="372" />
+              <property id="20" value="813" />
+              <property id="21" value="29" />
+              <property id="9" value="216" />
               <property id="10" value="40" />
             </properties>
           </label>
           <label id="316" model="306">
             <properties>
-              <property id="20" value="836" />
-              <property id="21" value="44" />
-              <property id="9" value="288" />
-              <property id="10" value="52" />
+              <property id="20" value="813" />
+              <property id="21" value="68" />
+              <property id="9" value="216" />
+              <property id="10" value="48" />
             </properties>
           </label>
           <image id="286" model="326">
             <properties>
-              <property id="20" value="836" />
-              <property id="21" value="106" />
-              <property id="9" value="372" />
-              <property id="10" value="8" />
+              <property id="20" value="813" />
+              <property id="21" value="153" />
+              <property id="9" value="210" />
+              <property id="10" value="15" />
               <property id="2" value="false" />
               <property id="3" value="true" />
             </properties>
           </image>
           <image id="296" model="336">
             <properties>
-              <property id="20" value="1136" />
-              <property id="21" value="44" />
-              <property id="9" value="72" />
-              <property id="10" value="72" />
+              <property id="20" value="865" />
+              <property id="21" value="107" />
+              <property id="9" value="96" />
+              <property id="10" value="96" />
               <property id="2" value="false" />
               <property id="3" value="true" />
             </properties>
           </image>
           <label id="267" model="377">
             <properties>
-              <property id="20" value="836" />
-              <property id="21" value="128" />
-              <property id="9" value="372" />
+              <property id="20" value="813" />
+              <property id="21" value="237" />
+              <property id="9" value="216" />
               <property id="10" value="40" />
             </properties>
           </label>
           <label id="317" model="307">
             <properties>
-              <property id="20" value="836" />
-              <property id="21" value="168" />
-              <property id="9" value="288" />
-              <property id="10" value="52" />
+              <property id="20" value="813" />
+              <property id="21" value="276" />
+              <property id="9" value="216" />
+              <property id="10" value="48" />
             </properties>
           </label>
           <image id="287" model="327">
             <properties>
-              <property id="20" value="836" />
-              <property id="21" value="230" />
-              <property id="9" value="372" />
-              <property id="10" value="8" />
+              <property id="20" value="813" />
+              <property id="21" value="361" />
+              <property id="9" value="210" />
+              <property id="10" value="15" />
               <property id="2" value="false" />
               <property id="3" value="true" />
             </properties>
           </image>
           <image id="297" model="337">
             <properties>
-              <property id="20" value="1136" />
-              <property id="21" value="168" />
-              <property id="9" value="72" />
-              <property id="10" value="72" />
+              <property id="20" value="865" />
+              <property id="21" value="315" />
+              <property id="9" value="96" />
+              <property id="10" value="96" />
               <property id="2" value="false" />
               <property id="3" value="true" />
             </properties>
           </image>
           <label id="268" model="378">
             <properties>
-              <property id="20" value="836" />
-              <property id="21" value="252" />
-              <property id="9" value="372" />
-              <property id="10" value="40" />
-            </properties>
-          </label>
-          <label id="318" model="308">
-            <properties>
-              <property id="20" value="836" />
-              <property id="21" value="292" />
-              <property id="9" value="288" />
-              <property id="10" value="52" />
+              <property id="20" value="1066" />
+              <property id="21" value="23" />
+              <property id="9" value="120" />
+              <property id="10" value="46" />
             </properties>
           </label>
           <image id="288" model="328">
             <properties>
-              <property id="20" value="836" />
-              <property id="21" value="354" />
-              <property id="9" value="372" />
-              <property id="10" value="8" />
+              <property id="20" value="1106" />
+              <property id="21" value="71" />
+              <property id="9" value="40" />
+              <property id="10" value="250" />
               <property id="2" value="false" />
               <property id="3" value="true" />
             </properties>
           </image>
           <image id="298" model="338">
             <properties>
-              <property id="20" value="1136" />
-              <property id="21" value="292" />
-              <property id="9" value="72" />
-              <property id="10" value="72" />
+              <property id="20" value="1078" />
+              <property id="21" value="141" />
+              <property id="9" value="96" />
+              <property id="10" value="96" />
               <property id="2" value="false" />
               <property id="3" value="true" />
             </properties>
           </image>
+          <label id="318" model="308">
+            <properties>
+              <property id="20" value="1080" />
+              <property id="21" value="335" />
+              <property id="9" value="112" />
+              <property id="10" value="63" />
+            </properties>
+          </label>
         </components>
       </hmiState>
       <hmiState id="520" parentId="100" text="BoostDeck settings">
         <components>
-          <label id="118" model="118">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </label>
-          <button id="120" action="521" text="" model="120">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
-          <button id="121" action="522" text="" model="121">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
-          <button id="122" action="523" text="" model="122">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
-          <button id="123" action="524" text="" model="123">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
-          <button id="124" action="525" text="" model="124">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
-          <button id="125" action="526" text="" model="125">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
-          <button id="126" action="527" text="" model="126">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
-          <button id="127" action="528" text="" model="127">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
-          <button id="654" action="104" text="" model="110">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
-          <button id="1051" action="501" text="" model="360">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
-          <button id="1050" action="500" text="Configure gauges">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
+          <label id="118" model="118" />
+          <button id="120" action="521" text="" model="120" />
+          <button id="121" action="522" text="" model="121" />
+          <button id="122" action="523" text="" model="122" />
+          <button id="123" action="524" text="" model="123" />
+          <button id="124" action="525" text="" model="124" />
+          <button id="125" action="526" text="" model="125" />
+          <button id="126" action="527" text="" model="126" />
+          <button id="127" action="528" text="" model="127" />
+          <button id="654" action="104" text="" model="110" />
+          <button id="1051" action="501" text="" model="360" />
+          <button id="1050" action="500" text="Configure gauges" />
         </components>
       </hmiState>
       <hmiState id="521" parentId="520" text="Pressure">
         <components>
-          <radiobutton id="700" action="2000" model="5000" text="" textModel="700">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="701" action="2001" model="5001" text="" textModel="701">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="702" action="2002" model="5002" text="" textModel="702">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
+          <radiobutton id="700" action="2000" model="5000" text="" textModel="700" />
+          <radiobutton id="701" action="2001" model="5001" text="" textModel="701" />
+          <radiobutton id="702" action="2002" model="5002" text="" textModel="702" />
         </components>
       </hmiState>
       <hmiState id="522" parentId="520" text="Speed">
         <components>
-          <radiobutton id="720" action="2020" model="5020" text="" textModel="720">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="721" action="2021" model="5021" text="" textModel="721">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
+          <radiobutton id="720" action="2020" model="5020" text="" textModel="720" />
+          <radiobutton id="721" action="2021" model="5021" text="" textModel="721" />
         </components>
       </hmiState>
       <hmiState id="523" parentId="520" text="Temperature">
         <components>
-          <radiobutton id="740" action="2040" model="5040" text="" textModel="740">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="741" action="2041" model="5041" text="" textModel="741">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
+          <radiobutton id="740" action="2040" model="5040" text="" textModel="740" />
+          <radiobutton id="741" action="2041" model="5041" text="" textModel="741" />
         </components>
       </hmiState>
       <hmiState id="524" parentId="520" text="Gauge style">
         <components>
-          <radiobutton id="760" action="2060" model="5060" text="" textModel="760">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="761" action="2061" model="5061" text="" textModel="761">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
+          <radiobutton id="760" action="2060" model="5060" text="" textModel="760" />
+          <radiobutton id="761" action="2061" model="5061" text="" textModel="761" />
         </components>
       </hmiState>
       <hmiState id="525" parentId="520" text="Alert mode">
         <components>
-          <radiobutton id="780" action="2080" model="5080" text="" textModel="780">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="781" action="2081" model="5081" text="" textModel="781">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
+          <radiobutton id="780" action="2080" model="5080" text="" textModel="780" />
+          <radiobutton id="781" action="2081" model="5081" text="" textModel="781" />
         </components>
       </hmiState>
       <hmiState id="526" parentId="520" text="Coolant high">
         <components>
-          <radiobutton id="800" action="2100" model="5100" text="" textModel="800">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="801" action="2101" model="5101" text="" textModel="801">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="802" action="2102" model="5102" text="" textModel="802">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="803" action="2103" model="5103" text="" textModel="803">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="804" action="2104" model="5104" text="" textModel="804">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="805" action="2105" model="5105" text="" textModel="805">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="806" action="2106" model="5106" text="" textModel="806">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="807" action="2107" model="5107" text="" textModel="807">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="808" action="2108" model="5108" text="" textModel="808">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="809" action="2109" model="5109" text="" textModel="809">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
+          <radiobutton id="800" action="2100" model="5100" text="" textModel="800" />
+          <radiobutton id="801" action="2101" model="5101" text="" textModel="801" />
+          <radiobutton id="802" action="2102" model="5102" text="" textModel="802" />
+          <radiobutton id="803" action="2103" model="5103" text="" textModel="803" />
+          <radiobutton id="804" action="2104" model="5104" text="" textModel="804" />
+          <radiobutton id="805" action="2105" model="5105" text="" textModel="805" />
+          <radiobutton id="806" action="2106" model="5106" text="" textModel="806" />
+          <radiobutton id="807" action="2107" model="5107" text="" textModel="807" />
+          <radiobutton id="808" action="2108" model="5108" text="" textModel="808" />
+          <radiobutton id="809" action="2109" model="5109" text="" textModel="809" />
         </components>
       </hmiState>
       <hmiState id="527" parentId="520" text="Oil temp high">
         <components>
-          <radiobutton id="820" action="2120" model="5120" text="" textModel="820">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="821" action="2121" model="5121" text="" textModel="821">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="822" action="2122" model="5122" text="" textModel="822">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="823" action="2123" model="5123" text="" textModel="823">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="824" action="2124" model="5124" text="" textModel="824">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="825" action="2125" model="5125" text="" textModel="825">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="826" action="2126" model="5126" text="" textModel="826">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="827" action="2127" model="5127" text="" textModel="827">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="828" action="2128" model="5128" text="" textModel="828">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="829" action="2129" model="5129" text="" textModel="829">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
+          <radiobutton id="820" action="2120" model="5120" text="" textModel="820" />
+          <radiobutton id="821" action="2121" model="5121" text="" textModel="821" />
+          <radiobutton id="822" action="2122" model="5122" text="" textModel="822" />
+          <radiobutton id="823" action="2123" model="5123" text="" textModel="823" />
+          <radiobutton id="824" action="2124" model="5124" text="" textModel="824" />
+          <radiobutton id="825" action="2125" model="5125" text="" textModel="825" />
+          <radiobutton id="826" action="2126" model="5126" text="" textModel="826" />
+          <radiobutton id="827" action="2127" model="5127" text="" textModel="827" />
+          <radiobutton id="828" action="2128" model="5128" text="" textModel="828" />
+          <radiobutton id="829" action="2129" model="5129" text="" textModel="829" />
         </components>
       </hmiState>
       <hmiState id="528" parentId="520" text="Oil pressure low">
         <components>
-          <radiobutton id="840" action="2140" model="5140" text="" textModel="840">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="841" action="2141" model="5141" text="" textModel="841">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="842" action="2142" model="5142" text="" textModel="842">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="843" action="2143" model="5143" text="" textModel="843">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="844" action="2144" model="5144" text="" textModel="844">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="845" action="2145" model="5145" text="" textModel="845">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
+          <radiobutton id="840" action="2140" model="5140" text="" textModel="840" />
+          <radiobutton id="841" action="2141" model="5141" text="" textModel="841" />
+          <radiobutton id="842" action="2142" model="5142" text="" textModel="842" />
+          <radiobutton id="843" action="2143" model="5143" text="" textModel="843" />
+          <radiobutton id="844" action="2144" model="5144" text="" textModel="844" />
+          <radiobutton id="845" action="2145" model="5145" text="" textModel="845" />
         </components>
       </hmiState>
       <hmiState id="104" parentId="520" text="Gauge color">
         <components>
-          <radiobutton id="390" action="2200" model="5200" text="BMW Orange">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="391" action="2201" model="5201" text="Blue">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="392" action="2202" model="5202" text="Green">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="393" action="2203" model="5203" text="White">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="394" action="2204" model="5204" text="Purple">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="395" action="2205" model="5205" text="Pink">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="396" action="2206" model="5206" text="Cyan">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="397" action="2207" model="5207" text="Red">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="398" action="2208" model="5208" text="Multicolor">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
+          <radiobutton id="390" action="2200" model="5200" text="BMW Orange" />
+          <radiobutton id="391" action="2201" model="5201" text="Blue" />
+          <radiobutton id="392" action="2202" model="5202" text="Green" />
+          <radiobutton id="393" action="2203" model="5203" text="White" />
+          <radiobutton id="394" action="2204" model="5204" text="Purple" />
+          <radiobutton id="395" action="2205" model="5205" text="Pink" />
+          <radiobutton id="396" action="2206" model="5206" text="Cyan" />
+          <radiobutton id="397" action="2207" model="5207" text="Red" />
+          <radiobutton id="398" action="2208" model="5208" text="Multicolor" />
         </components>
       </hmiState>
       <hmiState id="501" parentId="520" text="Engine profile">
         <components>
-          <radiobutton id="591" action="2210" model="5210" text="Gasoline">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="592" action="2211" model="5211" text="Diesel (OBD or pinned N57 DDE)">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <label id="593" model="361">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </label>
-          <button id="594" action="504" text="Show emissions gauges">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
-          <button id="595" action="505" text="Hide emissions gauges">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
+          <radiobutton id="591" action="2210" model="5210" text="Gasoline" />
+          <radiobutton id="592" action="2211" model="5211" text="Diesel / pinned N57" />
+          <radiobutton id="593" action="2212" model="5212" text="Hide emissions gauges" />
+          <radiobutton id="594" action="2213" model="5213" text="Show emissions gauges" />
         </components>
       </hmiState>
       <hmiState id="500" parentId="520" text="Configure gauges">
         <components>
-          <button id="540" action="510" text="" model="340">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
-          <button id="541" action="511" text="" model="341">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
-          <button id="542" action="512" text="" model="342">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
-          <button id="543" action="513" text="" model="343">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
-          <button id="544" action="514" text="" model="344">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
-          <button id="545" action="515" text="" model="345">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
-          <button id="546" action="516" text="" model="346">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
-          <button id="547" action="517" text="" model="347">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
-          <button id="548" action="518" text="" model="348">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </button>
+          <button id="540" action="510" text="" model="340" />
+          <button id="541" action="511" text="" model="341" />
+          <button id="542" action="512" text="" model="342" />
+          <button id="543" action="513" text="" model="343" />
+          <button id="544" action="514" text="" model="344" />
+          <button id="545" action="515" text="" model="345" />
+          <button id="546" action="516" text="" model="346" />
+          <button id="547" action="517" text="" model="347" />
+          <button id="548" action="518" text="" model="348" />
         </components>
       </hmiState>
       <hmiState id="510" parentId="500" text="Gauge 1">
         <components>
-          <radiobutton id="1001" action="3500" model="5300" text="Boost">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1002" action="3501" model="5301" text="AFR">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1003" action="3502" model="5302" text="Timing">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1004" action="3503" model="5303" text="Intake air">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1005" action="3504" model="5304" text="Trans temp">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1006" action="3505" model="5305" text="Rail pressure">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1007" action="3506" model="5306" text="Oil pressure">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1008" action="3507" model="5307" text="Coolant">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1009" action="3508" model="5308" text="Active ethanol">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1010" action="3509" model="5309" text="Oil temp">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1011" action="3510" model="5310" text="Voltage">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1012" action="3511" model="5311" text="Engine RPM">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1013" action="3512" model="5312" text="Speed">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1014" action="3513" model="5313" text="Engine load">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1015" action="3514" model="5314" text="Manifold abs.">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1016" action="3515" model="5315" text="Air flow">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1017" action="3516" model="5316" text="Throttle">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1018" action="3517" model="5317" text="Barometric">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1019" action="3518" model="5318" text="Outside air">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1020" action="3519" model="5319" text="Fuel rate">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1021" action="3520" model="5320" text="Fuel level">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1022" action="3521" model="5321" text="Accel. pedal">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1023" action="3522" model="5322" text="Spark advance">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1024" action="3523" model="5323" text="Absolute load">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1025" action="3524" model="5324" text="STFT bank 1">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1026" action="3525" model="5325" text="LTFT bank 1">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1027" action="3526" model="5326" text="STFT bank 2">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1028" action="3527" model="5327" text="LTFT bank 2">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1029" action="3528" model="5328" text="Lambda target">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1030" action="3529" model="5329" text="Catalyst temp">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1031" action="3530" model="5330" text="Throttle target">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1032" action="3531" model="5331" text="DPF soot">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1033" action="3532" model="5332" text="DPF pressure">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1034" action="3533" model="5333" text="DPF regen dist.">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1035" action="3534" model="5334" text="EGT pre-DPF">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1036" action="3535" model="5335" text="EGT pre-cat">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1037" action="3536" model="5336" text="AdBlue level">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1038" action="3537" model="5337" text="DDE torque">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1039" action="3538" model="5338" text="Power (calc.)">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1040" action="3539" model="5339" text="Fuel volume">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
+          <radiobutton id="3500" action="3500" model="5300" text="Boost" />
+          <radiobutton id="3501" action="3501" model="5301" text="AFR" />
+          <radiobutton id="3502" action="3502" model="5302" text="Timing" />
+          <radiobutton id="3503" action="3503" model="5303" text="Intake air" />
+          <radiobutton id="3504" action="3504" model="5304" text="Trans temp" />
+          <radiobutton id="3505" action="3505" model="5305" text="Rail pressure" />
+          <radiobutton id="3506" action="3506" model="5306" text="Oil pressure" />
+          <radiobutton id="3507" action="3507" model="5307" text="Coolant" />
+          <radiobutton id="3508" action="3508" model="5308" text="Active ethanol" />
+          <radiobutton id="3509" action="3509" model="5309" text="Oil temp" />
+          <radiobutton id="3510" action="3510" model="5310" text="Voltage" />
+          <radiobutton id="3511" action="3511" model="5311" text="Engine RPM" />
+          <radiobutton id="3512" action="3512" model="5312" text="Speed" />
+          <radiobutton id="3513" action="3513" model="5313" text="Engine load" />
+          <radiobutton id="3514" action="3514" model="5314" text="Manifold abs." />
+          <radiobutton id="3515" action="3515" model="5315" text="Air flow" />
+          <radiobutton id="3516" action="3516" model="5316" text="Throttle" />
+          <radiobutton id="3517" action="3517" model="5317" text="Barometric" />
+          <radiobutton id="3518" action="3518" model="5318" text="Outside air" />
+          <radiobutton id="3519" action="3519" model="5319" text="Fuel rate" />
+          <radiobutton id="3520" action="3520" model="5320" text="Fuel level" />
+          <radiobutton id="3521" action="3521" model="5321" text="Accel. pedal" />
+          <radiobutton id="3522" action="3522" model="5322" text="Spark advance" />
+          <radiobutton id="3523" action="3523" model="5323" text="Absolute load" />
+          <radiobutton id="3524" action="3524" model="5324" text="STFT bank 1" />
+          <radiobutton id="3525" action="3525" model="5325" text="LTFT bank 1" />
+          <radiobutton id="3526" action="3526" model="5326" text="STFT bank 2" />
+          <radiobutton id="3527" action="3527" model="5327" text="LTFT bank 2" />
+          <radiobutton id="3528" action="3528" model="5328" text="Lambda target" />
+          <radiobutton id="3529" action="3529" model="5329" text="Catalyst temp" />
+          <radiobutton id="3530" action="3530" model="5330" text="Throttle target" />
+          <radiobutton id="3531" action="3531" model="5331" text="DPF soot" />
+          <radiobutton id="3532" action="3532" model="5332" text="DPF pressure" />
+          <radiobutton id="3533" action="3533" model="5333" text="DPF regen dist." />
+          <radiobutton id="3534" action="3534" model="5334" text="EGT pre-DPF" />
+          <radiobutton id="3535" action="3535" model="5335" text="EGT pre-cat" />
+          <radiobutton id="3536" action="3536" model="5336" text="AdBlue level" />
+          <radiobutton id="3537" action="3537" model="5337" text="DDE torque" />
+          <radiobutton id="3538" action="3538" model="5338" text="Power (calc.)" />
+          <radiobutton id="3539" action="3539" model="5339" text="Fuel volume" />
+          <radiobutton id="3540" action="3540" model="5340" text="DDE relative torque, % (experimental)" />
         </components>
       </hmiState>
       <hmiState id="511" parentId="500" text="Gauge 2">
         <components>
-          <radiobutton id="1042" action="3500" model="5300" text="Boost">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1043" action="3501" model="5301" text="AFR">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1044" action="3502" model="5302" text="Timing">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1045" action="3503" model="5303" text="Intake air">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1046" action="3504" model="5304" text="Trans temp">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1047" action="3505" model="5305" text="Rail pressure">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1048" action="3506" model="5306" text="Oil pressure">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1049" action="3507" model="5307" text="Coolant">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1050" action="3508" model="5308" text="Active ethanol">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1051" action="3509" model="5309" text="Oil temp">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1052" action="3510" model="5310" text="Voltage">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1053" action="3511" model="5311" text="Engine RPM">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1054" action="3512" model="5312" text="Speed">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1055" action="3513" model="5313" text="Engine load">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1056" action="3514" model="5314" text="Manifold abs.">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1057" action="3515" model="5315" text="Air flow">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1058" action="3516" model="5316" text="Throttle">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1059" action="3517" model="5317" text="Barometric">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1060" action="3518" model="5318" text="Outside air">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1061" action="3519" model="5319" text="Fuel rate">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1062" action="3520" model="5320" text="Fuel level">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1063" action="3521" model="5321" text="Accel. pedal">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1064" action="3522" model="5322" text="Spark advance">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1065" action="3523" model="5323" text="Absolute load">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1066" action="3524" model="5324" text="STFT bank 1">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1067" action="3525" model="5325" text="LTFT bank 1">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1068" action="3526" model="5326" text="STFT bank 2">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1069" action="3527" model="5327" text="LTFT bank 2">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1070" action="3528" model="5328" text="Lambda target">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1071" action="3529" model="5329" text="Catalyst temp">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1072" action="3530" model="5330" text="Throttle target">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1073" action="3531" model="5331" text="DPF soot">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1074" action="3532" model="5332" text="DPF pressure">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1075" action="3533" model="5333" text="DPF regen dist.">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1076" action="3534" model="5334" text="EGT pre-DPF">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1077" action="3535" model="5335" text="EGT pre-cat">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1078" action="3536" model="5336" text="AdBlue level">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1079" action="3537" model="5337" text="DDE torque">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1080" action="3538" model="5338" text="Power (calc.)">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1081" action="3539" model="5339" text="Fuel volume">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
+          <radiobutton id="3564" action="3500" model="5300" text="Boost" />
+          <radiobutton id="3565" action="3501" model="5301" text="AFR" />
+          <radiobutton id="3566" action="3502" model="5302" text="Timing" />
+          <radiobutton id="3567" action="3503" model="5303" text="Intake air" />
+          <radiobutton id="3568" action="3504" model="5304" text="Trans temp" />
+          <radiobutton id="3569" action="3505" model="5305" text="Rail pressure" />
+          <radiobutton id="3570" action="3506" model="5306" text="Oil pressure" />
+          <radiobutton id="3571" action="3507" model="5307" text="Coolant" />
+          <radiobutton id="3572" action="3508" model="5308" text="Active ethanol" />
+          <radiobutton id="3573" action="3509" model="5309" text="Oil temp" />
+          <radiobutton id="3574" action="3510" model="5310" text="Voltage" />
+          <radiobutton id="3575" action="3511" model="5311" text="Engine RPM" />
+          <radiobutton id="3576" action="3512" model="5312" text="Speed" />
+          <radiobutton id="3577" action="3513" model="5313" text="Engine load" />
+          <radiobutton id="3578" action="3514" model="5314" text="Manifold abs." />
+          <radiobutton id="3579" action="3515" model="5315" text="Air flow" />
+          <radiobutton id="3580" action="3516" model="5316" text="Throttle" />
+          <radiobutton id="3581" action="3517" model="5317" text="Barometric" />
+          <radiobutton id="3582" action="3518" model="5318" text="Outside air" />
+          <radiobutton id="3583" action="3519" model="5319" text="Fuel rate" />
+          <radiobutton id="3584" action="3520" model="5320" text="Fuel level" />
+          <radiobutton id="3585" action="3521" model="5321" text="Accel. pedal" />
+          <radiobutton id="3586" action="3522" model="5322" text="Spark advance" />
+          <radiobutton id="3587" action="3523" model="5323" text="Absolute load" />
+          <radiobutton id="3588" action="3524" model="5324" text="STFT bank 1" />
+          <radiobutton id="3589" action="3525" model="5325" text="LTFT bank 1" />
+          <radiobutton id="3590" action="3526" model="5326" text="STFT bank 2" />
+          <radiobutton id="3591" action="3527" model="5327" text="LTFT bank 2" />
+          <radiobutton id="3592" action="3528" model="5328" text="Lambda target" />
+          <radiobutton id="3593" action="3529" model="5329" text="Catalyst temp" />
+          <radiobutton id="3594" action="3530" model="5330" text="Throttle target" />
+          <radiobutton id="3595" action="3531" model="5331" text="DPF soot" />
+          <radiobutton id="3596" action="3532" model="5332" text="DPF pressure" />
+          <radiobutton id="3597" action="3533" model="5333" text="DPF regen dist." />
+          <radiobutton id="3598" action="3534" model="5334" text="EGT pre-DPF" />
+          <radiobutton id="3599" action="3535" model="5335" text="EGT pre-cat" />
+          <radiobutton id="3600" action="3536" model="5336" text="AdBlue level" />
+          <radiobutton id="3601" action="3537" model="5337" text="DDE torque" />
+          <radiobutton id="3602" action="3538" model="5338" text="Power (calc.)" />
+          <radiobutton id="3603" action="3539" model="5339" text="Fuel volume" />
+          <radiobutton id="3604" action="3540" model="5340" text="DDE relative torque, % (experimental)" />
         </components>
       </hmiState>
       <hmiState id="512" parentId="500" text="Gauge 3">
         <components>
-          <radiobutton id="1083" action="3500" model="5300" text="Boost">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1084" action="3501" model="5301" text="AFR">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1085" action="3502" model="5302" text="Timing">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1086" action="3503" model="5303" text="Intake air">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1087" action="3504" model="5304" text="Trans temp">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1088" action="3505" model="5305" text="Rail pressure">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1089" action="3506" model="5306" text="Oil pressure">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1090" action="3507" model="5307" text="Coolant">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1091" action="3508" model="5308" text="Active ethanol">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1092" action="3509" model="5309" text="Oil temp">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1093" action="3510" model="5310" text="Voltage">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1094" action="3511" model="5311" text="Engine RPM">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1095" action="3512" model="5312" text="Speed">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1096" action="3513" model="5313" text="Engine load">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1097" action="3514" model="5314" text="Manifold abs.">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1098" action="3515" model="5315" text="Air flow">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1099" action="3516" model="5316" text="Throttle">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1100" action="3517" model="5317" text="Barometric">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1101" action="3518" model="5318" text="Outside air">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1102" action="3519" model="5319" text="Fuel rate">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1103" action="3520" model="5320" text="Fuel level">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1104" action="3521" model="5321" text="Accel. pedal">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1105" action="3522" model="5322" text="Spark advance">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1106" action="3523" model="5323" text="Absolute load">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1107" action="3524" model="5324" text="STFT bank 1">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1108" action="3525" model="5325" text="LTFT bank 1">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1109" action="3526" model="5326" text="STFT bank 2">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1110" action="3527" model="5327" text="LTFT bank 2">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1111" action="3528" model="5328" text="Lambda target">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1112" action="3529" model="5329" text="Catalyst temp">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1113" action="3530" model="5330" text="Throttle target">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1114" action="3531" model="5331" text="DPF soot">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1115" action="3532" model="5332" text="DPF pressure">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1116" action="3533" model="5333" text="DPF regen dist.">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1117" action="3534" model="5334" text="EGT pre-DPF">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1118" action="3535" model="5335" text="EGT pre-cat">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1119" action="3536" model="5336" text="AdBlue level">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1120" action="3537" model="5337" text="DDE torque">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1121" action="3538" model="5338" text="Power (calc.)">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1122" action="3539" model="5339" text="Fuel volume">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
+          <radiobutton id="3628" action="3500" model="5300" text="Boost" />
+          <radiobutton id="3629" action="3501" model="5301" text="AFR" />
+          <radiobutton id="3630" action="3502" model="5302" text="Timing" />
+          <radiobutton id="3631" action="3503" model="5303" text="Intake air" />
+          <radiobutton id="3632" action="3504" model="5304" text="Trans temp" />
+          <radiobutton id="3633" action="3505" model="5305" text="Rail pressure" />
+          <radiobutton id="3634" action="3506" model="5306" text="Oil pressure" />
+          <radiobutton id="3635" action="3507" model="5307" text="Coolant" />
+          <radiobutton id="3636" action="3508" model="5308" text="Active ethanol" />
+          <radiobutton id="3637" action="3509" model="5309" text="Oil temp" />
+          <radiobutton id="3638" action="3510" model="5310" text="Voltage" />
+          <radiobutton id="3639" action="3511" model="5311" text="Engine RPM" />
+          <radiobutton id="3640" action="3512" model="5312" text="Speed" />
+          <radiobutton id="3641" action="3513" model="5313" text="Engine load" />
+          <radiobutton id="3642" action="3514" model="5314" text="Manifold abs." />
+          <radiobutton id="3643" action="3515" model="5315" text="Air flow" />
+          <radiobutton id="3644" action="3516" model="5316" text="Throttle" />
+          <radiobutton id="3645" action="3517" model="5317" text="Barometric" />
+          <radiobutton id="3646" action="3518" model="5318" text="Outside air" />
+          <radiobutton id="3647" action="3519" model="5319" text="Fuel rate" />
+          <radiobutton id="3648" action="3520" model="5320" text="Fuel level" />
+          <radiobutton id="3649" action="3521" model="5321" text="Accel. pedal" />
+          <radiobutton id="3650" action="3522" model="5322" text="Spark advance" />
+          <radiobutton id="3651" action="3523" model="5323" text="Absolute load" />
+          <radiobutton id="3652" action="3524" model="5324" text="STFT bank 1" />
+          <radiobutton id="3653" action="3525" model="5325" text="LTFT bank 1" />
+          <radiobutton id="3654" action="3526" model="5326" text="STFT bank 2" />
+          <radiobutton id="3655" action="3527" model="5327" text="LTFT bank 2" />
+          <radiobutton id="3656" action="3528" model="5328" text="Lambda target" />
+          <radiobutton id="3657" action="3529" model="5329" text="Catalyst temp" />
+          <radiobutton id="3658" action="3530" model="5330" text="Throttle target" />
+          <radiobutton id="3659" action="3531" model="5331" text="DPF soot" />
+          <radiobutton id="3660" action="3532" model="5332" text="DPF pressure" />
+          <radiobutton id="3661" action="3533" model="5333" text="DPF regen dist." />
+          <radiobutton id="3662" action="3534" model="5334" text="EGT pre-DPF" />
+          <radiobutton id="3663" action="3535" model="5335" text="EGT pre-cat" />
+          <radiobutton id="3664" action="3536" model="5336" text="AdBlue level" />
+          <radiobutton id="3665" action="3537" model="5337" text="DDE torque" />
+          <radiobutton id="3666" action="3538" model="5338" text="Power (calc.)" />
+          <radiobutton id="3667" action="3539" model="5339" text="Fuel volume" />
+          <radiobutton id="3668" action="3540" model="5340" text="DDE relative torque, % (experimental)" />
         </components>
       </hmiState>
       <hmiState id="513" parentId="500" text="Gauge 4">
         <components>
-          <radiobutton id="1124" action="3500" model="5300" text="Boost">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1125" action="3501" model="5301" text="AFR">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1126" action="3502" model="5302" text="Timing">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1127" action="3503" model="5303" text="Intake air">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1128" action="3504" model="5304" text="Trans temp">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1129" action="3505" model="5305" text="Rail pressure">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1130" action="3506" model="5306" text="Oil pressure">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1131" action="3507" model="5307" text="Coolant">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1132" action="3508" model="5308" text="Active ethanol">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1133" action="3509" model="5309" text="Oil temp">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1134" action="3510" model="5310" text="Voltage">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1135" action="3511" model="5311" text="Engine RPM">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1136" action="3512" model="5312" text="Speed">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1137" action="3513" model="5313" text="Engine load">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1138" action="3514" model="5314" text="Manifold abs.">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1139" action="3515" model="5315" text="Air flow">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1140" action="3516" model="5316" text="Throttle">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1141" action="3517" model="5317" text="Barometric">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1142" action="3518" model="5318" text="Outside air">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1143" action="3519" model="5319" text="Fuel rate">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1144" action="3520" model="5320" text="Fuel level">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1145" action="3521" model="5321" text="Accel. pedal">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1146" action="3522" model="5322" text="Spark advance">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1147" action="3523" model="5323" text="Absolute load">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1148" action="3524" model="5324" text="STFT bank 1">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1149" action="3525" model="5325" text="LTFT bank 1">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1150" action="3526" model="5326" text="STFT bank 2">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1151" action="3527" model="5327" text="LTFT bank 2">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1152" action="3528" model="5328" text="Lambda target">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1153" action="3529" model="5329" text="Catalyst temp">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1154" action="3530" model="5330" text="Throttle target">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1155" action="3531" model="5331" text="DPF soot">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1156" action="3532" model="5332" text="DPF pressure">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1157" action="3533" model="5333" text="DPF regen dist.">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1158" action="3534" model="5334" text="EGT pre-DPF">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1159" action="3535" model="5335" text="EGT pre-cat">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1160" action="3536" model="5336" text="AdBlue level">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1161" action="3537" model="5337" text="DDE torque">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1162" action="3538" model="5338" text="Power (calc.)">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1163" action="3539" model="5339" text="Fuel volume">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
+          <radiobutton id="3692" action="3500" model="5300" text="Boost" />
+          <radiobutton id="3693" action="3501" model="5301" text="AFR" />
+          <radiobutton id="3694" action="3502" model="5302" text="Timing" />
+          <radiobutton id="3695" action="3503" model="5303" text="Intake air" />
+          <radiobutton id="3696" action="3504" model="5304" text="Trans temp" />
+          <radiobutton id="3697" action="3505" model="5305" text="Rail pressure" />
+          <radiobutton id="3698" action="3506" model="5306" text="Oil pressure" />
+          <radiobutton id="3699" action="3507" model="5307" text="Coolant" />
+          <radiobutton id="3700" action="3508" model="5308" text="Active ethanol" />
+          <radiobutton id="3701" action="3509" model="5309" text="Oil temp" />
+          <radiobutton id="3702" action="3510" model="5310" text="Voltage" />
+          <radiobutton id="3703" action="3511" model="5311" text="Engine RPM" />
+          <radiobutton id="3704" action="3512" model="5312" text="Speed" />
+          <radiobutton id="3705" action="3513" model="5313" text="Engine load" />
+          <radiobutton id="3706" action="3514" model="5314" text="Manifold abs." />
+          <radiobutton id="3707" action="3515" model="5315" text="Air flow" />
+          <radiobutton id="3708" action="3516" model="5316" text="Throttle" />
+          <radiobutton id="3709" action="3517" model="5317" text="Barometric" />
+          <radiobutton id="3710" action="3518" model="5318" text="Outside air" />
+          <radiobutton id="3711" action="3519" model="5319" text="Fuel rate" />
+          <radiobutton id="3712" action="3520" model="5320" text="Fuel level" />
+          <radiobutton id="3713" action="3521" model="5321" text="Accel. pedal" />
+          <radiobutton id="3714" action="3522" model="5322" text="Spark advance" />
+          <radiobutton id="3715" action="3523" model="5323" text="Absolute load" />
+          <radiobutton id="3716" action="3524" model="5324" text="STFT bank 1" />
+          <radiobutton id="3717" action="3525" model="5325" text="LTFT bank 1" />
+          <radiobutton id="3718" action="3526" model="5326" text="STFT bank 2" />
+          <radiobutton id="3719" action="3527" model="5327" text="LTFT bank 2" />
+          <radiobutton id="3720" action="3528" model="5328" text="Lambda target" />
+          <radiobutton id="3721" action="3529" model="5329" text="Catalyst temp" />
+          <radiobutton id="3722" action="3530" model="5330" text="Throttle target" />
+          <radiobutton id="3723" action="3531" model="5331" text="DPF soot" />
+          <radiobutton id="3724" action="3532" model="5332" text="DPF pressure" />
+          <radiobutton id="3725" action="3533" model="5333" text="DPF regen dist." />
+          <radiobutton id="3726" action="3534" model="5334" text="EGT pre-DPF" />
+          <radiobutton id="3727" action="3535" model="5335" text="EGT pre-cat" />
+          <radiobutton id="3728" action="3536" model="5336" text="AdBlue level" />
+          <radiobutton id="3729" action="3537" model="5337" text="DDE torque" />
+          <radiobutton id="3730" action="3538" model="5338" text="Power (calc.)" />
+          <radiobutton id="3731" action="3539" model="5339" text="Fuel volume" />
+          <radiobutton id="3732" action="3540" model="5340" text="DDE relative torque, % (experimental)" />
         </components>
       </hmiState>
       <hmiState id="514" parentId="500" text="Gauge 5">
         <components>
-          <radiobutton id="1165" action="3500" model="5300" text="Boost">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1166" action="3501" model="5301" text="AFR">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1167" action="3502" model="5302" text="Timing">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1168" action="3503" model="5303" text="Intake air">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1169" action="3504" model="5304" text="Trans temp">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1170" action="3505" model="5305" text="Rail pressure">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1171" action="3506" model="5306" text="Oil pressure">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1172" action="3507" model="5307" text="Coolant">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1173" action="3508" model="5308" text="Active ethanol">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1174" action="3509" model="5309" text="Oil temp">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1175" action="3510" model="5310" text="Voltage">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1176" action="3511" model="5311" text="Engine RPM">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1177" action="3512" model="5312" text="Speed">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1178" action="3513" model="5313" text="Engine load">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1179" action="3514" model="5314" text="Manifold abs.">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1180" action="3515" model="5315" text="Air flow">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1181" action="3516" model="5316" text="Throttle">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1182" action="3517" model="5317" text="Barometric">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1183" action="3518" model="5318" text="Outside air">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1184" action="3519" model="5319" text="Fuel rate">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1185" action="3520" model="5320" text="Fuel level">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1186" action="3521" model="5321" text="Accel. pedal">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1187" action="3522" model="5322" text="Spark advance">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1188" action="3523" model="5323" text="Absolute load">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1189" action="3524" model="5324" text="STFT bank 1">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1190" action="3525" model="5325" text="LTFT bank 1">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1191" action="3526" model="5326" text="STFT bank 2">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1192" action="3527" model="5327" text="LTFT bank 2">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1193" action="3528" model="5328" text="Lambda target">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1194" action="3529" model="5329" text="Catalyst temp">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1195" action="3530" model="5330" text="Throttle target">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1196" action="3531" model="5331" text="DPF soot">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1197" action="3532" model="5332" text="DPF pressure">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1198" action="3533" model="5333" text="DPF regen dist.">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1199" action="3534" model="5334" text="EGT pre-DPF">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1200" action="3535" model="5335" text="EGT pre-cat">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1201" action="3536" model="5336" text="AdBlue level">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1202" action="3537" model="5337" text="DDE torque">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1203" action="3538" model="5338" text="Power (calc.)">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1204" action="3539" model="5339" text="Fuel volume">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
+          <radiobutton id="3756" action="3500" model="5300" text="Boost" />
+          <radiobutton id="3757" action="3501" model="5301" text="AFR" />
+          <radiobutton id="3758" action="3502" model="5302" text="Timing" />
+          <radiobutton id="3759" action="3503" model="5303" text="Intake air" />
+          <radiobutton id="3760" action="3504" model="5304" text="Trans temp" />
+          <radiobutton id="3761" action="3505" model="5305" text="Rail pressure" />
+          <radiobutton id="3762" action="3506" model="5306" text="Oil pressure" />
+          <radiobutton id="3763" action="3507" model="5307" text="Coolant" />
+          <radiobutton id="3764" action="3508" model="5308" text="Active ethanol" />
+          <radiobutton id="3765" action="3509" model="5309" text="Oil temp" />
+          <radiobutton id="3766" action="3510" model="5310" text="Voltage" />
+          <radiobutton id="3767" action="3511" model="5311" text="Engine RPM" />
+          <radiobutton id="3768" action="3512" model="5312" text="Speed" />
+          <radiobutton id="3769" action="3513" model="5313" text="Engine load" />
+          <radiobutton id="3770" action="3514" model="5314" text="Manifold abs." />
+          <radiobutton id="3771" action="3515" model="5315" text="Air flow" />
+          <radiobutton id="3772" action="3516" model="5316" text="Throttle" />
+          <radiobutton id="3773" action="3517" model="5317" text="Barometric" />
+          <radiobutton id="3774" action="3518" model="5318" text="Outside air" />
+          <radiobutton id="3775" action="3519" model="5319" text="Fuel rate" />
+          <radiobutton id="3776" action="3520" model="5320" text="Fuel level" />
+          <radiobutton id="3777" action="3521" model="5321" text="Accel. pedal" />
+          <radiobutton id="3778" action="3522" model="5322" text="Spark advance" />
+          <radiobutton id="3779" action="3523" model="5323" text="Absolute load" />
+          <radiobutton id="3780" action="3524" model="5324" text="STFT bank 1" />
+          <radiobutton id="3781" action="3525" model="5325" text="LTFT bank 1" />
+          <radiobutton id="3782" action="3526" model="5326" text="STFT bank 2" />
+          <radiobutton id="3783" action="3527" model="5327" text="LTFT bank 2" />
+          <radiobutton id="3784" action="3528" model="5328" text="Lambda target" />
+          <radiobutton id="3785" action="3529" model="5329" text="Catalyst temp" />
+          <radiobutton id="3786" action="3530" model="5330" text="Throttle target" />
+          <radiobutton id="3787" action="3531" model="5331" text="DPF soot" />
+          <radiobutton id="3788" action="3532" model="5332" text="DPF pressure" />
+          <radiobutton id="3789" action="3533" model="5333" text="DPF regen dist." />
+          <radiobutton id="3790" action="3534" model="5334" text="EGT pre-DPF" />
+          <radiobutton id="3791" action="3535" model="5335" text="EGT pre-cat" />
+          <radiobutton id="3792" action="3536" model="5336" text="AdBlue level" />
+          <radiobutton id="3793" action="3537" model="5337" text="DDE torque" />
+          <radiobutton id="3794" action="3538" model="5338" text="Power (calc.)" />
+          <radiobutton id="3795" action="3539" model="5339" text="Fuel volume" />
+          <radiobutton id="3796" action="3540" model="5340" text="DDE relative torque, % (experimental)" />
         </components>
       </hmiState>
       <hmiState id="515" parentId="500" text="Gauge 6">
         <components>
-          <radiobutton id="1206" action="3500" model="5300" text="Boost">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1207" action="3501" model="5301" text="AFR">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1208" action="3502" model="5302" text="Timing">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1209" action="3503" model="5303" text="Intake air">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1210" action="3504" model="5304" text="Trans temp">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1211" action="3505" model="5305" text="Rail pressure">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1212" action="3506" model="5306" text="Oil pressure">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1213" action="3507" model="5307" text="Coolant">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1214" action="3508" model="5308" text="Active ethanol">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1215" action="3509" model="5309" text="Oil temp">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1216" action="3510" model="5310" text="Voltage">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1217" action="3511" model="5311" text="Engine RPM">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1218" action="3512" model="5312" text="Speed">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1219" action="3513" model="5313" text="Engine load">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1220" action="3514" model="5314" text="Manifold abs.">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1221" action="3515" model="5315" text="Air flow">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1222" action="3516" model="5316" text="Throttle">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1223" action="3517" model="5317" text="Barometric">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1224" action="3518" model="5318" text="Outside air">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1225" action="3519" model="5319" text="Fuel rate">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1226" action="3520" model="5320" text="Fuel level">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1227" action="3521" model="5321" text="Accel. pedal">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1228" action="3522" model="5322" text="Spark advance">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1229" action="3523" model="5323" text="Absolute load">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1230" action="3524" model="5324" text="STFT bank 1">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1231" action="3525" model="5325" text="LTFT bank 1">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1232" action="3526" model="5326" text="STFT bank 2">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1233" action="3527" model="5327" text="LTFT bank 2">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1234" action="3528" model="5328" text="Lambda target">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1235" action="3529" model="5329" text="Catalyst temp">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1236" action="3530" model="5330" text="Throttle target">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1237" action="3531" model="5331" text="DPF soot">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1238" action="3532" model="5332" text="DPF pressure">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1239" action="3533" model="5333" text="DPF regen dist.">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1240" action="3534" model="5334" text="EGT pre-DPF">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1241" action="3535" model="5335" text="EGT pre-cat">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1242" action="3536" model="5336" text="AdBlue level">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1243" action="3537" model="5337" text="DDE torque">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1244" action="3538" model="5338" text="Power (calc.)">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1245" action="3539" model="5339" text="Fuel volume">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
+          <radiobutton id="3820" action="3500" model="5300" text="Boost" />
+          <radiobutton id="3821" action="3501" model="5301" text="AFR" />
+          <radiobutton id="3822" action="3502" model="5302" text="Timing" />
+          <radiobutton id="3823" action="3503" model="5303" text="Intake air" />
+          <radiobutton id="3824" action="3504" model="5304" text="Trans temp" />
+          <radiobutton id="3825" action="3505" model="5305" text="Rail pressure" />
+          <radiobutton id="3826" action="3506" model="5306" text="Oil pressure" />
+          <radiobutton id="3827" action="3507" model="5307" text="Coolant" />
+          <radiobutton id="3828" action="3508" model="5308" text="Active ethanol" />
+          <radiobutton id="3829" action="3509" model="5309" text="Oil temp" />
+          <radiobutton id="3830" action="3510" model="5310" text="Voltage" />
+          <radiobutton id="3831" action="3511" model="5311" text="Engine RPM" />
+          <radiobutton id="3832" action="3512" model="5312" text="Speed" />
+          <radiobutton id="3833" action="3513" model="5313" text="Engine load" />
+          <radiobutton id="3834" action="3514" model="5314" text="Manifold abs." />
+          <radiobutton id="3835" action="3515" model="5315" text="Air flow" />
+          <radiobutton id="3836" action="3516" model="5316" text="Throttle" />
+          <radiobutton id="3837" action="3517" model="5317" text="Barometric" />
+          <radiobutton id="3838" action="3518" model="5318" text="Outside air" />
+          <radiobutton id="3839" action="3519" model="5319" text="Fuel rate" />
+          <radiobutton id="3840" action="3520" model="5320" text="Fuel level" />
+          <radiobutton id="3841" action="3521" model="5321" text="Accel. pedal" />
+          <radiobutton id="3842" action="3522" model="5322" text="Spark advance" />
+          <radiobutton id="3843" action="3523" model="5323" text="Absolute load" />
+          <radiobutton id="3844" action="3524" model="5324" text="STFT bank 1" />
+          <radiobutton id="3845" action="3525" model="5325" text="LTFT bank 1" />
+          <radiobutton id="3846" action="3526" model="5326" text="STFT bank 2" />
+          <radiobutton id="3847" action="3527" model="5327" text="LTFT bank 2" />
+          <radiobutton id="3848" action="3528" model="5328" text="Lambda target" />
+          <radiobutton id="3849" action="3529" model="5329" text="Catalyst temp" />
+          <radiobutton id="3850" action="3530" model="5330" text="Throttle target" />
+          <radiobutton id="3851" action="3531" model="5331" text="DPF soot" />
+          <radiobutton id="3852" action="3532" model="5332" text="DPF pressure" />
+          <radiobutton id="3853" action="3533" model="5333" text="DPF regen dist." />
+          <radiobutton id="3854" action="3534" model="5334" text="EGT pre-DPF" />
+          <radiobutton id="3855" action="3535" model="5335" text="EGT pre-cat" />
+          <radiobutton id="3856" action="3536" model="5336" text="AdBlue level" />
+          <radiobutton id="3857" action="3537" model="5337" text="DDE torque" />
+          <radiobutton id="3858" action="3538" model="5338" text="Power (calc.)" />
+          <radiobutton id="3859" action="3539" model="5339" text="Fuel volume" />
+          <radiobutton id="3860" action="3540" model="5340" text="DDE relative torque, % (experimental)" />
         </components>
       </hmiState>
       <hmiState id="516" parentId="500" text="Gauge 7">
         <components>
-          <radiobutton id="1247" action="3500" model="5300" text="Boost">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1248" action="3501" model="5301" text="AFR">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1249" action="3502" model="5302" text="Timing">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1250" action="3503" model="5303" text="Intake air">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1251" action="3504" model="5304" text="Trans temp">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1252" action="3505" model="5305" text="Rail pressure">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1253" action="3506" model="5306" text="Oil pressure">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1254" action="3507" model="5307" text="Coolant">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1255" action="3508" model="5308" text="Active ethanol">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1256" action="3509" model="5309" text="Oil temp">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1257" action="3510" model="5310" text="Voltage">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1258" action="3511" model="5311" text="Engine RPM">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1259" action="3512" model="5312" text="Speed">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1260" action="3513" model="5313" text="Engine load">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1261" action="3514" model="5314" text="Manifold abs.">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1262" action="3515" model="5315" text="Air flow">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1263" action="3516" model="5316" text="Throttle">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1264" action="3517" model="5317" text="Barometric">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1265" action="3518" model="5318" text="Outside air">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1266" action="3519" model="5319" text="Fuel rate">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1267" action="3520" model="5320" text="Fuel level">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1268" action="3521" model="5321" text="Accel. pedal">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1269" action="3522" model="5322" text="Spark advance">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1270" action="3523" model="5323" text="Absolute load">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1271" action="3524" model="5324" text="STFT bank 1">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1272" action="3525" model="5325" text="LTFT bank 1">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1273" action="3526" model="5326" text="STFT bank 2">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1274" action="3527" model="5327" text="LTFT bank 2">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1275" action="3528" model="5328" text="Lambda target">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1276" action="3529" model="5329" text="Catalyst temp">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1277" action="3530" model="5330" text="Throttle target">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1278" action="3531" model="5331" text="DPF soot">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1279" action="3532" model="5332" text="DPF pressure">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1280" action="3533" model="5333" text="DPF regen dist.">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1281" action="3534" model="5334" text="EGT pre-DPF">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1282" action="3535" model="5335" text="EGT pre-cat">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1283" action="3536" model="5336" text="AdBlue level">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1284" action="3537" model="5337" text="DDE torque">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1285" action="3538" model="5338" text="Power (calc.)">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1286" action="3539" model="5339" text="Fuel volume">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
+          <radiobutton id="3884" action="3500" model="5300" text="Boost" />
+          <radiobutton id="3885" action="3501" model="5301" text="AFR" />
+          <radiobutton id="3886" action="3502" model="5302" text="Timing" />
+          <radiobutton id="3887" action="3503" model="5303" text="Intake air" />
+          <radiobutton id="3888" action="3504" model="5304" text="Trans temp" />
+          <radiobutton id="3889" action="3505" model="5305" text="Rail pressure" />
+          <radiobutton id="3890" action="3506" model="5306" text="Oil pressure" />
+          <radiobutton id="3891" action="3507" model="5307" text="Coolant" />
+          <radiobutton id="3892" action="3508" model="5308" text="Active ethanol" />
+          <radiobutton id="3893" action="3509" model="5309" text="Oil temp" />
+          <radiobutton id="3894" action="3510" model="5310" text="Voltage" />
+          <radiobutton id="3895" action="3511" model="5311" text="Engine RPM" />
+          <radiobutton id="3896" action="3512" model="5312" text="Speed" />
+          <radiobutton id="3897" action="3513" model="5313" text="Engine load" />
+          <radiobutton id="3898" action="3514" model="5314" text="Manifold abs." />
+          <radiobutton id="3899" action="3515" model="5315" text="Air flow" />
+          <radiobutton id="3900" action="3516" model="5316" text="Throttle" />
+          <radiobutton id="3901" action="3517" model="5317" text="Barometric" />
+          <radiobutton id="3902" action="3518" model="5318" text="Outside air" />
+          <radiobutton id="3903" action="3519" model="5319" text="Fuel rate" />
+          <radiobutton id="3904" action="3520" model="5320" text="Fuel level" />
+          <radiobutton id="3905" action="3521" model="5321" text="Accel. pedal" />
+          <radiobutton id="3906" action="3522" model="5322" text="Spark advance" />
+          <radiobutton id="3907" action="3523" model="5323" text="Absolute load" />
+          <radiobutton id="3908" action="3524" model="5324" text="STFT bank 1" />
+          <radiobutton id="3909" action="3525" model="5325" text="LTFT bank 1" />
+          <radiobutton id="3910" action="3526" model="5326" text="STFT bank 2" />
+          <radiobutton id="3911" action="3527" model="5327" text="LTFT bank 2" />
+          <radiobutton id="3912" action="3528" model="5328" text="Lambda target" />
+          <radiobutton id="3913" action="3529" model="5329" text="Catalyst temp" />
+          <radiobutton id="3914" action="3530" model="5330" text="Throttle target" />
+          <radiobutton id="3915" action="3531" model="5331" text="DPF soot" />
+          <radiobutton id="3916" action="3532" model="5332" text="DPF pressure" />
+          <radiobutton id="3917" action="3533" model="5333" text="DPF regen dist." />
+          <radiobutton id="3918" action="3534" model="5334" text="EGT pre-DPF" />
+          <radiobutton id="3919" action="3535" model="5335" text="EGT pre-cat" />
+          <radiobutton id="3920" action="3536" model="5336" text="AdBlue level" />
+          <radiobutton id="3921" action="3537" model="5337" text="DDE torque" />
+          <radiobutton id="3922" action="3538" model="5338" text="Power (calc.)" />
+          <radiobutton id="3923" action="3539" model="5339" text="Fuel volume" />
+          <radiobutton id="3924" action="3540" model="5340" text="DDE relative torque, % (experimental)" />
         </components>
       </hmiState>
       <hmiState id="517" parentId="500" text="Gauge 8">
         <components>
-          <radiobutton id="1288" action="3500" model="5300" text="Boost">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1289" action="3501" model="5301" text="AFR">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1290" action="3502" model="5302" text="Timing">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1291" action="3503" model="5303" text="Intake air">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1292" action="3504" model="5304" text="Trans temp">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1293" action="3505" model="5305" text="Rail pressure">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1294" action="3506" model="5306" text="Oil pressure">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1295" action="3507" model="5307" text="Coolant">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1296" action="3508" model="5308" text="Active ethanol">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1297" action="3509" model="5309" text="Oil temp">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1298" action="3510" model="5310" text="Voltage">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1299" action="3511" model="5311" text="Engine RPM">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1300" action="3512" model="5312" text="Speed">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1301" action="3513" model="5313" text="Engine load">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1302" action="3514" model="5314" text="Manifold abs.">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1303" action="3515" model="5315" text="Air flow">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1304" action="3516" model="5316" text="Throttle">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1305" action="3517" model="5317" text="Barometric">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1306" action="3518" model="5318" text="Outside air">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1307" action="3519" model="5319" text="Fuel rate">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1308" action="3520" model="5320" text="Fuel level">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1309" action="3521" model="5321" text="Accel. pedal">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1310" action="3522" model="5322" text="Spark advance">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1311" action="3523" model="5323" text="Absolute load">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1312" action="3524" model="5324" text="STFT bank 1">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1313" action="3525" model="5325" text="LTFT bank 1">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1314" action="3526" model="5326" text="STFT bank 2">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1315" action="3527" model="5327" text="LTFT bank 2">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1316" action="3528" model="5328" text="Lambda target">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1317" action="3529" model="5329" text="Catalyst temp">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1318" action="3530" model="5330" text="Throttle target">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1319" action="3531" model="5331" text="DPF soot">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1320" action="3532" model="5332" text="DPF pressure">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1321" action="3533" model="5333" text="DPF regen dist.">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1322" action="3534" model="5334" text="EGT pre-DPF">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1323" action="3535" model="5335" text="EGT pre-cat">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1324" action="3536" model="5336" text="AdBlue level">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1325" action="3537" model="5337" text="DDE torque">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1326" action="3538" model="5338" text="Power (calc.)">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1327" action="3539" model="5339" text="Fuel volume">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
+          <radiobutton id="3948" action="3500" model="5300" text="Boost" />
+          <radiobutton id="3949" action="3501" model="5301" text="AFR" />
+          <radiobutton id="3950" action="3502" model="5302" text="Timing" />
+          <radiobutton id="3951" action="3503" model="5303" text="Intake air" />
+          <radiobutton id="3952" action="3504" model="5304" text="Trans temp" />
+          <radiobutton id="3953" action="3505" model="5305" text="Rail pressure" />
+          <radiobutton id="3954" action="3506" model="5306" text="Oil pressure" />
+          <radiobutton id="3955" action="3507" model="5307" text="Coolant" />
+          <radiobutton id="3956" action="3508" model="5308" text="Active ethanol" />
+          <radiobutton id="3957" action="3509" model="5309" text="Oil temp" />
+          <radiobutton id="3958" action="3510" model="5310" text="Voltage" />
+          <radiobutton id="3959" action="3511" model="5311" text="Engine RPM" />
+          <radiobutton id="3960" action="3512" model="5312" text="Speed" />
+          <radiobutton id="3961" action="3513" model="5313" text="Engine load" />
+          <radiobutton id="3962" action="3514" model="5314" text="Manifold abs." />
+          <radiobutton id="3963" action="3515" model="5315" text="Air flow" />
+          <radiobutton id="3964" action="3516" model="5316" text="Throttle" />
+          <radiobutton id="3965" action="3517" model="5317" text="Barometric" />
+          <radiobutton id="3966" action="3518" model="5318" text="Outside air" />
+          <radiobutton id="3967" action="3519" model="5319" text="Fuel rate" />
+          <radiobutton id="3968" action="3520" model="5320" text="Fuel level" />
+          <radiobutton id="3969" action="3521" model="5321" text="Accel. pedal" />
+          <radiobutton id="3970" action="3522" model="5322" text="Spark advance" />
+          <radiobutton id="3971" action="3523" model="5323" text="Absolute load" />
+          <radiobutton id="3972" action="3524" model="5324" text="STFT bank 1" />
+          <radiobutton id="3973" action="3525" model="5325" text="LTFT bank 1" />
+          <radiobutton id="3974" action="3526" model="5326" text="STFT bank 2" />
+          <radiobutton id="3975" action="3527" model="5327" text="LTFT bank 2" />
+          <radiobutton id="3976" action="3528" model="5328" text="Lambda target" />
+          <radiobutton id="3977" action="3529" model="5329" text="Catalyst temp" />
+          <radiobutton id="3978" action="3530" model="5330" text="Throttle target" />
+          <radiobutton id="3979" action="3531" model="5331" text="DPF soot" />
+          <radiobutton id="3980" action="3532" model="5332" text="DPF pressure" />
+          <radiobutton id="3981" action="3533" model="5333" text="DPF regen dist." />
+          <radiobutton id="3982" action="3534" model="5334" text="EGT pre-DPF" />
+          <radiobutton id="3983" action="3535" model="5335" text="EGT pre-cat" />
+          <radiobutton id="3984" action="3536" model="5336" text="AdBlue level" />
+          <radiobutton id="3985" action="3537" model="5337" text="DDE torque" />
+          <radiobutton id="3986" action="3538" model="5338" text="Power (calc.)" />
+          <radiobutton id="3987" action="3539" model="5339" text="Fuel volume" />
+          <radiobutton id="3988" action="3540" model="5340" text="DDE relative torque, % (experimental)" />
         </components>
       </hmiState>
       <hmiState id="518" parentId="500" text="Gauge 9">
         <components>
-          <radiobutton id="1329" action="3500" model="5300" text="Boost">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1330" action="3501" model="5301" text="AFR">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1331" action="3502" model="5302" text="Timing">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1332" action="3503" model="5303" text="Intake air">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1333" action="3504" model="5304" text="Trans temp">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1334" action="3505" model="5305" text="Rail pressure">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1335" action="3506" model="5306" text="Oil pressure">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1336" action="3507" model="5307" text="Coolant">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1337" action="3508" model="5308" text="Active ethanol">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1338" action="3509" model="5309" text="Oil temp">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1339" action="3510" model="5310" text="Voltage">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1340" action="3511" model="5311" text="Engine RPM">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1341" action="3512" model="5312" text="Speed">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1342" action="3513" model="5313" text="Engine load">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1343" action="3514" model="5314" text="Manifold abs.">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1344" action="3515" model="5315" text="Air flow">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1345" action="3516" model="5316" text="Throttle">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1346" action="3517" model="5317" text="Barometric">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1347" action="3518" model="5318" text="Outside air">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1348" action="3519" model="5319" text="Fuel rate">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1349" action="3520" model="5320" text="Fuel level">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1350" action="3521" model="5321" text="Accel. pedal">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1351" action="3522" model="5322" text="Spark advance">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1352" action="3523" model="5323" text="Absolute load">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1353" action="3524" model="5324" text="STFT bank 1">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1354" action="3525" model="5325" text="LTFT bank 1">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1355" action="3526" model="5326" text="STFT bank 2">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1356" action="3527" model="5327" text="LTFT bank 2">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1357" action="3528" model="5328" text="Lambda target">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1358" action="3529" model="5329" text="Catalyst temp">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1359" action="3530" model="5330" text="Throttle target">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1360" action="3531" model="5331" text="DPF soot">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1361" action="3532" model="5332" text="DPF pressure">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1362" action="3533" model="5333" text="DPF regen dist.">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1363" action="3534" model="5334" text="EGT pre-DPF">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1364" action="3535" model="5335" text="EGT pre-cat">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1365" action="3536" model="5336" text="AdBlue level">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1366" action="3537" model="5337" text="DDE torque">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1367" action="3538" model="5338" text="Power (calc.)">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
-          <radiobutton id="1368" action="3539" model="5339" text="Fuel volume">
-            <properties>
-              <property id="9" value="1236" />
-            </properties>
-          </radiobutton>
+          <radiobutton id="4012" action="3500" model="5300" text="Boost" />
+          <radiobutton id="4013" action="3501" model="5301" text="AFR" />
+          <radiobutton id="4014" action="3502" model="5302" text="Timing" />
+          <radiobutton id="4015" action="3503" model="5303" text="Intake air" />
+          <radiobutton id="4016" action="3504" model="5304" text="Trans temp" />
+          <radiobutton id="4017" action="3505" model="5305" text="Rail pressure" />
+          <radiobutton id="4018" action="3506" model="5306" text="Oil pressure" />
+          <radiobutton id="4019" action="3507" model="5307" text="Coolant" />
+          <radiobutton id="4020" action="3508" model="5308" text="Active ethanol" />
+          <radiobutton id="4021" action="3509" model="5309" text="Oil temp" />
+          <radiobutton id="4022" action="3510" model="5310" text="Voltage" />
+          <radiobutton id="4023" action="3511" model="5311" text="Engine RPM" />
+          <radiobutton id="4024" action="3512" model="5312" text="Speed" />
+          <radiobutton id="4025" action="3513" model="5313" text="Engine load" />
+          <radiobutton id="4026" action="3514" model="5314" text="Manifold abs." />
+          <radiobutton id="4027" action="3515" model="5315" text="Air flow" />
+          <radiobutton id="4028" action="3516" model="5316" text="Throttle" />
+          <radiobutton id="4029" action="3517" model="5317" text="Barometric" />
+          <radiobutton id="4030" action="3518" model="5318" text="Outside air" />
+          <radiobutton id="4031" action="3519" model="5319" text="Fuel rate" />
+          <radiobutton id="4032" action="3520" model="5320" text="Fuel level" />
+          <radiobutton id="4033" action="3521" model="5321" text="Accel. pedal" />
+          <radiobutton id="4034" action="3522" model="5322" text="Spark advance" />
+          <radiobutton id="4035" action="3523" model="5323" text="Absolute load" />
+          <radiobutton id="4036" action="3524" model="5324" text="STFT bank 1" />
+          <radiobutton id="4037" action="3525" model="5325" text="LTFT bank 1" />
+          <radiobutton id="4038" action="3526" model="5326" text="STFT bank 2" />
+          <radiobutton id="4039" action="3527" model="5327" text="LTFT bank 2" />
+          <radiobutton id="4040" action="3528" model="5328" text="Lambda target" />
+          <radiobutton id="4041" action="3529" model="5329" text="Catalyst temp" />
+          <radiobutton id="4042" action="3530" model="5330" text="Throttle target" />
+          <radiobutton id="4043" action="3531" model="5331" text="DPF soot" />
+          <radiobutton id="4044" action="3532" model="5332" text="DPF pressure" />
+          <radiobutton id="4045" action="3533" model="5333" text="DPF regen dist." />
+          <radiobutton id="4046" action="3534" model="5334" text="EGT pre-DPF" />
+          <radiobutton id="4047" action="3535" model="5335" text="EGT pre-cat" />
+          <radiobutton id="4048" action="3536" model="5336" text="AdBlue level" />
+          <radiobutton id="4049" action="3537" model="5337" text="DDE torque" />
+          <radiobutton id="4050" action="3538" model="5338" text="Power (calc.)" />
+          <radiobutton id="4051" action="3539" model="5339" text="Fuel volume" />
+          <radiobutton id="4052" action="3540" model="5340" text="DDE relative torque, % (experimental)" />
         </components>
       </hmiState>
     </hmiStates>

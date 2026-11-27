@@ -62,7 +62,7 @@ class Worker:
                 continue
             if self.name == "boostdeck-n57":
                 p = packet.decode().split()
-                assert p[0] == "NBG9", p
+                assert p[0] == "NBGA", p
                 self.frames.append({"valid": int(p[3]), "sent": int(p[2]),
                                     "values": list(map(float, p[5::2])), "ages": list(map(int, p[6::2]))})
             else:
@@ -279,6 +279,25 @@ class N57MostTest(unittest.TestCase):
         self.assertEqual(next(f for f in w.frames if f["valid"])["values"][REGEN_DISTANCE], 1500000)
         self.assertIn("2C01F30344BF0104", w.requests)
         self.stop(w)
+
+    def test_relative_torque_most_requires_pin_and_complete_dynamic_read(self):
+        mask = 1 << 40
+        w = self.worker("boostdeck-n57", signals=mask, delay=80)
+        self.assertTrue(w.until(lambda: self.live(w)), w.error)
+        first = next(f for f in w.frames if f["valid"])
+        self.assertEqual(first["valid"], mask)
+        self.assertAlmostEqual(first["values"][40], 50.003968, places=6)
+        self.assertGreaterEqual(first["ages"][40], 200)
+        self.assertEqual(w.requests[:4], ["22F150", "2C03F303", "2C01F303464C0102", "22F303"])
+        self.stop(w)
+        for mode in ("n57-wrong-pin", "n57-refuse-clear", "n57-refuse-define", "n57-short-read"):
+            with self.subTest(mode=mode):
+                w = self.worker("boostdeck-n57", signals=mask, mode=mode)
+                self.assertTrue(w.until(lambda: bool(w.frames) and bool(w.requests)), w.error)
+                self.assertFalse(self.live(w), w.error)
+                self.stop(w)
+                if mode == "n57-wrong-pin":
+                    self.assertTrue(all(q == "22F150" for q in w.requests))
 
     def test_most_skips_requested_egs_channel(self):
         w = self.worker("boostdeck-n57", signals=(1 << RPM) | (1 << 4))
