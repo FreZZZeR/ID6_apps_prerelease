@@ -535,8 +535,11 @@ void BoostDeck::updateAssignments() {
         char railCaption[64];
         if (diesel_ && signal==BD_RAIL) {
             const unsigned units=preferences_.units(signal);
-            snprintf(railCaption,sizeof railCaption,i==kVerticalSlot ? "Rail\n0-%.0f" : "Rail 0-%.0f",
-                     bd_display_selected(signal,rail_scale_.maximum(),units));
+            const double maximum=bd_display_selected(signal,rail_scale_.maximum(),units);
+            if (maximum>=100000)
+                snprintf(railCaption,sizeof railCaption,i==kVerticalSlot ? "Rail\n0-%.0fk" : "Rail 0-%.0fk",maximum/1000);
+            else
+                snprintf(railCaption,sizeof railCaption,i==kVerticalSlot ? "Rail\n0-%.0f" : "Rail 0-%.0f",maximum);
             caption=railCaption;
         }
         updateModel(370u+i,bmw::BasicString<char>(caption));

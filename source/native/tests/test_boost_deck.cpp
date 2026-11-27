@@ -205,6 +205,7 @@ static void railScaleChecks(BoostDeck& app) {
     app.testAction(2402);
     assert(app.texts[305]=="100000 kPa" && app.images[325]==55016);
     assert(app.texts[128]=="Diesel rail scale: 0 - 200000 kPa");
+    assert(app.texts[375]=="Rail 0-200k");
     app.testAction(2401);
     fail_rail_scale=true;app.testAction(2560);fail_rail_scale=false;
     assert(app.texts[118]=="Could not save diesel rail scale" && app.bools[5162]);
@@ -214,6 +215,9 @@ static void railScaleChecks(BoostDeck& app) {
     assert(app.testState(518,11,23,0));
     sampleRail(app,1000);
     assert(app.texts[378]=="Rail\n0-2000" && app.images[328]==56110);
+    app.testAction(2402);
+    assert(app.texts[378]=="Rail\n0-200k" && app.texts[308]=="100000 kPa");
+    app.testAction(2401);
     app.testAction(2461);
     assert(app.images[338]==57008 && app.images[335]==57008);
     sampleRail(app,3000);
