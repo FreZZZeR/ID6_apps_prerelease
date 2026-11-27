@@ -61,7 +61,7 @@ const char* const kSettingLabels[] = {
 
 void settingValue(const BoostPreferences& prefs, unsigned row, unsigned choice, char* text, size_t size) {
     static const char* const values[][3]={
-        {"psi","bar","kPa"}, {"mph","km/h",0}, {"\260F","\260C",0},
+        {"psi","bar","SI (kPa / MPa)"}, {"mph","km/h",0}, {"\260F","\260C",0},
         {"Bars","Circular dials",0}, {"Screen + soft chime","Screen only",0},
     };
     if (row<BOOST_COOLANT_ALERT) snprintf(text,size,"%s",values[row][choice]);
@@ -418,8 +418,8 @@ void BoostDeck::updateSettings() {
         BoostRailScale option;
         option.choice=i;
         char value[32];
-        snprintf(value,sizeof value,"0 - %.0f %s",bd_display_selected(BD_RAIL,option.maximum(),units),
-                 bd_unit_selected(BD_RAIL,units));
+        snprintf(value,sizeof value,"0 - %.0f %s",BoostRailScale::display(option.maximum(),units),
+                 BoostRailScale::unit(units));
         updateModel(700u+20u*kRailScaleRow+i,bmw::BasicString<char>(value));
         updateModel(5000u+20u*kRailScaleRow+i,rail_scale_.choice==i);
         if (rail_scale_.choice==i) {
@@ -535,11 +535,8 @@ void BoostDeck::updateAssignments() {
         char railCaption[64];
         if (diesel_ && signal==BD_RAIL) {
             const unsigned units=preferences_.units(signal);
-            const double maximum=bd_display_selected(signal,rail_scale_.maximum(),units);
-            if (maximum>=100000)
-                snprintf(railCaption,sizeof railCaption,i==kVerticalSlot ? "Rail\n0-%.0fk" : "Rail 0-%.0fk",maximum/1000);
-            else
-                snprintf(railCaption,sizeof railCaption,i==kVerticalSlot ? "Rail\n0-%.0f" : "Rail 0-%.0f",maximum);
+            const double maximum=BoostRailScale::display(rail_scale_.maximum(),units);
+            snprintf(railCaption,sizeof railCaption,i==kVerticalSlot ? "Rail\n0-%.0f" : "Rail 0-%.0f",maximum);
             caption=railCaption;
         }
         updateModel(370u+i,bmw::BasicString<char>(caption));
@@ -591,10 +588,11 @@ void BoostDeck::refresh() {
         if (!boostDeckSignalHidden(signal,diesel_,hide_emissions_,n57_index_!=0) && received_ && bd_is_fresh(&frame_,signal,elapsed)) {
             const double value=frame_.value[signal];
             const unsigned units=preferences_.units(signal);
-            const char *unit=bd_unit_selected(signal,units);
-            double reading=bd_display_selected(signal,value,units);
+            const bool rail_si=diesel_ && signal==BD_RAIL && units==2;
+            const char *unit=rail_si ? BoostRailScale::unit(units) : bd_unit_selected(signal,units);
+            double reading=rail_si ? BoostRailScale::display(value,units) : bd_display_selected(signal,value,units);
             if (signal==BD_BOOST && fabs(reading)<0.05) reading=0;
-            const int decimals=signal==BD_BATTERY || signal==BD_LAMBDA_TARGET ? 2 :
+            const int decimals=rail_si ? 1 : signal==BD_BATTERY || signal==BD_LAMBDA_TARGET ? 2 :
                 signal==BD_RPM || signal==BD_RAIL || signal==BD_ETHANOL ? 0 : 1;
             snprintf(label,sizeof label,"%.*f%s%s",decimals,reading,
                      *unit && *unit!='%' ? " " : "",unit);

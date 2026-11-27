@@ -15,6 +15,12 @@ struct BoostRailScale {
         static const double values[]={1000,1600,2000,2500};
         return values[choice<COUNT ? choice : static_cast<unsigned>(DEFAULT)];
     }
+    static double display(double bar, unsigned units) {
+        return units==2 ? bar/10 : bd_display_selected(BD_RAIL,bar,units);
+    }
+    static const char* unit(unsigned units) {
+        return units==2 ? "MPa" : bd_unit_selected(BD_RAIL,units);
+    }
     void load(const char* path) {
         FILE* file=fopen(path,"rb");
         if (!file) return;

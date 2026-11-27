@@ -2,6 +2,7 @@
 #include "boost_rail_scale.h"
 #include <assert.h>
 #include <math.h>
+#include <string.h>
 
 int main() {
     char path[]="/tmp/boost-rail-scale.XXXXXX";
@@ -10,6 +11,9 @@ int main() {
     close(fd);
     BoostRailScale scale;
     assert(scale.maximum()==2000);
+    assert(BoostRailScale::display(1800,2)==180);
+    assert(strcmp(BoostRailScale::unit(2),"MPa")==0);
+    assert(BoostRailScale::display(1800,1)==1800);
     const unsigned char pressure[]={0x27,0x10};
     double value=0;
     assert(bd_decode_obd(0x23,pressure,sizeof pressure,&value) && value==1000);
@@ -39,8 +43,8 @@ int main() {
         restarted.load(path);
         assert(restarted.choice==option);
         for (unsigned units=0;units<3;++units) {
-            const double top=bd_display_selected(BD_RAIL,scale.maximum(),units);
-            const double half=bd_display_selected(BD_RAIL,scale.maximum()/2,units);
+            const double top=BoostRailScale::display(scale.maximum(),units);
+            const double half=BoostRailScale::display(scale.maximum()/2,units);
             assert(fabs(top-half*2)<1e-6);
         }
     }

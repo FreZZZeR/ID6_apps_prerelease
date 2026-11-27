@@ -5,6 +5,7 @@
 #include <arpa/inet.h>
 #include <errno.h>
 #include <signal.h>
+#include <poll.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -19,6 +20,7 @@ static char fixture_dir[128];
 static bool fail_assignments,fail_preferences,fail_names,fail_rail_scale;
 static unsigned configured_n57=0x010203;
 static uint64_t fixture_now=100000;
+static int fixture_udp_fd=-1;
 static std::string storagePath(const char* path) {
     const char* prefix="/var/opt/hmi/data/ID5/";
     return strncmp(path,prefix,strlen(prefix)) ? path : std::string(fixture_dir)+"/"+(path+strlen(prefix));
@@ -97,18 +99,26 @@ static int fixture_kill(pid_t pid,int signal) {
 }
 static unsigned fixture_n57(const char*) {return configured_n57;}
 static uint64_t fixture_clock() {return fixture_now;}
+static int fixture_bind(int fd,const struct sockaddr* address,socklen_t length) {
+    const int result=bind(fd,address,length);
+    if (!result && address->sa_family==AF_INET &&
+        ntohs(reinterpret_cast<const struct sockaddr_in*>(address)->sin_port)==BD_UDP_PORT) fixture_udp_fd=fd;
+    return result;
+}
 #define DIAGNOSTIC_WORKER_H
 #define launch fixture_launch
 #define waitpid fixture_waitpid
 #define kill fixture_kill
 #define n57_index_file fixture_n57
 #define bd_mono_ms fixture_clock
+#define bind fixture_bind
 #include "../src/plugins/boost_deck.cpp"
 #undef launch
 #undef waitpid
 #undef kill
 #undef n57_index_file
 #undef bd_mono_ms
+#undef bind
 
 static void tick(BoostDeck& app) {app.testDeliver(app.testLastMessage(kPollKey));}
 static void finishStopped(BoostDeck& app) {
@@ -143,7 +153,11 @@ static void sampleValue(BoostDeck& app,unsigned signal,double value,unsigned age
     destination.sin_family=AF_INET;destination.sin_port=htons(BD_UDP_PORT);
     destination.sin_addr.s_addr=htonl(INADDR_LOOPBACK);
     assert(sendto(sender,packet,length,0,reinterpret_cast<struct sockaddr*>(&destination),sizeof destination)==length);
-    close(sender);tick(app);
+    close(sender);
+    // Receive before the next fake-clock jump can make a delayed packet stale.
+    struct pollfd ready={fixture_udp_fd,POLLIN,0};
+    assert(fixture_udp_fd>=0 && poll(&ready,1,100)==1 && (ready.revents&POLLIN));
+    tick(app);
 }
 
 static void sampleRail(BoostDeck& app,double pressure,unsigned age=0,bool valid=true) {
@@ -203,9 +217,9 @@ static void railScaleChecks(BoostDeck& app) {
     app.testAction(2400);
     assert(app.texts[305]=="14504 psi" && app.images[325]==55016 && app.texts[375]=="Rail 0-29008");
     app.testAction(2402);
-    assert(app.texts[305]=="100000 kPa" && app.images[325]==55016);
-    assert(app.texts[128]=="Diesel rail scale: 0 - 200000 kPa");
-    assert(app.texts[375]=="Rail 0-200k");
+    assert(app.texts[305]=="100.0 MPa" && app.images[325]==55016);
+    assert(app.texts[128]=="Diesel rail scale: 0 - 200 MPa");
+    assert(app.texts[375]=="Rail 0-200");
     app.testAction(2401);
     fail_rail_scale=true;app.testAction(2560);fail_rail_scale=false;
     assert(app.texts[118]=="Could not save diesel rail scale" && app.bools[5162]);
@@ -216,7 +230,7 @@ static void railScaleChecks(BoostDeck& app) {
     sampleRail(app,1000);
     assert(app.texts[378]=="Rail\n0-2000" && app.images[328]==56110);
     app.testAction(2402);
-    assert(app.texts[378]=="Rail\n0-200k" && app.texts[308]=="100000 kPa");
+    assert(app.texts[378]=="Rail\n0-200" && app.texts[308]=="100.0 MPa");
     app.testAction(2401);
     app.testAction(2461);
     assert(app.images[338]==57008 && app.images[335]==57008);

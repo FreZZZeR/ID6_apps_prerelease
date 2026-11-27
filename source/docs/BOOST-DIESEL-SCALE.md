@@ -10,9 +10,11 @@ range is used only by Diesel/pinned N57; gasoline retains its 0–250 bar scale.
 
 Bars, circular dials and the ninth vertical tile share the same range. The
 caption and choices follow the selected pressure units; changing units does
-not change the fill fraction. Long kPa range captions use `k` for thousands
-(for example, `0-250k`); the numeric reading and OPTIONS choices stay in full
-kPa. Numeric readings are not clipped to the graphic
+not change the fill fraction. **SI (kPa / MPa)** uses kPa for boost/MAP and MPa
+for diesel rail pressure: 1800 bar is displayed as 180.0 MPa, and the 2500-bar
+range as 0–250 MPa. The unit stays stable across readings; one decimal in MPa
+preserves the existing whole-bar display precision. The existing pressure
+preference encoding is unchanged. Numeric readings are not clipped to the graphic
 range. Unsupported and stale data remain unavailable. No diagnostic request,
 DDE scaling, F303 transaction, pin, freshness or emissions-selection rule changes.
 
