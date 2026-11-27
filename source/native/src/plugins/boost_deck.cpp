@@ -6,6 +6,7 @@
 #include "diagnostic_worker.h"
 #include "diagnostic_gateway.h"
 #include "boost_preferences.h"
+#include "boost_rail_scale.h"
 #include "boostdeck_assignments.h"
 #include "hmi_state_activity.h"
 #include "n57.h"
@@ -38,6 +39,8 @@ const unsigned kActivePollIntervalMs = 25u;
 const unsigned kIdlePollIntervalMs = 250u;
 const char kCollector[] = "/var/opt/hmi/data/ID5/Plugins/BoostDeck/boostdeck-collector-qnx";
 const char kPreferences[] = "/var/opt/hmi/data/ID5/BoostDeck.prefs";
+const char kRailScalePreferences[] = "/var/opt/hmi/data/ID5/BoostDeck.rail-scale";
+const unsigned kRailScaleRow = BOOST_SETTING_COUNT;
 const unsigned kBarCount = 9;
 const unsigned kVerticalSlot = 8;
 const char* const kGaugeCaptions[][2] = {
@@ -85,6 +88,7 @@ class BoostDeck : public bmw::PluginApp {
     bool gauges_visible_;
     unsigned shown_,focused_,n57_index_;
     BoostPreferences preferences_;
+    BoostRailScale rail_scale_;
     BoostAlerts alerts_;
     pid_t tone_;
     uint64_t last_tone_;
@@ -147,7 +151,20 @@ public:
         }
         updateModel(118u,bmw::BasicString<char>(""));
         updateSettings();
-        refresh();
+        updateAssignments();
+        return true;
+    }
+    template <unsigned Choice> bool changeRailScale(const bmw::Parcel&) {
+        BoostRailScale changed=rail_scale_;
+        changed.choice=Choice;
+        if (!changed.save(kRailScalePreferences)) {
+            updateModel(118u,bmw::BasicString<char>("Could not save diesel rail scale"));
+            return true;
+        }
+        rail_scale_=changed;
+        updateModel(118u,bmw::BasicString<char>(""));
+        updateSettings();
+        updateAssignments();
         return true;
     }
     template <unsigned Slot> bool editGauge(const bmw::Map<unsigned,bmw::Variant>& event) {
@@ -196,7 +213,7 @@ public:
     void reapCollector() {
         if (collector_ <= 0) return;
         pid_t ended = waitpid(collector_, 0, WNOHANG);
-        if (ended == collector_ || (ended < 0 && errno == ECHILD)) {
+        if (ended == collector_ || (ended < 0 && errno == ECHILD && kill(collector_,0)!=0 && errno==ESRCH)) {
             collector_ = -1;
             stopping_ = false;
         }
@@ -285,6 +302,19 @@ bool BoostDeck::onInit() {
             addHandler(2400u+20u*row+choice,action);
         }
     }
+    static const Handler railScaleHandlers[]={
+        &Action::execImpl<BoostDeck,&BoostDeck::changeRailScale<0> >,
+        &Action::execImpl<BoostDeck,&BoostDeck::changeRailScale<1> >,
+        &Action::execImpl<BoostDeck,&BoostDeck::changeRailScale<2> >,
+        &Action::execImpl<BoostDeck,&BoostDeck::changeRailScale<3> >
+    };
+    typedef char rail_scale_count[(sizeof railScaleHandlers/sizeof railScaleHandlers[0]==BoostRailScale::COUNT &&
+                                   kRailScaleRow==8) ? 1 : -1];
+    (void)sizeof(rail_scale_count);
+    for (unsigned i=0;i<BoostRailScale::COUNT;++i) {
+        action.m_exec=railScaleHandlers[i];
+        addHandler(2400u+20u*kRailScaleRow+i,action);
+    }
     action.m_exec=&Action::execImpl<BoostDeck,&BoostDeck::changeProfile<false> >;
     addHandler(502u,action);
     action.m_exec=&Action::execImpl<BoostDeck,&BoostDeck::changeProfile<true> >;
@@ -314,6 +344,7 @@ bool BoostDeck::onInit() {
         addHandler(600u+i,action);
     }
     preferences_.load(kPreferences, sizeof kColorNames / sizeof kColorNames[0]);
+    rail_scale_.load(kRailScalePreferences);
     updateSettings();
     updateAssignments();
     if (fd_>=0) {
@@ -382,12 +413,26 @@ void BoostDeck::updateSettings() {
             updateModel(5000u+row*20u+choice,preferences_.choice[row]==choice);
         }
     }
+    const unsigned units=preferences_.units(BD_RAIL);
+    for (unsigned i=0;i<BoostRailScale::COUNT;++i) {
+        BoostRailScale option;
+        option.choice=i;
+        char value[32];
+        snprintf(value,sizeof value,"0 - %.0f %s",bd_display_selected(BD_RAIL,option.maximum(),units),
+                 bd_unit_selected(BD_RAIL,units));
+        updateModel(700u+20u*kRailScaleRow+i,bmw::BasicString<char>(value));
+        updateModel(5000u+20u*kRailScaleRow+i,rail_scale_.choice==i);
+        if (rail_scale_.choice==i) {
+            snprintf(label,sizeof label,"Diesel rail scale: %s",value);
+            updateModel(120u+kRailScaleRow,bmw::BasicString<char>(label));
+        }
+    }
 }
 
 void BoostDeck::reapTone() {
     if (tone_>0) {
         pid_t ended=waitpid(tone_,0,WNOHANG);
-        if (ended==tone_ || (ended<0 && errno==ECHILD)) tone_=-1;
+        if (ended==tone_ || (ended<0 && errno==ECHILD && kill(tone_,0)!=0 && errno==ESRCH)) tone_=-1;
     }
 }
 
@@ -487,6 +532,13 @@ void BoostDeck::updateAssignments() {
         updateModel(340u+i,bmw::BasicString<char>(name));
         const unsigned signal=signals_[diesel_][i];
         const char* caption=kGaugeCaptions[signal][i==kVerticalSlot];
+        char railCaption[64];
+        if (diesel_ && signal==BD_RAIL) {
+            const unsigned units=preferences_.units(signal);
+            snprintf(railCaption,sizeof railCaption,i==kVerticalSlot ? "Rail\n0-%.0f" : "Rail 0-%.0f",
+                     bd_display_selected(signal,rail_scale_.maximum(),units));
+            caption=railCaption;
+        }
         updateModel(370u+i,bmw::BasicString<char>(caption));
         const unsigned parts[]={260u+i,310u+i,280u+i,290u+i};
         bmw::Parcel visible(!boostDeckSignalHidden(signal,diesel_,hide_emissions_,n57_index_!=0));
@@ -545,7 +597,7 @@ void BoostDeck::refresh() {
                      *unit && *unit!='%' ? " " : "",unit);
             const unsigned color=preferences_.color;
             const unsigned palette=color==kMulticolor ? kMulticolor+(i%8) : color;
-            const int fill=bd_bar(signal,value);
+            const int fill=rail_scale_.bar(signal,value,diesel_);
             if (circular) {
                 const unsigned step=(fill*kCircularSteps+500)/1000;
                 dial+=1+palette*(kCircularSteps+1)+step;

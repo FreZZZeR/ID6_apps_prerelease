@@ -157,10 +157,13 @@ build/boostdeck-collector build/boostdeck-n57: build/boost-deck
 build/test-boostdeck-assignments: tests/test_boostdeck_assignments.cpp src/plugins/boostdeck_assignments.h $(HEADERS) | build
 	$(CXX) -O2 -std=gnu++98 -Wall -Wextra -Werror $(INCLUDES) $< -o $@
 
-build/test-boost-deck: tests/test_boost_deck.cpp tests/dashboard_sdk/bmw_list.h src/plugins/boost_deck.cpp src/plugins/boostdeck_assignments.h src/plugins/hmi_state_activity.h build/boost-test-core.o $(HEADERS) | build
+build/test-boost-deck: tests/test_boost_deck.cpp tests/dashboard_sdk/bmw_list.h src/plugins/boost_deck.cpp src/plugins/boostdeck_assignments.h src/plugins/boost_rail_scale.h src/plugins/hmi_state_activity.h build/boost-test-core.o $(HEADERS) | build
 	$(CXX) -O2 -std=gnu++98 -Wall -Wextra -Werror -Itests/dashboard_sdk $(INCLUDES) tests/test_boost_deck.cpp build/boost-test-core.o -lm -o $@
 
-N57_TESTS = build/test-boostdeck-assignments build/test-boost-deck build/test-n57 build/test-drive-frame build/test-gauge-coexistence build/test-hud-dashboard build/test-shift-scale build/test-shift-window build/test-shift-deck build/test-shift-deck-smooth build/test-power-history build/test-power-rpm-plot build/test-power-deck build/test-hud-reader build/test-gauges-extended build/test-launch-deck
+build/test-boost-rail-scale: tests/test_boost_rail_scale.cpp src/plugins/boost_rail_scale.h src/common/gauge_preferences.h build/boost-test-core.o $(HEADERS) | build
+	$(CXX) -O2 -std=gnu++98 -Wall -Wextra -Werror $(INCLUDES) tests/test_boost_rail_scale.cpp build/boost-test-core.o -lm -o $@
+
+N57_TESTS = build/test-boostdeck-assignments build/test-boost-deck build/test-boost-rail-scale build/test-n57 build/test-drive-frame build/test-gauge-coexistence build/test-hud-dashboard build/test-shift-scale build/test-shift-window build/test-shift-deck build/test-shift-deck-smooth build/test-power-history build/test-power-rpm-plot build/test-power-deck build/test-hud-reader build/test-gauges-extended build/test-launch-deck
 
 test: test-n57-support
 
@@ -173,3 +176,5 @@ test-n57-support: $(N57_TESTS) build/boostdeck-collector build/boostdeck-n57 bui
 	$(PYTHON) -B tests/test_n57_coexistence.py
 	$(PYTHON) -B tests/test_upstream_n57_ui.py
 	$(PYTHON) -B tests/test_n57_dashboards.py
+	$(PYTHON) -B tests/test_worker_pid.py
+	$(PYTHON) -B ../tools/test_boost_scale_resources.py
